@@ -25,7 +25,7 @@ class Object(object):
         """ Must be defined by the child class """
         raise Exception('SYSTEM ERROR: field structure not defined.')
 
-    def valid():
+    def valid(self):  # pylint: disable=no-self-use
         """ Must be defined by the child class """
         raise Exception('SYSTEM ERROR: validation logic not defined.')
 
