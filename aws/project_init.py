@@ -1,11 +1,15 @@
 #!/usr/bin/python
+"""
+This initializes the project entirely within an AWS account.
 
-# This initializes the project entirely within an AWS account.
-# Sufficient permissions are needed for this to work.
+Sufficient permissions are needed for this to work.
+"""
 import boto3
 
 
-def createUsersTable():
+def create_users_table():
+    """ Create the 'Users' DynamoDB table """
+
     # Get the service resource.
     dynamodb = boto3.resource('dynamodb')
 
@@ -14,13 +18,13 @@ def createUsersTable():
         TableName='Users',
         KeySchema=[
             {
-                'AttributeName': 'id',
+                'AttributeName': 'uuid',
                 'KeyType': 'HASH',
             },
         ],
         AttributeDefinitions=[
             {
-                'AttributeName': 'id',
+                'AttributeName': 'uuid',
                 'AttributeType': 'S',
             },
             {
@@ -63,16 +67,19 @@ def createUsersTable():
 
 
 def wait(tables):
+    """ Wait for AWS to finish the table creation process """
     for table_name, table in tables.items():
         print "Waiting for '{}' table to finish being created...".format(table_name)
         table.meta.client.get_waiter('table_exists').wait(TableName=table_name)
         print "Done!"
 
 
-if __name__ == '__main__':
+def main():
+    """ main """
+
     # DynamoDB
     tables = {}
-    tables['Users'] = createUsersTable()
+    tables['Users'] = create_users_table()
     wait(tables)
 
     # API Gateway
@@ -82,3 +89,7 @@ if __name__ == '__main__':
     # S3 Static Web Site
 
     # Lambda
+
+
+if __name__ == '__main__':
+    main()

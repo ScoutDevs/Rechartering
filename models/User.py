@@ -1,12 +1,47 @@
+""" User classes """
+from . import Base
 
 
-class User():
+class User(Base.Object):
 
-    def __init__(self):
-        self.username = 'foo'
-        self.password = 'bar'
+    """ User class """
+
+    @staticmethod
+    def get_uuid_prefix():
+        return 'usr'
+
+    @staticmethod
+    def get_fields():
+        return [
+            'uuid',
+            'username',
+            'password',
+            'roles',
+            'positions',
+            'guardians'
+        ]
+
+    def valid(self):
+        return True
 
 
-class UserFactory():
-    pass
+class Factory(Base.Factory):
 
+    """ User Factory """
+
+    @staticmethod
+    def _get_object_class():
+        return User
+
+    @staticmethod
+    def _get_persister():
+        return Persister()
+
+
+class Persister(Base.Persister):
+
+    """ Persists User objects """
+
+    @staticmethod
+    def _get_table_name():
+        return 'Users'
