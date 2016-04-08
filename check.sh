@@ -1,3 +1,5 @@
 #!/bin/sh
 
-flake8 . && pylint aws && pylint models
+flake8 .
+pylint aws
+pylint models

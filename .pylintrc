@@ -1,5 +1,5 @@
 [Messages]
-disable=locally-disabled
+disable=locally-disabled,duplicate-code
 
 [Reports]
 reports=n

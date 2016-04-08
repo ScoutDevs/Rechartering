@@ -3,13 +3,17 @@ import boto3
 import shortuuid
 
 
+FIELD_REQUIRED = 'required'
+FIELD_OPTIONAL = 'optional'
+
+
 class Object(object):
 
     """ Base class """
 
     def __init__(self, init_data=None):
         if init_data:
-            for key in self.__class__.get_fields():
+            for key, _ in self.__class__.get_fields().items():
                 if key in init_data:
                     self.__dict__[key] = init_data[key]
         if not hasattr(self, 'uuid'):
@@ -25,9 +29,17 @@ class Object(object):
         """ Must be defined by the child class """
         raise Exception('SYSTEM ERROR: field structure not defined.')
 
-    def valid(self):  # pylint: disable=no-self-use
-        """ Must be defined by the child class """
-        raise Exception('SYSTEM ERROR: validation logic not defined.')
+    def valid(self):
+        """ Determine validity of the object """
+        valid = True
+
+        for key, value in self.get_fields().items():
+            if value == FIELD_REQUIRED:
+                if key not in self.__dict__:
+                    valid = False
+                    break
+
+        return valid
 
 
 class Factory(object):

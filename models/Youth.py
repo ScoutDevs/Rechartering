@@ -1,34 +1,34 @@
-""" User classes """
+""" Youth classes """
 from . import Base
 
 
-class User(Base.Object):
+class Youth(Base.Object):
 
-    """ User class """
+    """ Youth class """
 
     @staticmethod
     def get_uuid_prefix():
-        return 'usr'
+        return 'yth'
 
     @staticmethod
     def get_fields():
         return {
             'uuid': Base.FIELD_REQUIRED,
-            'username': Base.FIELD_REQUIRED,
-            'password': Base.FIELD_REQUIRED,
-            'roles': Base.FIELD_OPTIONAL,
-            'positions': Base.FIELD_OPTIONAL,
+            'duplicate_hash': Base.FIELD_REQUIRED,
+            'units': Base.FIELD_REQUIRED,
+            'scoutnet_id': Base.FIELD_OPTIONAL,
+            'application_id': Base.FIELD_OPTIONAL,
             'guardians': Base.FIELD_OPTIONAL,
         }
 
 
 class Factory(Base.Factory):
 
-    """ User Factory """
+    """ Youth Factory """
 
     @staticmethod
     def _get_object_class():
-        return User
+        return Youth
 
     @staticmethod
     def _get_persister():
@@ -37,8 +37,8 @@ class Factory(Base.Factory):
 
 class Persister(Base.Persister):
 
-    """ Persists User objects """
+    """ Persists Youth objects """
 
     @staticmethod
     def _get_table_name():
-        return 'Users'
+        return 'Youth'
