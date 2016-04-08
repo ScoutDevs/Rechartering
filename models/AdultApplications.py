@@ -10,13 +10,29 @@ class AdultApplications(Base.Object):
     def get_uuid_prefix():
         return 'aap'
 
+    def get_validator(self):
+        return Validator(self)
+
+
+class Validator(Base.Validator):
+    """ AdultApplication validator """
+
     @staticmethod
-    def get_fields():
+    def get_field_requirements():
         return {
             'uuid': Base.FIELD_REQUIRED,
             'status': Base.FIELD_REQUIRED,
             'org_id': Base.FIELD_REQUIRED,
             'data': Base.FIELD_REQUIRED,
+        }
+
+    @staticmethod
+    def get_field_types():
+        return {
+            'uuid': str,
+            'status': str,
+            'org_id': str,
+            'data': dict,
         }
 
 

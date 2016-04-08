@@ -20,7 +20,7 @@ class ModelTestCase(unittest.TestCase):
 
     """ Parent for all model tests """
 
-    def _test_persistence(self):
+    def _test_persistance(self):
         """ Test persistance of object """
         self.persister.save(self.obj)
 
@@ -50,9 +50,15 @@ class TestUser(ModelTestCase):
         """ Validate the UUID prefix """
         self.assertEquals('usr', self.obj.uuid[0:3])
 
-    def test_persistence(self):
-        """ Test persistence in parent """
-        self._test_persistence()
+    def test_persistance(self):
+        """ Test persistance in parent """
+        self._test_persistance()
+
+    def test_field_type_validation(self):
+        """ Ensure field type validation is occurring """
+        self.obj.roles = 'test'
+        with self.assertRaises(Base.InvalidObjectException):
+            self._test_persistance()
 
     def test_password(self):
         """ Make sure passwords are being hashed correctly """
@@ -81,9 +87,9 @@ class TestYouth(ModelTestCase):
         """ Validate the UUID prefix """
         self.assertEquals('yth', self.obj.uuid[0:3])
 
-    def test_persistence(self):
-        """ Test persistence in parent """
-        self._test_persistence()
+    def test_persistance(self):
+        """ Test persistance in parent """
+        self._test_persistance()
 
 
 class TestVolunteers(ModelTestCase):
@@ -109,9 +115,9 @@ class TestVolunteers(ModelTestCase):
         """ Validate the UUID prefix """
         self.assertEquals('vol', self.obj.uuid[0:3])
 
-    def test_persistence(self):
-        """ Test persistence in parent """
-        self._test_persistence()
+    def test_persistance(self):
+        """ Test persistance in parent """
+        self._test_persistance()
 
 
 class TestGuardians(ModelTestCase):
@@ -134,9 +140,9 @@ class TestGuardians(ModelTestCase):
         """ Validate the UUID prefix """
         self.assertEquals('gdn', self.obj.uuid[0:3])
 
-    def test_persistence(self):
-        """ Test persistence in parent """
-        self._test_persistence()
+    def test_persistance(self):
+        """ Test persistance in parent """
+        self._test_persistance()
 
 
 class TestDistricts(ModelTestCase):
@@ -157,9 +163,9 @@ class TestDistricts(ModelTestCase):
         """ Validate the UUID prefix """
         self.assertEquals('dst', self.obj.uuid[0:3])
 
-    def test_persistence(self):
-        """ Test persistence in parent """
-        self._test_persistence()
+    def test_persistance(self):
+        """ Test persistance in parent """
+        self._test_persistance()
 
 
 class TestSubdistricts(ModelTestCase):
@@ -181,9 +187,9 @@ class TestSubdistricts(ModelTestCase):
         """ Validate the UUID prefix """
         self.assertEquals('sbd', self.obj.uuid[0:3])
 
-    def test_persistence(self):
-        """ Test persistence in parent """
-        self._test_persistence()
+    def test_persistance(self):
+        """ Test persistance in parent """
+        self._test_persistance()
 
 
 class TestSponsoringOrganizations(ModelTestCase):
@@ -204,9 +210,9 @@ class TestSponsoringOrganizations(ModelTestCase):
         """ Validate the UUID prefix """
         self.assertEquals('spo', self.obj.uuid[0:3])
 
-    def test_persistence(self):
-        """ Test persistence in parent """
-        self._test_persistence()
+    def test_persistance(self):
+        """ Test persistance in parent """
+        self._test_persistance()
 
 
 class TestUnits(ModelTestCase):
@@ -228,9 +234,9 @@ class TestUnits(ModelTestCase):
         """ Validate the UUID prefix """
         self.assertEquals('unt', self.obj.uuid[0:3])
 
-    def test_persistence(self):
-        """ Test persistence in parent """
-        self._test_persistence()
+    def test_persistance(self):
+        """ Test persistance in parent """
+        self._test_persistance()
 
 
 class TestYouthApplications(ModelTestCase):
@@ -253,9 +259,9 @@ class TestYouthApplications(ModelTestCase):
         """ Validate the UUID prefix """
         self.assertEquals('yap', self.obj.uuid[0:3])
 
-    def test_persistence(self):
-        """ Test persistence in parent """
-        self._test_persistence()
+    def test_persistance(self):
+        """ Test persistance in parent """
+        self._test_persistance()
 
 
 class TestAdultApplications(ModelTestCase):
@@ -277,9 +283,9 @@ class TestAdultApplications(ModelTestCase):
         """ Validate the UUID prefix """
         self.assertEquals('aap', self.obj.uuid[0:3])
 
-    def test_persistence(self):
-        """ Test persistence in parent """
-        self._test_persistence()
+    def test_persistance(self):
+        """ Test persistance in parent """
+        self._test_persistance()
 
 
 class TestCharterApplications(ModelTestCase):
@@ -301,9 +307,9 @@ class TestCharterApplications(ModelTestCase):
         """ Validate the UUID prefix """
         self.assertEquals('cap', self.obj.uuid[0:3])
 
-    def test_persistence(self):
-        """ Test persistence in parent """
-        self._test_persistence()
+    def test_persistance(self):
+        """ Test persistance in parent """
+        self._test_persistance()
 
 
 if __name__ == '__main__':

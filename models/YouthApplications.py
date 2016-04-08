@@ -10,13 +10,29 @@ class YouthApplications(Base.Object):
     def get_uuid_prefix():
         return 'yap'
 
+    def get_validator(self):
+        return Validator(self)
+
+
+class Validator(Base.Validator):
+    """ YouthApplication validator """
+
     @staticmethod
-    def get_fields():
+    def get_field_requirements():
         return {
             'uuid': Base.FIELD_REQUIRED,
             'status': Base.FIELD_REQUIRED,
             'unit_id': Base.FIELD_REQUIRED,
             'data': Base.FIELD_REQUIRED,
+        }
+
+    @staticmethod
+    def get_field_types():
+        return {
+            'uuid': str,
+            'status': str,
+            'unit_id': str,
+            'data': dict,
         }
 
 

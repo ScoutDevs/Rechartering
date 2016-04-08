@@ -10,13 +10,29 @@ class Guardians(Base.Object):
     def get_uuid_prefix():
         return 'gdn'
 
+    def get_validator(self):
+        return Validator(self)
+
+
+class Validator(Base.Validator):
+    """ Guardian validator """
+
     @staticmethod
-    def get_fields():
+    def get_field_requirements():
         return {
             'uuid': Base.FIELD_REQUIRED,
             'first_name': Base.FIELD_REQUIRED,
             'last_name': Base.FIELD_REQUIRED,
             'youth': Base.FIELD_REQUIRED,
+        }
+
+    @staticmethod
+    def get_field_types():
+        return {
+            'uuid': str,
+            'first_name': str,
+            'last_name': str,
+            'youth': list,
         }
 
 

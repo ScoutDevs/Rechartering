@@ -17,8 +17,15 @@ class User(Base.Object):
     def get_uuid_prefix():
         return 'usr'
 
+    def get_validator(self):
+        return Validator(self)
+
+
+class Validator(Base.Validator):
+    """ User validator """
+
     @staticmethod
-    def get_fields():
+    def get_field_requirements():
         return {
             'uuid': Base.FIELD_REQUIRED,
             'username': Base.FIELD_REQUIRED,
@@ -26,6 +33,17 @@ class User(Base.Object):
             'roles': Base.FIELD_OPTIONAL,
             'positions': Base.FIELD_OPTIONAL,
             'guardians': Base.FIELD_OPTIONAL,
+        }
+
+    @staticmethod
+    def get_field_types():
+        return {
+            'uuid': str,
+            'username': str,
+            'password': str,
+            'roles': list,
+            'positions': list,
+            'guardians': list,
         }
 
 

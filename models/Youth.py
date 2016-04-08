@@ -13,8 +13,24 @@ class Youth(Base.Object):
     def get_uuid_prefix():
         return 'yth'
 
+    def get_validator(self):
+        return Validator(self)
+
+    def _hash_record(self):
+        regex = re.compile('[a-zA-Z0-9]+')
+        match = regex.findall(self.first_name+self.last_name+self.date_of_birth)
+        string = "".join(match)
+        return hashlib.sha256(string).hexdigest()
+
+    def prepare_for_persist(self):
+        self.duplicate_hash = self._hash_record()
+
+
+class Validator(Base.Validator):
+    """ Youth validator """
+
     @staticmethod
-    def get_fields():
+    def get_field_requirements():
         return {
             'uuid': Base.FIELD_REQUIRED,
             'duplicate_hash': Base.FIELD_REQUIRED,
@@ -27,14 +43,19 @@ class Youth(Base.Object):
             'date_of_birth': Base.FIELD_REQUIRED,
         }
 
-    def _hash_record(self):
-        regex = re.compile('[a-zA-Z0-9]+')
-        match = regex.findall(self.first_name+self.last_name+self.date_of_birth)
-        string = "".join(match)
-        return hashlib.sha256(string).hexdigest()
-
-    def prepare_for_persist(self):
-        self.duplicate_hash = self._hash_record()
+    @staticmethod
+    def get_field_types():
+        return {
+            'uuid': str,
+            'duplicate_hash': str,
+            'units': list,
+            'scoutnet_id': int,
+            'application_id': str,
+            'guardians': list,
+            'first_name': str,
+            'last_name': str,
+            'date_of_birth': str,
+        }
 
 
 class Factory(Base.Factory):

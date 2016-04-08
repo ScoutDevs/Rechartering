@@ -10,12 +10,27 @@ class SponsoringOrganizations(Base.Object):
     def get_uuid_prefix():
         return 'spo'
 
+    def get_validator(self):
+        return Validator(self)
+
+
+class Validator(Base.Validator):
+    """ SponsoringOrganization validator """
+
     @staticmethod
-    def get_fields():
+    def get_field_requirements():
         return {
             'uuid': Base.FIELD_REQUIRED,
             'subdistrict_id': Base.FIELD_REQUIRED,
             'name': Base.FIELD_REQUIRED,
+        }
+
+    @staticmethod
+    def get_field_types():
+        return {
+            'uuid': str,
+            'subdistrict_id': str,
+            'name': str,
         }
 
 

@@ -13,7 +13,7 @@ class Object(object):
 
     def __init__(self, init_data=None):
         if init_data:
-            for key, _ in self.__class__.get_fields().items():
+            for key, _ in self.get_validator().get_field_requirements().items():
                 if key in init_data:
                     self.__dict__[key] = init_data[key]
         if not hasattr(self, 'uuid'):
@@ -21,25 +21,12 @@ class Object(object):
 
     @staticmethod
     def get_uuid_prefix():
-        """ Must be defined by the child class """
+        """
+        UUID prefix to easily identify record types
+
+        Must be defined by the child class.
+        """
         raise Exception('SYSTEM ERROR: prefix not defined.')
-
-    @staticmethod
-    def get_fields():
-        """ Must be defined by the child class """
-        raise Exception('SYSTEM ERROR: field structure not defined.')
-
-    def valid(self):
-        """ Determine validity of the object """
-        valid = True
-
-        for key, value in self.get_fields().items():
-            if value == FIELD_REQUIRED:
-                if key not in self.__dict__:
-                    print "Missing required field {}".format(key)
-                    valid = False
-
-        return valid
 
     def prepare_for_persist(self):
         """
@@ -48,6 +35,88 @@ class Object(object):
         Useful for setting derived values.
         """
         pass
+
+    def get_validator(self):  # pylint: disable=no-self-use
+        """
+        Returns a Validator object for validation
+
+        Must be defined by the child class.
+        """
+        raise Exception('SYSTEM ERROR: validator not defined.')
+
+
+class Validator(object):
+
+    """ Validates data construct """
+
+    def __init__(self, obj):
+        self.obj = obj
+
+    @staticmethod
+    def get_field_requirements():
+        """
+        Specify which fields are used, and whether they're required
+
+        Must be defined by the child class.
+        """
+        raise Exception('SYSTEM ERROR: field requirements not defined.')
+
+    @staticmethod
+    def get_field_types():
+        """
+        Specify the data types for fields for validation.
+
+        Must be defined by the child class.
+        """
+        raise Exception('SYSTEM ERROR: field structure not defined.')
+
+    def _validate_required_fields(self):
+        """ Validate that the data provided includes all required fields """
+        valid = True
+        errors = []
+
+        for key, value in self.get_field_requirements().items():
+            if value == FIELD_REQUIRED:
+                if key not in self.obj.__dict__:
+                    errors.append("Missing required field {}".format(key))
+                    valid = False
+
+        return (valid, errors)
+
+    def _validate_field_types(self):
+        """ Validate that the data provided matches the expected types """
+        valid = True
+        errors = []
+
+        for field, data_type in self.get_field_types().items():
+            if field not in self.obj.__dict__:  # field requirements handled elsewhere
+                continue
+            if not isinstance(self.obj.__dict__[field], data_type):
+                errors.append('Invalid data type {}; expected {}, got [{}]'.format(
+                    type(self.obj.__dict__[field]),
+                    data_type,
+                    self.obj.__dict__[field]))
+                valid = False
+
+        return (valid, errors)
+
+    def _validate(self):  # pylint: disable=no-self-use
+        """ Any additional validation can be done in this method in the child """
+        return (True, [])
+
+    def valid(self):
+        """ Determine validity of the object """
+        (requirements_valid, _) = self._validate_required_fields()
+        (field_types_valid, _) = self._validate_field_types()
+        (other_valid, _) = self._validate()
+        return requirements_valid and field_types_valid and other_valid
+
+    def get_validation_errors(self):
+        """ Provide errors associated with validation """
+        (_, requirements_errors) = self._validate_required_fields()
+        (_, field_types_errors) = self._validate_field_types()
+        (_, other_errors) = self._validate()
+        return requirements_errors + field_types_errors + other_errors
 
 
 class Factory(object):
@@ -92,10 +161,11 @@ class Persister(object):
     def save(self, obj):
         """ Save to DB """
         obj.prepare_for_persist()
-        if obj.valid():
+        validator = obj.get_validator()
+        if validator.valid():
             self.table.put_item(Item=obj.__dict__)
         else:
-            raise Exception("Error saving data to {}.".format(self._get_table_name()))
+            raise InvalidObjectException("Error saving data to {}.".format(self._get_table_name()))
 
     def get(self, key):
         """ Load from DB """

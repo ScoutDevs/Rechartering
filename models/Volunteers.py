@@ -13,8 +13,24 @@ class Volunteers(Base.Object):
     def get_uuid_prefix():
         return 'vol'
 
+    def get_validator(self):
+        return Validator(self)
+
+    def _hash_record(self):
+        regex = re.compile('[0-9]+')
+        numbers = regex.findall(self.ssn)
+        string = "".join(numbers)
+        return hashlib.sha256(string).hexdigest()
+
+    def prepare_for_persist(self):
+        self.duplicate_hash = self._hash_record()
+
+
+class Validator(Base.Validator):
+    """ Volunteer validator """
+
     @staticmethod
-    def get_fields():
+    def get_field_requirements():
         return {
             'uuid': Base.FIELD_REQUIRED,
             'duplicate_hash': Base.FIELD_REQUIRED,
@@ -27,14 +43,19 @@ class Volunteers(Base.Object):
             'ssn': Base.FIELD_REQUIRED,
         }
 
-    def _hash_record(self):
-        regex = re.compile('[0-9]+')
-        numbers = regex.findall(self.ssn)
-        string = "".join(numbers)
-        return hashlib.sha256(string).hexdigest()
-
-    def prepare_for_persist(self):
-        self.duplicate_hash = self._hash_record()
+    @staticmethod
+    def get_field_types():
+        return {
+            'uuid': str,
+            'duplicate_hash': str,
+            'unit_id': str,
+            'scoutnet_id': int,
+            'application_id': str,
+            'YPT_completion_date': str,
+            'first_name': str,
+            'last_name': str,
+            'ssn': str,
+        }
 
 
 class Factory(Base.Factory):
