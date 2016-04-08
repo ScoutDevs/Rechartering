@@ -1,10 +1,17 @@
 """ User classes """
+import hashlib
 from . import Base
 
 
 class User(Base.Object):
 
     """ User class """
+
+    @staticmethod
+    def hash_password(password):
+        """ Hashes the password """
+        hashed_password = hashlib.sha256(password).hexdigest()
+        return hashed_password
 
     @staticmethod
     def get_uuid_prefix():

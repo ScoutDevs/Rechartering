@@ -36,10 +36,18 @@ class Object(object):
         for key, value in self.get_fields().items():
             if value == FIELD_REQUIRED:
                 if key not in self.__dict__:
+                    print "Missing required field {}".format(key)
                     valid = False
-                    break
 
         return valid
+
+    def prepare_for_persist(self):
+        """
+        Called by the persister prior to validation & storage
+
+        Useful for setting derived values.
+        """
+        pass
 
 
 class Factory(object):
@@ -83,6 +91,7 @@ class Persister(object):
 
     def save(self, obj):
         """ Save to DB """
+        obj.prepare_for_persist()
         if obj.valid():
             self.table.put_item(Item=obj.__dict__)
         else:

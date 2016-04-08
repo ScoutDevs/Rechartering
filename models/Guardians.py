@@ -14,6 +14,8 @@ class Guardians(Base.Object):
     def get_fields():
         return {
             'uuid': Base.FIELD_REQUIRED,
+            'first_name': Base.FIELD_REQUIRED,
+            'last_name': Base.FIELD_REQUIRED,
             'youth': Base.FIELD_REQUIRED,
         }
 

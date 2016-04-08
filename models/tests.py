@@ -54,6 +54,11 @@ class TestUser(ModelTestCase):
         """ Test persistence in parent """
         self._test_persistence()
 
+    def test_password(self):
+        """ Make sure passwords are being hashed correctly """
+        hashed_password = '0f1128046248f83dc9b9ab187e16fad0ff596128f1524d05a9a77c4ad932f10a'
+        self.assertEquals(hashed_password, self.obj.hash_password('howdy'))
+
 
 class TestYouth(ModelTestCase):
 
@@ -64,6 +69,9 @@ class TestYouth(ModelTestCase):
         obj_data = {
             'duplicate_hash': 'foo',
             'units': [123, 456],
+            'first_name': 'Test',
+            'last_name': 'McTesterton',
+            'date_of_birth': '2000-01-01',
         }
         self.obj = Youth.Youth(obj_data)
         self.factory = Youth.Factory()
@@ -86,10 +94,12 @@ class TestVolunteers(ModelTestCase):
         """ Init """
         obj_data = {
             'scoutnet_id': 123,
-            'unit_id': 1455,
+            'unit_id': 'unt-123',
             'duplicate_hash': '123123123',
             'YPT_completion_date': '2015-01-01',
-            'data': {},
+            'ssn': '123-45-6789',
+            'first_name': 'Test',
+            'last_name': "O'Test",
         }
         self.obj = Volunteers.Volunteers(obj_data)
         self.factory = Volunteers.Factory()
@@ -111,7 +121,10 @@ class TestGuardians(ModelTestCase):
     def setUp(self):
         """ Init """
         obj_data = {
+            'uuid': 'gdn-TEST-1',
             'youth': [123, 456],
+            'first_name': 'Test',
+            'last_name': 'Testerson',
         }
         self.obj = Guardians.Guardians(obj_data)
         self.factory = Guardians.Factory()
@@ -228,7 +241,7 @@ class TestYouthApplications(ModelTestCase):
         """ Init """
         obj_data = {
             'status': 'Completed',
-            'unit_id': 1455,
+            'unit_id': 'unt-123',
             'scoutnet_id': 123,
             'data': {}
         }

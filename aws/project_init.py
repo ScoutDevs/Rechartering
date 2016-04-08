@@ -172,7 +172,7 @@ def create_volunteers_table():
                 },
                 {
                     'AttributeName': 'unit_id',
-                    'AttributeType': 'N',
+                    'AttributeType': 'S',
                 },
             ],
             GlobalSecondaryIndexes=[
@@ -538,7 +538,7 @@ def create_youth_apps_table():
                 },
                 {
                     'AttributeName': 'unit_id',
-                    'AttributeType': 'N',
+                    'AttributeType': 'S',
                 },
             ],
             GlobalSecondaryIndexes=[

@@ -1,4 +1,7 @@
+# pylint: disable=no-member,attribute-defined-outside-init
 """ Youth classes """
+import hashlib
+import re
 from . import Base
 
 
@@ -19,7 +22,19 @@ class Youth(Base.Object):
             'scoutnet_id': Base.FIELD_OPTIONAL,
             'application_id': Base.FIELD_OPTIONAL,
             'guardians': Base.FIELD_OPTIONAL,
+            'first_name': Base.FIELD_REQUIRED,
+            'last_name': Base.FIELD_REQUIRED,
+            'date_of_birth': Base.FIELD_REQUIRED,
         }
+
+    def _hash_record(self):
+        regex = re.compile('[a-zA-Z0-9]+')
+        match = regex.findall(self.first_name+self.last_name+self.date_of_birth)
+        string = "".join(match)
+        return hashlib.sha256(string).hexdigest()
+
+    def prepare_for_persist(self):
+        self.duplicate_hash = self._hash_record()
 
 
 class Factory(Base.Factory):
