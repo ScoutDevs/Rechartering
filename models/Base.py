@@ -86,7 +86,7 @@ class Persister(object):
         if obj.valid():
             self.table.put_item(Item=obj.__dict__)
         else:
-            raise Exception("Error saving.")
+            raise Exception("Error saving data to {}.".format(self._get_table_name()))
 
     def get(self, key):
         """ Load from DB """
