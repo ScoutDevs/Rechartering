@@ -3,8 +3,12 @@ from . import Base
 
 
 class SponsoringOrganizations(Base.Object):
-
     """ SponsoringOrganizations class """
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self.subdistrict_id = ''
+        self.name = ''
 
     @staticmethod
     def get_uuid_prefix():
@@ -23,14 +27,6 @@ class Validator(Base.Validator):
             'uuid': Base.FIELD_REQUIRED,
             'subdistrict_id': Base.FIELD_REQUIRED,
             'name': Base.FIELD_REQUIRED,
-        }
-
-    @staticmethod
-    def get_field_types():
-        return {
-            'uuid': str,
-            'subdistrict_id': str,
-            'name': str,
         }
 
 

@@ -1,4 +1,6 @@
 """ Base classes """
+import sys
+from boto3.dynamodb.conditions import Key
 import boto3
 import shortuuid
 
@@ -11,13 +13,8 @@ class Object(object):
 
     """ Base class """
 
-    def __init__(self, init_data=None):
-        if init_data:
-            for key, _ in self.get_validator().get_field_requirements().items():
-                if key in init_data:
-                    self.__dict__[key] = init_data[key]
-        if not hasattr(self, 'uuid'):
-            self.uuid = self.__class__.get_uuid_prefix()+'-'+shortuuid.uuid()
+    def __init__(self):
+        self.uuid = self.__class__.get_uuid_prefix()+'-'+shortuuid.uuid()
 
     @staticmethod
     def get_uuid_prefix():
@@ -28,7 +25,7 @@ class Object(object):
         """
         raise Exception('SYSTEM ERROR: prefix not defined.')
 
-    def prepare_for_persist(self):
+    def prepare_for_validate(self):
         """
         Called by the persister prior to validation & storage
 
@@ -61,15 +58,6 @@ class Validator(object):
         """
         raise Exception('SYSTEM ERROR: field requirements not defined.')
 
-    @staticmethod
-    def get_field_types():
-        """
-        Specify the data types for fields for validation.
-
-        Must be defined by the child class.
-        """
-        raise Exception('SYSTEM ERROR: field structure not defined.')
-
     def _validate_required_fields(self):
         """ Validate that the data provided includes all required fields """
         valid = True
@@ -77,26 +65,9 @@ class Validator(object):
 
         for key, value in self.get_field_requirements().items():
             if value == FIELD_REQUIRED:
-                if key not in self.obj.__dict__:
+                if key not in self.obj.__dict__ or not self.obj.__dict__[key]:
                     errors.append("Missing required field {}".format(key))
                     valid = False
-
-        return (valid, errors)
-
-    def _validate_field_types(self):
-        """ Validate that the data provided matches the expected types """
-        valid = True
-        errors = []
-
-        for field, data_type in self.get_field_types().items():
-            if field not in self.obj.__dict__:  # field requirements handled elsewhere
-                continue
-            if not isinstance(self.obj.__dict__[field], data_type):
-                errors.append('Invalid data type {}; expected {}, got [{}]'.format(
-                    type(self.obj.__dict__[field]),
-                    data_type,
-                    self.obj.__dict__[field]))
-                valid = False
 
         return (valid, errors)
 
@@ -106,17 +77,17 @@ class Validator(object):
 
     def valid(self):
         """ Determine validity of the object """
+        self.obj.prepare_for_validate()
         (requirements_valid, _) = self._validate_required_fields()
-        (field_types_valid, _) = self._validate_field_types()
         (other_valid, _) = self._validate()
-        return requirements_valid and field_types_valid and other_valid
+        return requirements_valid and other_valid
 
     def get_validation_errors(self):
         """ Provide errors associated with validation """
+        self.obj.prepare_for_validate()
         (_, requirements_errors) = self._validate_required_fields()
-        (_, field_types_errors) = self._validate_field_types()
         (_, other_errors) = self._validate()
-        return requirements_errors + field_types_errors + other_errors
+        return requirements_errors + other_errors
 
 
 class Factory(object):
@@ -138,7 +109,10 @@ class Factory(object):
     def construct(self, data):
         """ Create object from dict """
         klass = self._get_object_class()  # pylint: disable=assignment-from-no-return
-        obj = klass(data)
+        obj = klass()
+        for key, _ in obj.__dict__.items():
+            if key in data:
+                obj.__dict__[key] = data[key]
         return obj
 
     @staticmethod
@@ -160,12 +134,15 @@ class Persister(object):
 
     def save(self, obj):
         """ Save to DB """
-        obj.prepare_for_persist()
         validator = obj.get_validator()
         if validator.valid():
             self.table.put_item(Item=obj.__dict__)
         else:
-            raise InvalidObjectException("Error saving data to {}.".format(self._get_table_name()))
+            errors = validator.get_validation_errors()
+            if sys.stdin.isatty():
+                print "Error saving data to {}.".format(self._get_table_name())
+                print errors
+            raise InvalidObjectException(errors[0])
 
     def get(self, key):
         """ Load from DB """
@@ -174,6 +151,20 @@ class Persister(object):
             return item['Item']
         else:
             raise RecordNotFoundException('Record not found')
+
+    def query(self, key, value):
+        """ Search DB with index and return 0 or more records """
+        result = self.table.query(
+            IndexName=key,
+            KeyConditionExpression=Key(key).eq(value)
+        )
+
+        if 'Items' in result:
+            items = result['Items']
+        else:
+            raise Exception('Error searching')
+
+        return items
 
     def delete(self, obj):
         """ Delete from DB """
@@ -192,4 +183,9 @@ class RecordNotFoundException(Exception):
 
 class InvalidObjectException(Exception):
     """ Object is not in valid state """
+    pass
+
+
+class InvalidActionException(Exception):
+    """ The action attempted is not valid """
     pass

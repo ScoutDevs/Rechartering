@@ -3,8 +3,13 @@ from . import Base
 
 
 class Guardians(Base.Object):
-
     """ Guardians class """
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self.first_name = ''
+        self.last_name = ''
+        self.youth = ''
 
     @staticmethod
     def get_uuid_prefix():
@@ -24,15 +29,6 @@ class Validator(Base.Validator):
             'first_name': Base.FIELD_REQUIRED,
             'last_name': Base.FIELD_REQUIRED,
             'youth': Base.FIELD_REQUIRED,
-        }
-
-    @staticmethod
-    def get_field_types():
-        return {
-            'uuid': str,
-            'first_name': str,
-            'last_name': str,
-            'youth': list,
         }
 
 

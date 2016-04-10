@@ -3,8 +3,13 @@ from . import Base
 
 
 class AdultApplications(Base.Object):
-
     """ AdultApplications class """
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self.status = ''
+        self.org_id = ''
+        self.data = {}
 
     @staticmethod
     def get_uuid_prefix():
@@ -23,16 +28,6 @@ class Validator(Base.Validator):
             'uuid': Base.FIELD_REQUIRED,
             'status': Base.FIELD_REQUIRED,
             'org_id': Base.FIELD_REQUIRED,
-            'data': Base.FIELD_REQUIRED,
-        }
-
-    @staticmethod
-    def get_field_types():
-        return {
-            'uuid': str,
-            'status': str,
-            'org_id': str,
-            'data': dict,
         }
 
 

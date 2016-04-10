@@ -1,13 +1,23 @@
-# pylint: disable=no-member,attribute-defined-outside-init
+# pylint: disable=no-member
 """ Volunteers classes """
 import hashlib
 import re
 from . import Base
 
 
-class Volunteers(Base.Object):
-
+class Volunteers(Base.Object):  # pylint: disable=too-many-instance-attributes
     """ Volunteers class """
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self.duplicate_hash = ''
+        self.unit_id = ''
+        self.scoutnet_id = ''
+        self.application_id = ''
+        self.ypt_completion_date = ''
+        self.first_name = ''
+        self.last_name = ''
+        self.ssn = ''
 
     @staticmethod
     def get_uuid_prefix():
@@ -16,14 +26,15 @@ class Volunteers(Base.Object):
     def get_validator(self):
         return Validator(self)
 
-    def _hash_record(self):
+    def get_record_hash(self):
+        """ Compile record hash to allow for easy duplicate checks """
         regex = re.compile('[0-9]+')
         numbers = regex.findall(self.ssn)
         string = "".join(numbers)
         return hashlib.sha256(string).hexdigest()
 
-    def prepare_for_persist(self):
-        self.duplicate_hash = self._hash_record()
+    def prepare_for_validate(self):
+        self.duplicate_hash = self.get_record_hash()
 
 
 class Validator(Base.Validator):
@@ -37,24 +48,10 @@ class Validator(Base.Validator):
             'unit_id': Base.FIELD_REQUIRED,
             'scoutnet_id': Base.FIELD_OPTIONAL,
             'application_id': Base.FIELD_OPTIONAL,
-            'YPT_completion_date': Base.FIELD_REQUIRED,
+            'ypt_completion_date': Base.FIELD_REQUIRED,
             'first_name': Base.FIELD_REQUIRED,
             'last_name': Base.FIELD_REQUIRED,
             'ssn': Base.FIELD_REQUIRED,
-        }
-
-    @staticmethod
-    def get_field_types():
-        return {
-            'uuid': str,
-            'duplicate_hash': str,
-            'unit_id': str,
-            'scoutnet_id': int,
-            'application_id': str,
-            'YPT_completion_date': str,
-            'first_name': str,
-            'last_name': str,
-            'ssn': str,
         }
 
 

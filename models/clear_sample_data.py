@@ -18,7 +18,7 @@ from . import sample_data
 
 
 def clear_objects(module, source_data):
-    """ Clear the objects from persistance """
+    """ Clear the objects from persistence """
     factory = module.Factory()
     persister = module.Persister()
 

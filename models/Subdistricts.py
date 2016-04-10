@@ -3,8 +3,13 @@ from . import Base
 
 
 class Subdistricts(Base.Object):
-
     """ Subdistricts class """
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self.district_id = ''
+        self.number = ''
+        self.name = ''
 
     @staticmethod
     def get_uuid_prefix():
@@ -25,15 +30,6 @@ class Validator(Base.Validator):
             'district_id': Base.FIELD_REQUIRED,
             'number': Base.FIELD_REQUIRED,
             'name': Base.FIELD_REQUIRED,
-        }
-
-    @staticmethod
-    def get_field_types():
-        return {
-            'uuid': str,
-            'district_id': str,
-            'number': str,
-            'name': str,
         }
 
 

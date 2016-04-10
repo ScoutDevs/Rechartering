@@ -1,13 +1,26 @@
-# pylint: disable=no-member,attribute-defined-outside-init
+# pylint: disable=no-member
 """ Youth classes """
 import hashlib
 import re
 from . import Base
 
 
-class Youth(Base.Object):
-
+class Youth(Base.Object):  # pylint: disable=too-many-instance-attributes
     """ Youth class """
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self.duplicate_hash = ''
+        self.units = []
+        self.scoutnet_id = ''
+        self.application_id = ''
+        self.guardians = []
+        self.first_name = ''
+        self.last_name = ''
+        self.date_of_birth = ''
+        self.guardian_approval_guardian_id = ''
+        self.guardian_approval_signature = ''
+        self.guardian_approval_date = ''
 
     @staticmethod
     def get_uuid_prefix():
@@ -16,14 +29,32 @@ class Youth(Base.Object):
     def get_validator(self):
         return Validator(self)
 
-    def _hash_record(self):
+    def get_record_hash(self):
+        """ Hash the record for easy duplicate checks """
         regex = re.compile('[a-zA-Z0-9]+')
         match = regex.findall(self.first_name+self.last_name+self.date_of_birth)
         string = "".join(match)
         return hashlib.sha256(string).hexdigest()
 
-    def prepare_for_persist(self):
-        self.duplicate_hash = self._hash_record()
+    def prepare_for_validate(self):
+        self.duplicate_hash = self.get_record_hash()
+
+    def get_guardian_approval(self):
+        """ Get guardian approval data """
+        approval = {}
+        if hasattr(self, 'guardian_approval_guardian_id'):
+            approval = {
+                'guardian_id': self.guardian_approval_guardian_id,
+                'signature': self.guardian_approval_signature,
+                'date': self.guardian_approval_date,
+            }
+        return approval
+
+    def set_guardian_approval(self, approval):
+        """ Set guardian approval data """
+        self.guardian_approval_guardian_id = approval['guardian_id']
+        self.guardian_approval_signature = approval['signature']
+        self.guardian_approval_date = approval['date']
 
 
 class Validator(Base.Validator):
@@ -35,26 +66,9 @@ class Validator(Base.Validator):
             'uuid': Base.FIELD_REQUIRED,
             'duplicate_hash': Base.FIELD_REQUIRED,
             'units': Base.FIELD_REQUIRED,
-            'scoutnet_id': Base.FIELD_OPTIONAL,
-            'application_id': Base.FIELD_OPTIONAL,
-            'guardians': Base.FIELD_OPTIONAL,
             'first_name': Base.FIELD_REQUIRED,
             'last_name': Base.FIELD_REQUIRED,
             'date_of_birth': Base.FIELD_REQUIRED,
-        }
-
-    @staticmethod
-    def get_field_types():
-        return {
-            'uuid': str,
-            'duplicate_hash': str,
-            'units': list,
-            'scoutnet_id': int,
-            'application_id': str,
-            'guardians': list,
-            'first_name': str,
-            'last_name': str,
-            'date_of_birth': str,
         }
 
 
@@ -78,3 +92,7 @@ class Persister(Base.Persister):
     @staticmethod
     def _get_table_name():
         return 'Youth'
+
+    def find_potential_duplicates(self, youth):
+        """ Find duplicates based on hash """
+        return self.query(key='duplicate_hash', value=youth.get_record_hash())

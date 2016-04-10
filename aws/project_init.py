@@ -56,14 +56,14 @@ def create_users_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
-                        'WriteCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 2,
-                'WriteCapacityUnits': 2,
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
             }
         )
         return table
@@ -112,8 +112,8 @@ def create_youth_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
-                        'WriteCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
                     },
                 },
                 {
@@ -128,14 +128,14 @@ def create_youth_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
-                        'WriteCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 2,
-                'WriteCapacityUnits': 2,
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
             }
         )
         return table
@@ -188,8 +188,8 @@ def create_volunteers_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
-                        'WriteCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
                     },
                 },
                 {
@@ -204,8 +204,8 @@ def create_volunteers_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
-                        'WriteCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
                     },
                 },
                 {
@@ -220,14 +220,14 @@ def create_volunteers_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
-                        'WriteCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 2,
-                'WriteCapacityUnits': 2,
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
             }
         )
         return table
@@ -256,8 +256,8 @@ def create_guardians_table():
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 2,
-                'WriteCapacityUnits': 2,
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
             }
         )
         return table
@@ -302,13 +302,13 @@ def create_districts_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
                         'WriteCapacityUnits': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 2,
+                'ReadCapacityUnits': 1,
                 'WriteCapacityUnits': 1,
             }
         )
@@ -358,7 +358,7 @@ def create_subdistricts_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
                         'WriteCapacityUnits': 1,
                     },
                 },
@@ -374,13 +374,13 @@ def create_subdistricts_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
                         'WriteCapacityUnits': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 2,
+                'ReadCapacityUnits': 1,
                 'WriteCapacityUnits': 1,
             }
         )
@@ -426,13 +426,13 @@ def create_sponsoring_orgs_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
                         'WriteCapacityUnits': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 2,
+                'ReadCapacityUnits': 1,
                 'WriteCapacityUnits': 1,
             }
         )
@@ -482,7 +482,7 @@ def create_units_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
                         'WriteCapacityUnits': 1,
                     },
                 },
@@ -498,13 +498,13 @@ def create_units_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
                         'WriteCapacityUnits': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 2,
+                'ReadCapacityUnits': 1,
                 'WriteCapacityUnits': 1,
             }
         )
@@ -554,7 +554,7 @@ def create_youth_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
                         'WriteCapacityUnits': 1,
                     },
                 },
@@ -570,14 +570,14 @@ def create_youth_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
                         'WriteCapacityUnits': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 2,
-                'WriteCapacityUnits': 2,
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
             }
         )
         return table
@@ -626,7 +626,7 @@ def create_adult_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
                         'WriteCapacityUnits': 1,
                     },
                 },
@@ -642,14 +642,14 @@ def create_adult_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
                         'WriteCapacityUnits': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 2,
-                'WriteCapacityUnits': 2,
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
             }
         )
         return table
@@ -702,7 +702,7 @@ def create_charter_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
                         'WriteCapacityUnits': 1,
                     },
                 },
@@ -718,7 +718,7 @@ def create_charter_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
                         'WriteCapacityUnits': 1,
                     },
                 },
@@ -734,13 +734,43 @@ def create_charter_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 2,
+                        'ReadCapacityUnits': 1,
                         'WriteCapacityUnits': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 2,
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
+            }
+        )
+        return table
+    except botocore.exceptions.ClientError as exc:
+        if 'ResourceInUseException' not in exc.__str__():
+            raise exc
+
+
+def create_record_log_table():
+    """ Create the 'RecordLog' DynamoDB table """
+
+    # Create the DynamoDB table.
+    try:
+        table = DYNAMODB.create_table(
+            TableName='RecordLog',
+            KeySchema=[
+                {
+                    'AttributeName': 'uuid',
+                    'KeyType': 'HASH',
+                },
+            ],
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'uuid',
+                    'AttributeType': 'S',
+                },
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 1,
                 'WriteCapacityUnits': 1,
             }
         )
@@ -769,12 +799,19 @@ def main():
     tables['Volunteers'] = create_volunteers_table()
     tables['Guardians'] = create_guardians_table()
     tables['Districts'] = create_districts_table()
+    wait(tables)
+
+    tables = {}
     tables['Subdistricts'] = create_subdistricts_table()
     tables['SponsoringOrganizations'] = create_sponsoring_orgs_table()
     tables['Units'] = create_units_table()
     tables['YouthApplications'] = create_youth_apps_table()
     tables['AdultApplications'] = create_adult_apps_table()
+    wait(tables)
+
+    tables = {}
     tables['CharterApplications'] = create_charter_apps_table()
+    tables['RecordLog'] = create_record_log_table()
     wait(tables)
 
     # API Gateway

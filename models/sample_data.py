@@ -62,7 +62,7 @@ VOLUNTEERS_DATA = [
         'last_name': 'Reece',
         'scoutnet_id': 0,
         'application_id': 0,
-        'YPT_completion_date': '2015-01-01',
+        'ypt_completion_date': '2015-01-01',
     },
     {
         'uuid': 'vol-2',
@@ -72,7 +72,7 @@ VOLUNTEERS_DATA = [
         'last_name': 'Reece',
         'scoutnet_id': 0,
         'application_id': 0,
-        'YPT_completion_date': '2015-01-01',
+        'ypt_completion_date': '2015-01-01',
     },
 ]
 

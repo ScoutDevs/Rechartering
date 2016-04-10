@@ -4,8 +4,15 @@ from . import Base
 
 
 class User(Base.Object):
-
     """ User class """
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self.username = ''
+        self.password = ''
+        self.guardian_id = ''
+        self.roles = []
+        self.positions = []
 
     @staticmethod
     def hash_password(password):
@@ -33,17 +40,6 @@ class Validator(Base.Validator):
             'roles': Base.FIELD_OPTIONAL,
             'positions': Base.FIELD_OPTIONAL,
             'guardians': Base.FIELD_OPTIONAL,
-        }
-
-    @staticmethod
-    def get_field_types():
-        return {
-            'uuid': str,
-            'username': str,
-            'password': str,
-            'roles': list,
-            'positions': list,
-            'guardians': list,
         }
 
 
