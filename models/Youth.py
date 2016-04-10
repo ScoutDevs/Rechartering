@@ -42,19 +42,19 @@ class Youth(Base.Object):  # pylint: disable=too-many-instance-attributes
     def get_guardian_approval(self):
         """ Get guardian approval data """
         approval = {}
-        if hasattr(self, 'guardian_approval_guardian_id'):
+        if self.guardian_approval_guardian_id:
             approval = {
-                'guardian_id': self.guardian_approval_guardian_id,
-                'signature': self.guardian_approval_signature,
-                'date': self.guardian_approval_date,
+                'guardian_approval_guardian_id': self.guardian_approval_guardian_id,
+                'guardian_approval_signature': self.guardian_approval_signature,
+                'guardian_approval_date': self.guardian_approval_date,
             }
         return approval
 
     def set_guardian_approval(self, approval):
         """ Set guardian approval data """
-        self.guardian_approval_guardian_id = approval['guardian_id']
-        self.guardian_approval_signature = approval['signature']
-        self.guardian_approval_date = approval['date']
+        self.guardian_approval_guardian_id = approval['guardian_approval_guardian_id']
+        self.guardian_approval_signature = approval['guardian_approval_signature']
+        self.guardian_approval_date = approval['guardian_approval_date']
 
 
 class Validator(Base.Validator):

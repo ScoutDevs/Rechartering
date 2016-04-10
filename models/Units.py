@@ -1,6 +1,13 @@
 """ Units classes """
 from . import Base
 
+TYPE_PACK = 'Pack'
+TYPE_TROOP = 'Troop'
+TYPE_TEAM = 'Team'
+TYPE_CREW = 'Crew'
+TYPE_SHIP = 'Ship'
+TYPE_POST = 'Post'
+
 
 class Units(Base.Object):
 
@@ -9,6 +16,7 @@ class Units(Base.Object):
         super(self.__class__, self).__init__()
         self.sponsoring_organization_id = ''
         self.type = ''
+        self.lds_unit = True
         self.number = 0
 
     @staticmethod
@@ -33,12 +41,12 @@ class Validator(Base.Validator):
 
     def _validate(self):
         valid_types = [
-            'Pack',
-            'Troop',
-            'Team',
-            'Crew',
-            'Ship',
-            'Post',
+            TYPE_PACK,
+            TYPE_TROOP,
+            TYPE_TEAM,
+            TYPE_CREW,
+            TYPE_SHIP,
+            TYPE_POST,
         ]
         valid = True
         errors = []

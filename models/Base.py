@@ -1,5 +1,4 @@
 """ Base classes """
-import sys
 from boto3.dynamodb.conditions import Key
 import boto3
 import shortuuid
@@ -41,6 +40,10 @@ class Object(object):
         """
         raise Exception('SYSTEM ERROR: validator not defined.')
 
+    def validate(self):
+        """ Validate the object """
+        return self.get_validator().validate()
+
 
 class Validator(object):
 
@@ -81,6 +84,13 @@ class Validator(object):
         (requirements_valid, _) = self._validate_required_fields()
         (other_valid, _) = self._validate()
         return requirements_valid and other_valid
+
+    def validate(self):
+        """ Validates the object """
+        errors = self.get_validation_errors()
+        if errors:
+            # if sys.stdin.isatty() print errors
+            raise InvalidObjectException(errors[0])
 
     def get_validation_errors(self):
         """ Provide errors associated with validation """
@@ -134,15 +144,23 @@ class Persister(object):
 
     def save(self, obj):
         """ Save to DB """
-        validator = obj.get_validator()
-        if validator.valid():
-            self.table.put_item(Item=obj.__dict__)
-        else:
-            errors = validator.get_validation_errors()
-            if sys.stdin.isatty():
-                print "Error saving data to {}.".format(self._get_table_name())
-                print errors
-            raise InvalidObjectException(errors[0])
+        obj.get_validator().validate()
+        persist_obj = self.__class__.get_persistable_object(obj)
+        self.table.put_item(Item=persist_obj)
+
+    @staticmethod
+    def get_persistable_object(obj):
+        """
+        Give DynamoDB what it wants
+
+        DynamoDB wants a dict, not an object
+        DynamoDB won't store empty fields, so get rid of 'em
+        """
+        new_dict = {}
+        for key, val in obj.__dict__.items():
+            if val != '':
+                new_dict[key] = val
+        return new_dict
 
     def get(self, key):
         """ Load from DB """
@@ -183,9 +201,4 @@ class RecordNotFoundException(Exception):
 
 class InvalidObjectException(Exception):
     """ Object is not in valid state """
-    pass
-
-
-class InvalidActionException(Exception):
-    """ The action attempted is not valid """
     pass

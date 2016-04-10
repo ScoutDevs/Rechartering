@@ -251,6 +251,10 @@ class TestYouthApplications(ModelTestCase):
         """ Overriding general validation to do status-specific validation """
         pass
 
+    def test_persistence(self):
+        """ Overriding general validation to do status-specific validation """
+        pass
+
     def test_uuid(self):
         """ Validate the UUID prefix """
         self.assertEquals('yap', self.obj.uuid[0:3])
@@ -268,6 +272,9 @@ class TestYouthApplications(ModelTestCase):
         """ Test unit approval validation """
         self.obj.status = YouthApplications.STATUS_FEE_PENDING
         self.assertFalse(self.validator.valid())
+        self.obj.guardian_approval_guardian_id = '123'
+        self.obj.guardian_approval_signature = 'stuff'
+        self.obj.guardian_approval_date = '2015-01-01'
         self.obj.unit_approval_user_id = '123'
         self.obj.unit_approval_signature = 'stuff'
         self.obj.unit_approval_date = '2015-01-01'
@@ -275,26 +282,37 @@ class TestYouthApplications(ModelTestCase):
 
     def test_fee_payment(self):
         """ Test fee payment validation """
-        self.obj.status = YouthApplications.STATUS_READY_TO_RECORD
+        self.obj.status = YouthApplications.STATUS_READY_FOR_SCOUTNET
         self.assertFalse(self.validator.valid())
-        self.obj.fee_payment_date = '2015-01-01'
-        self.obj.fee_payment_user_id = '123'
-        self.obj.fee_payment_signature = 'stuff'
+        self.obj.guardian_approval_guardian_id = '123'
+        self.obj.guardian_approval_signature = 'stuff'
+        self.obj.guardian_approval_date = '2015-01-01'
+        self.obj.unit_approval_user_id = '123'
+        self.obj.unit_approval_signature = 'stuff'
+        self.obj.unit_approval_date = '2015-01-01'
         self.assertTrue(self.validator.valid())
 
     def test_record(self):
-        """ Test fee payment validation """
-        self.obj.status = YouthApplications.STATUS_READY_TO_RECORD
-        self.assertFalse(self.validator.valid())
-        self.obj.fee_payment_date = '2015-01-01'
-        self.obj.fee_payment_user_id = '123'
-        self.obj.fee_payment_signature = 'stuff'
+        """ Test ready for ScoutNet validation """
+        self.obj.status = YouthApplications.STATUS_READY_FOR_SCOUTNET
+        self.obj.guardian_approval_guardian_id = '123'
+        self.obj.guardian_approval_signature = 'stuff'
+        self.obj.guardian_approval_date = '2015-01-01'
+        self.obj.unit_approval_user_id = '123'
+        self.obj.unit_approval_signature = 'stuff'
+        self.obj.unit_approval_date = '2015-01-01'
         self.assertTrue(self.validator.valid())
 
     def test_complete(self):
         """ Test complete status """
         self.obj.status = YouthApplications.STATUS_COMPLETE
         self.assertFalse(self.validator.valid())
+        self.obj.guardian_approval_guardian_id = '123'
+        self.obj.guardian_approval_signature = 'stuff'
+        self.obj.guardian_approval_date = '2015-01-01'
+        self.obj.unit_approval_user_id = '123'
+        self.obj.unit_approval_signature = 'stuff'
+        self.obj.unit_approval_date = '2015-01-01'
         self.obj.recorded_in_scoutnet_date = '2015-01-01'
         self.assertTrue(self.validator.valid())
 

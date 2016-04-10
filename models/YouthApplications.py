@@ -2,11 +2,11 @@
 from . import Base
 
 
-STATUS_SUBMITTED = 'Submitted'
+STATUS_CREATED = 'Created'
 STATUS_GUARDIAN_APPROVAL = 'Awaiting Guardian Approval'
 STATUS_UNIT_APPROVAL = 'Awaiting Unit Approval'
 STATUS_FEE_PENDING = 'Fee Payment Pending'
-STATUS_READY_TO_RECORD = 'Ready to Record'
+STATUS_READY_FOR_SCOUTNET = 'Ready for ScoutNet'
 STATUS_COMPLETE = 'Complete'
 STATUS_REJECTED = 'Rejected'
 
@@ -17,7 +17,7 @@ class YouthApplications(Base.Object):  # pylint: disable=too-many-instance-attri
     def __init__(self):
         super(self.__class__, self).__init__()
         self.unit_id = ''
-        self.status = ''
+        self.status = STATUS_CREATED
         self.guardian_approval_guardian_id = ''
         self.guardian_approval_signature = ''
         self.guardian_approval_date = ''
@@ -26,10 +26,12 @@ class YouthApplications(Base.Object):  # pylint: disable=too-many-instance-attri
         self.unit_approval_date = ''
         self.fee_payment_date = ''
         self.fee_payment_user_id = ''
-        self.fee_payment_signature = ''
+        self.fee_payment_receipt = ''
         self.recorded_in_scoutnet_date = ''
         self.rejection_date = ''
         self.rejection_reason = ''
+        self.youth_id = ''
+        self.scoutnet_id = 0
 
     def set_status(self, status):
         """ Set the application status """
@@ -37,8 +39,26 @@ class YouthApplications(Base.Object):  # pylint: disable=too-many-instance-attri
 
     def set_guardian_approval(self, approval):
         """ Set guardian approval """
-        self.guardian_approval_guardian_id = approval.guardian_id
-        self.guardian_approval_signature = approval.guardian_signature
+        self.guardian_approval_guardian_id = approval['guardian_approval_guardian_id']
+        self.guardian_approval_signature = approval['guardian_approval_signature']
+        self.guardian_approval_date = approval['guardian_approval_date']
+
+    def set_unit_approval(self, approval):
+        """ Set unit approval """
+        self.unit_approval_user_id = approval['unit_approval_user_id']
+        self.unit_approval_signature = approval['unit_approval_signature']
+        self.unit_approval_date = approval['unit_approval_date']
+
+    def set_fee_payment(self, data):
+        """ Set fee payment """
+        self.fee_payment_date = data['fee_payment_date']
+        self.fee_payment_user_id = data['fee_payment_user_id']
+        self.fee_payment_receipt = data['fee_payment_receipt']
+
+    def set_recorded_in_scoutnet(self, data):
+        """ Mark as recorded in ScoutNet """
+        self.scoutnet_id = data['scoutnet_id']
+        self.recorded_in_scoutnet_date = data['date']
 
     @staticmethod
     def get_uuid_prefix():
@@ -65,11 +85,11 @@ class Validator(Base.Validator):
     def get_valid_statuses():
         """ List of all valid statuses """
         return [
-            STATUS_SUBMITTED,
+            STATUS_CREATED,
             STATUS_GUARDIAN_APPROVAL,
             STATUS_UNIT_APPROVAL,
             STATUS_FEE_PENDING,
-            STATUS_READY_TO_RECORD,
+            STATUS_READY_FOR_SCOUTNET,
             STATUS_COMPLETE,
             STATUS_REJECTED,
         ]
@@ -91,35 +111,35 @@ class StatusValidator(object):  # pylint: disable=too-few-public-methods
 
     def get_field_requirements(self):
         """ Additional field requirements by status """
-        if self.status == STATUS_UNIT_APPROVAL:
-            fields = {
+        fields = {}
+        if self.status in [STATUS_UNIT_APPROVAL, STATUS_FEE_PENDING, STATUS_READY_FOR_SCOUTNET, STATUS_COMPLETE]:
+            fields.update({
                 'guardian_approval_guardian_id': Base.FIELD_REQUIRED,
                 'guardian_approval_signature': Base.FIELD_REQUIRED,
                 'guardian_approval_date': Base.FIELD_REQUIRED,
-            }
-        elif self.status == STATUS_FEE_PENDING:
-            fields = {
+            })
+        if self.status in [STATUS_FEE_PENDING, STATUS_READY_FOR_SCOUTNET, STATUS_COMPLETE]:
+            fields.update({
                 'unit_approval_user_id': Base.FIELD_REQUIRED,
                 'unit_approval_signature': Base.FIELD_REQUIRED,
                 'unit_approval_date': Base.FIELD_REQUIRED,
-            }
-        elif self.status == STATUS_READY_TO_RECORD:
-            fields = {
-                'fee_payment_date': Base.FIELD_REQUIRED,
-                'fee_payment_user_id': Base.FIELD_REQUIRED,
-                'fee_payment_signature': Base.FIELD_REQUIRED,
-            }
-        elif self.status == STATUS_COMPLETE:
-            fields = {
+            })
+        if self.status in [STATUS_READY_FOR_SCOUTNET, STATUS_COMPLETE]:
+            fields.update({
+                # TODO: not required for LDS units; make conditional?
+                # 'fee_payment_date': Base.FIELD_REQUIRED,
+                # 'fee_payment_user_id': Base.FIELD_REQUIRED,
+                # 'fee_payment_receipt': Base.FIELD_REQUIRED,
+            })
+        if self.status in [STATUS_COMPLETE]:
+            fields.update({
                 'recorded_in_scoutnet_date': Base.FIELD_REQUIRED,
-            }
-        elif self.status == STATUS_REJECTED:
-            fields = {
+            })
+        if self.status == STATUS_REJECTED:
+            fields.update({
                 'rejection_date': Base.FIELD_REQUIRED,
                 'rejection_reason': Base.FIELD_REQUIRED,
-            }
-        else:
-            fields = {}
+            })
 
         return fields
 

@@ -1,4 +1,5 @@
 #!/bin/sh
 
-python -m models.tests $1
+python -m models.tests
+python -m controllers.tests
 #coverage run --source models
