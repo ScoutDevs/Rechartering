@@ -295,11 +295,6 @@ class Controller(object):
         Returns:
             Application object (updated)
         """
-        # QUESTION: is this paid only annually?  Should we move past this...
-        # automatically if the fee has already been paid for this youth? Does it
-        # apply for the youth regardless of unit, or just for the youth + unit?
-
-        # QUESTION: is there some sort of transaction ID or receipt or something we can record here?
 
         if 'fee_payment_date' not in data or not data['fee_payment_date']:
             data['fee_payment_date'] = date.today().isoformat()

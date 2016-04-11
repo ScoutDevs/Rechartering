@@ -2,9 +2,6 @@
 # TODO: API Gateway
 # TODO: API Gateway authentication:
 #   http://docs.aws.amazon.com/apigateway/latest/developerguide/use-custom-authorizer.html
-# TODO: create swimlane branches; merge everything
-# TODO: Send email
-# TODO: get answers to QUESTIONs
 # TODO: add data integrity check scripts
 # TODO: add Google-riffic docstrings everywhere
 """
