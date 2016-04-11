@@ -1,33 +1,31 @@
 # pylint: disable=import-error
 # TODO: implement security measures
-# TODO: Move YouthApplications to Youth.Application?
 """ Youth Application controller """
 from datetime import date
 from controllers import InvalidActionException
 from models import Unit
 from models import Youth
-from models import YouthApplications
 
 
-class YouthApplication(object):
+class Controller(object):
     """Youth Application Controller
 
     Manages the Youth Application workflow from beginning to end, top to
     bottom.
 
     Attributes:
-        factory: YouthApplications factory object
-        persister: YouthApplications persister object
+        factory: Application factory object
+        persister: Application persister object
         unit: Unit object
     """
 
     def __init__(self, application_persister=None, unit_factory=None):
         """ init """
-        self.factory = YouthApplications.Factory()
+        self.factory = Youth.ApplicationFactory()
         if application_persister:
             self.persister = application_persister
         else:
-            self.persister = YouthApplications.Persister()
+            self.persister = Youth.ApplicationPersister()
 
         if unit_factory:
             self.unit_factory = unit_factory
@@ -71,13 +69,13 @@ class YouthApplication(object):
         is already on record.
 
         Args:
-            app: New YouthApplications object to submit
+            app: New Application object to submit
         Returns:
             Application object (updated)
         """
-        self._enforce_app_status(app, YouthApplications.STATUS_CREATED)
+        self._enforce_app_status(app, Youth.APPLICATION_STATUS_CREATED)
 
-        app.status = YouthApplications.STATUS_GUARDIAN_APPROVAL
+        app.status = Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL
 
         if app.youth_id:
             app.scoutnet_id = self._get_youth_scoutnet_id(app)
@@ -97,7 +95,7 @@ class YouthApplication(object):
         This will attempt to find it.
 
         Args:
-            app: YouthApplications object to check
+            app: Application object to check
         Returns:
             dict containing approval data, or empty dict
         """
@@ -113,7 +111,7 @@ class YouthApplication(object):
         staff.
 
         Args:
-            app: YouthApplications object
+            app: Application object
         Returns:
             int: the Youth's ScoutNet ID
         """
@@ -128,7 +126,7 @@ class YouthApplication(object):
         program.  This handles the submission of that approval.
 
         Args:
-            app: YouthApplications object in GUARDIAN_APPROVAL status
+            app: Application object in GUARDIAN_APPROVAL status
             data: dict containing the following fields:
                 guardian_approval_guardian_id: ID of the guardian who granted
                     approval
@@ -136,16 +134,16 @@ class YouthApplication(object):
                 guardian_approval_date (optional): date of original guardian
                     approval for the youth; defaults to current date
         Returns:
-            YouthApplications object (updated)
+            Application object (updated)
         """
-        self._enforce_app_status(app, YouthApplications.STATUS_GUARDIAN_APPROVAL)
+        self._enforce_app_status(app, Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL)
         if 'guardian_approval_date' not in data or not data['guardian_approval_date']:
             data['guardian_approval_date'] = date.today().isoformat()
 
         app.guardian_approval_guardian_id = data['guardian_approval_guardian_id']
         app.guardian_approval_signature = data['guardian_approval_signature']
         app.guardian_approval_date = data['guardian_approval_date']
-        app.status = YouthApplications.STATUS_UNIT_APPROVAL
+        app.status = Youth.APPLICATION_STATUS_UNIT_APPROVAL
 
         # LAMBDA-TODO: record on youth record
 
@@ -161,15 +159,15 @@ class YouthApplication(object):
         permanently for their youth, use the revoke_guardian_approval method.
 
         Args:
-            app: YouthApplications object in GUARDIAN_APPROVAL status
+            app: Application object in GUARDIAN_APPROVAL status
             data: dict containing the following fields:
                 rejection_reason (optional): ID of the guardian who granted
                     approval; default message is used if not provided
                 rejection_date (optional): defaults to current date
         Returns:
-            YouthApplications object (updated)
+            Application object (updated)
         """
-        self._enforce_app_status(app, YouthApplications.STATUS_GUARDIAN_APPROVAL)
+        self._enforce_app_status(app, Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL)
         if 'rejection_reason' not in data:
             data['rejection_reason'] = 'Guardian approval NOT granted'
         if 'rejection_date' not in data:
@@ -178,7 +176,7 @@ class YouthApplication(object):
         app.rejection_reason = data['rejection_reason']
         app.rejection_date = data['rejection_date']
 
-        app.status = YouthApplications.STATUS_REJECTED
+        app.status = Youth.APPLICATION_STATUS_REJECTED
 
         app.validate()
         return app
@@ -190,15 +188,15 @@ class YouthApplication(object):
         application.
 
         Args:
-            app: YouthApplications object in UNIT_APPROVAL status
+            app: Application object in UNIT_APPROVAL status
             data: dict containing the following fields:
                 unit_approval_user_id: User ID of the user who approved
                 unit_approval_signature: Signature of said user
                 unit_approval_date (optional): defaults to current date
         Returns:
-            YouthApplications object (updated)
+            Application object (updated)
         """
-        self._enforce_app_status(app, YouthApplications.STATUS_UNIT_APPROVAL)
+        self._enforce_app_status(app, Youth.APPLICATION_STATUS_UNIT_APPROVAL)
         if 'unit_approval_date' not in data or not data['unit_approval_date']:
             data['unit_approval_date'] = date.today().isoformat()
 
@@ -207,9 +205,9 @@ class YouthApplication(object):
         app.unit_approval_date = data['unit_approval_date']
 
         if self._is_lds_unit_application(app):
-            app.status = YouthApplications.STATUS_READY_FOR_SCOUTNET
+            app.status = Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET
         else:
-            app.status = YouthApplications.STATUS_FEE_PENDING
+            app.status = Youth.APPLICATION_STATUS_FEE_PENDING
 
         app.validate()
         return app
@@ -221,7 +219,7 @@ class YouthApplication(object):
         level, so they bypass the FEE_PENDING status.
 
         Args:
-            app: YouthApplications object
+            app: Application object
         Returns:
             boolean
         """
@@ -235,15 +233,15 @@ class YouthApplication(object):
         want to reject an application for their unit.
 
         Args:
-            app: YouthApplications object in GUARDIAN_APPROVAL status
+            app: Application object in GUARDIAN_APPROVAL status
             data: dict containing the following fields:
                 rejection_reason (optional): ID of the guardian who granted
                     approval; default message is used if not provided
                 rejection_date (optional): defaults to current date
         Returns:
-            YouthApplications object (updated)
+            Application object (updated)
         """
-        self._enforce_app_status(app, YouthApplications.STATUS_UNIT_APPROVAL)
+        self._enforce_app_status(app, Youth.APPLICATION_STATUS_UNIT_APPROVAL)
         if 'rejection_reason' not in data:
             data['rejection_reason'] = 'Guardian approval NOT granted'
         if 'rejection_date' not in data:
@@ -252,7 +250,7 @@ class YouthApplication(object):
         app.rejection_reason = data['rejection_reason']
         app.rejection_date = data['rejection_date']
 
-        app.status = YouthApplications.STATUS_REJECTED
+        app.status = Youth.APPLICATION_STATUS_REJECTED
 
         app.validate()
         return app
@@ -264,14 +262,14 @@ class YouthApplication(object):
         fee has been paid, a council employee can mark it as paid.
 
         Args:
-            app: YouthApplications object in FEE_PENDING status
+            app: Application object in FEE_PENDING status
             data: dict containing the following fields:
                 fee_payment_user_id (optional): ID of the user who is marking the
                     registration fees as paid
                 fee_payment_receipt: Transaction or receipt number
                 fee_payment_date (optional): defaults to current date
         Returns:
-            YouthApplications object (updated)
+            Application object (updated)
         """
         # QUESTION: is this paid only annually?  Should we move past this...
         # automatically if the fee has already been paid for this youth? Does it
@@ -279,14 +277,14 @@ class YouthApplication(object):
 
         # QUESTION: is there some sort of transaction ID or receipt or something we can record here?
 
-        self._enforce_app_status(app, YouthApplications.STATUS_FEE_PENDING)
+        self._enforce_app_status(app, Youth.APPLICATION_STATUS_FEE_PENDING)
         if 'fee_payment_date' not in data or not data['fee_payment_date']:
             data['fee_payment_date'] = date.today().isoformat()
 
         app.fee_payment_date = data['fee_payment_date']
         app.fee_payment_user_id = data['fee_payment_user_id']
         app.fee_payment_receipt = data['fee_payment_receipt']
-        app.status = YouthApplications.STATUS_READY_FOR_SCOUTNET
+        app.status = Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET
 
         app.validate()
         return app
@@ -299,15 +297,15 @@ class YouthApplication(object):
         Council employee will mark it as entered.
 
         Args:
-            app: YouthApplications object in READY_FOR_SCOUTNET status
+            app: Application object in READY_FOR_SCOUTNET status
             data: dict containing the following fields:
                 scoutnet_id (optional): ScoutNet ID for the Youth created.  Not
                     required for non-new youth.
                 recorded_in_scoutnet_date (optional): defaults to current date
         Returns:
-            YouthApplications object (updated)
+            Application object (updated)
         """
-        self._enforce_app_status(app, YouthApplications.STATUS_READY_FOR_SCOUTNET)
+        self._enforce_app_status(app, Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET)
         if 'date' not in data:
             data['date'] = date.today().isoformat()
 
@@ -315,7 +313,7 @@ class YouthApplication(object):
 
         app.scoutnet_id = data['scoutnet_id']
         app.recorded_in_scoutnet_date = data['date']
-        app.status = YouthApplications.STATUS_COMPLETE
+        app.status = Youth.APPLICATION_STATUS_COMPLETE
 
         app.validate()
         return app
@@ -351,7 +349,7 @@ class YouthApplication(object):
         an exception if the app isn't in the specified status.
 
         Args:
-            app: YouthApplications object
+            app: Application object
             status: Status to enforce
         Raises:
             InvalidActionException

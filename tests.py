@@ -17,28 +17,27 @@ from models import Unit
 from models import User
 from models import Volunteer
 from models import Youth
-from models import YouthApplications
 
 ENVIRONMENT = 'dev'  # 'dev-persist' for persistence tests
 
 
-class TestYouthApplication(unittest.TestCase):
-    """ Test YouthApplication controller """
+class TestYouthApplicationController(unittest.TestCase):
+    """ Test YouthApplicationController """
 
     def setUp(self):
         app_data = self.get_test_app_data()
-        self.app = YouthApplications.Factory().construct(app_data)
+        self.app = Youth.ApplicationFactory().construct(app_data)
 
-        application_persister = TestYouthApplicationsPersister()
+        application_persister = TestYouthApplicationPersister()
         unit_factory = TestUnitFactory()
-        self.controller = YouthApplication.YouthApplication(
+        self.controller = YouthApplication.Controller(
             application_persister,
             unit_factory
         )
 
     @staticmethod
     def get_test_app_data():
-        """ Test YouthApplications data """
+        """ Test Youth Application data """
         return {
             'unit_id': 'unt-TEST-123',
             'scoutnet_id': 123,
@@ -91,33 +90,33 @@ class TestYouthApplication(unittest.TestCase):
 
     def test_status_search(self):
         """ Test get_applications_by_status() """
-        app_list = self.controller.get_applications_by_status(YouthApplications.STATUS_CREATED)
+        app_list = self.controller.get_applications_by_status(Youth.APPLICATION_STATUS_CREATED)
         self.assertNotEqual(0, len(app_list))
 
     def test_new_youth(self):
         """ Test new youth workflow """
         self.app = self.controller.submit_application(self.app)
-        self.assertEqual(YouthApplications.STATUS_GUARDIAN_APPROVAL, self.app.status)
+        self.assertEqual(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL, self.app.status)
 
         guardian_approval = {
             'guardian_approval_guardian_id': 'grd-TEST-123',
             'guardian_approval_signature': 'abcd',
         }
         self.app = self.controller.submit_guardian_approval(self.app, guardian_approval)
-        self.assertEqual(YouthApplications.STATUS_UNIT_APPROVAL, self.app.status)
+        self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
 
         unit_approval = {
             'unit_approval_user_id': 'usr-TEST-123',
             'unit_approval_signature': 'abcd',
         }
         self.app = self.controller.submit_unit_approval(self.app, unit_approval)
-        self.assertEqual(YouthApplications.STATUS_READY_FOR_SCOUTNET, self.app.status)
+        self.assertEqual(Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET, self.app.status)
 
         recording_data = {
             'scoutnet_id': 123,
         }
         self.app = self.controller.mark_as_recorded(self.app, recording_data)
-        self.assertEqual(YouthApplications.STATUS_COMPLETE, self.app.status)
+        self.assertEqual(Youth.APPLICATION_STATUS_COMPLETE, self.app.status)
 
     def test_guardian_approval_on_file(self):
         """ Test workflow when the guardian approval is on file """
@@ -125,69 +124,69 @@ class TestYouthApplication(unittest.TestCase):
             data = self.__class__.get_test_youth_data()
             self.app.youth_id = data['uuid']
             self.app = self.controller.submit_application(self.app)
-            self.assertEqual(YouthApplications.STATUS_UNIT_APPROVAL, self.app.status)
+            self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
 
     def test_non_lds_flow(self):
         """ Test flow with non-LDS unit """
         if ENVIRONMENT == 'dev-persist':
             self.app.unit_id = 'unt-TEST-51'
             self.app = self.controller.submit_application(self.app)
-            self.assertEqual(YouthApplications.STATUS_GUARDIAN_APPROVAL, self.app.status)
+            self.assertEqual(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL, self.app.status)
 
             guardian_approval = {
                 'guardian_approval_guardian_id': 'grd-TEST-123',
                 'guardian_approval_signature': 'abcd',
             }
             self.app = self.controller.submit_guardian_approval(self.app, guardian_approval)
-            self.assertEqual(YouthApplications.STATUS_UNIT_APPROVAL, self.app.status)
+            self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
 
             unit_approval = {
                 'unit_approval_user_id': 'usr-TEST-123',
                 'unit_approval_signature': 'abcd',
             }
             self.app = self.controller.submit_unit_approval(self.app, unit_approval)
-            self.assertEqual(YouthApplications.STATUS_FEE_PENDING, self.app.status)
+            self.assertEqual(Youth.APPLICATION_STATUS_FEE_PENDING, self.app.status)
 
             fee_data = {
                 'fee_payment_user_id': 'usr-TEST-123',
                 'fee_payment_receipt': 123
             }
             self.app = self.controller.pay_fees(self.app, fee_data)
-            self.assertEqual(YouthApplications.STATUS_READY_FOR_SCOUTNET, self.app.status)
+            self.assertEqual(Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET, self.app.status)
 
             recording_data = {
                 'scoutnet_id': 123,
             }
             self.app = self.controller.mark_as_recorded(self.app, recording_data)
-            self.assertEqual(YouthApplications.STATUS_COMPLETE, self.app.status)
+            self.assertEqual(Youth.APPLICATION_STATUS_COMPLETE, self.app.status)
 
     def test_guardian_rejection(self):
         """ Test guardian rejection flow """
         self.app = self.controller.submit_application(self.app)
-        self.assertEqual(YouthApplications.STATUS_GUARDIAN_APPROVAL, self.app.status)
+        self.assertEqual(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL, self.app.status)
 
         data = {}
         self.app = self.controller.submit_guardian_rejection(self.app, data)
-        self.assertEqual(YouthApplications.STATUS_REJECTED, self.app.status)
+        self.assertEqual(Youth.APPLICATION_STATUS_REJECTED, self.app.status)
 
     def test_unit_rejection(self):
         """ Test unit rejection flow """
         self.app = self.controller.submit_application(self.app)
-        self.assertEqual(YouthApplications.STATUS_GUARDIAN_APPROVAL, self.app.status)
+        self.assertEqual(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL, self.app.status)
 
         guardian_approval = {
             'guardian_approval_guardian_id': 'grd-TEST-123',
             'guardian_approval_signature': 'abcd',
         }
         self.app = self.controller.submit_guardian_approval(self.app, guardian_approval)
-        self.assertEqual(YouthApplications.STATUS_UNIT_APPROVAL, self.app.status)
+        self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
 
         data = {
             'unit_approval_user_id': 'usr-TEST-123',
             'unit_approval_signature': 'abcd',
         }
         self.app = self.controller.submit_unit_rejection(self.app, data)
-        self.assertEqual(YouthApplications.STATUS_REJECTED, self.app.status)
+        self.assertEqual(Youth.APPLICATION_STATUS_REJECTED, self.app.status)
 
     def test_invalid_workflows(self):
         """ Test invalid workflow exceptions """
@@ -247,7 +246,7 @@ class ModelTestCase(unittest.TestCase):
 
 class TestUser(ModelTestCase):
 
-    """ Tests User module """
+    """ Tests User model """
 
     def setUp(self):
         """ Init """
@@ -275,8 +274,7 @@ class TestUser(ModelTestCase):
 
 
 class TestYouth(ModelTestCase):
-
-    """ Tests Youth module """
+    """ Tests Youth model """
 
     def setUp(self):
         """ Init """
@@ -287,7 +285,10 @@ class TestYouth(ModelTestCase):
             'last_name': 'McTesterton',
             'date_of_birth': '2000-01-01',
         }
-        self._set_up(Youth, obj_data)
+        self.factory = Youth.YouthFactory()
+        self.obj = self.factory.construct(obj_data)
+        self.persister = Youth.YouthPersister()
+        self.validator = self.obj.get_validator()
 
     def test_uuid(self):
         """ Validate the UUID prefix """
@@ -320,7 +321,7 @@ class TestYouth(ModelTestCase):
 
 class TestVolunteer(ModelTestCase):
 
-    """ Tests Volunteer module """
+    """ Tests Volunteer model """
 
     def setUp(self):
         """ Init """
@@ -342,7 +343,7 @@ class TestVolunteer(ModelTestCase):
 
 class TestGuardian(ModelTestCase):
 
-    """ Tests Guardian module """
+    """ Tests Guardian model """
 
     def setUp(self):
         """ Init """
@@ -361,7 +362,7 @@ class TestGuardian(ModelTestCase):
 
 class TestDistrict(ModelTestCase):
 
-    """ Tests District module """
+    """ Tests District model """
 
     def setUp(self):
         """ Init """
@@ -378,7 +379,7 @@ class TestDistrict(ModelTestCase):
 
 class TestSubdistrict(ModelTestCase):
 
-    """ Tests Subdistrict module """
+    """ Tests Subdistrict model """
 
     def setUp(self):
         """ Init """
@@ -396,7 +397,7 @@ class TestSubdistrict(ModelTestCase):
 
 class TestSponsoringOrganization(ModelTestCase):
 
-    """ Tests SponsoringOrganization module """
+    """ Tests SponsoringOrganization model """
 
     def setUp(self):
         """ Init """
@@ -413,7 +414,7 @@ class TestSponsoringOrganization(ModelTestCase):
 
 class TestUnit(ModelTestCase):
 
-    """ Tests Unit module """
+    """ Tests Unit model """
 
     def setUp(self):
         """ Init """
@@ -429,19 +430,22 @@ class TestUnit(ModelTestCase):
         self.assertEquals('unt', self.obj.uuid[0:3])
 
 
-class TestYouthApplications(ModelTestCase):
+class TestYouthApplication(ModelTestCase):
 
-    """ Tests YouthApplications module """
+    """ Tests Youth Application model """
 
     def setUp(self):
         """ Init """
         obj_data = {
-            'status': YouthApplications.STATUS_COMPLETE,
+            'status': Youth.APPLICATION_STATUS_COMPLETE,
             'unit_id': 'unt-123',
             'scoutnet_id': 123,
             'data': {}
         }
-        self._set_up(YouthApplications, obj_data)
+        self.factory = Youth.ApplicationFactory()
+        self.obj = self.factory.construct(obj_data)
+        self.persister = Youth.ApplicationPersister()
+        self.validator = self.obj.get_validator()
 
     def test_validation(self):
         """ Overriding general validation to do status-specific validation """
@@ -457,7 +461,7 @@ class TestYouthApplications(ModelTestCase):
 
     def test_guardian_signature(self):
         """ Test guardian signature validation """
-        self.obj.status = YouthApplications.STATUS_UNIT_APPROVAL
+        self.obj.status = Youth.APPLICATION_STATUS_UNIT_APPROVAL
         self.assertFalse(self.validator.valid())
         self.obj.guardian_approval_guardian_id = '123'
         self.obj.guardian_approval_signature = 'stuff'
@@ -466,7 +470,7 @@ class TestYouthApplications(ModelTestCase):
 
     def test_unit_approval(self):
         """ Test unit approval validation """
-        self.obj.status = YouthApplications.STATUS_FEE_PENDING
+        self.obj.status = Youth.APPLICATION_STATUS_FEE_PENDING
         self.assertFalse(self.validator.valid())
         self.obj.guardian_approval_guardian_id = '123'
         self.obj.guardian_approval_signature = 'stuff'
@@ -478,7 +482,7 @@ class TestYouthApplications(ModelTestCase):
 
     def test_fee_payment(self):
         """ Test fee payment validation """
-        self.obj.status = YouthApplications.STATUS_READY_FOR_SCOUTNET
+        self.obj.status = Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET
         self.assertFalse(self.validator.valid())
         self.obj.guardian_approval_guardian_id = '123'
         self.obj.guardian_approval_signature = 'stuff'
@@ -490,7 +494,7 @@ class TestYouthApplications(ModelTestCase):
 
     def test_record(self):
         """ Test ready for ScoutNet validation """
-        self.obj.status = YouthApplications.STATUS_READY_FOR_SCOUTNET
+        self.obj.status = Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET
         self.obj.guardian_approval_guardian_id = '123'
         self.obj.guardian_approval_signature = 'stuff'
         self.obj.guardian_approval_date = '2015-01-01'
@@ -501,7 +505,7 @@ class TestYouthApplications(ModelTestCase):
 
     def test_complete(self):
         """ Test complete status """
-        self.obj.status = YouthApplications.STATUS_COMPLETE
+        self.obj.status = Youth.APPLICATION_STATUS_COMPLETE
         self.assertFalse(self.validator.valid())
         self.obj.guardian_approval_guardian_id = '123'
         self.obj.guardian_approval_signature = 'stuff'
@@ -514,7 +518,7 @@ class TestYouthApplications(ModelTestCase):
 
     def test_rejected(self):
         """ Test reject status """
-        self.obj.status = YouthApplications.STATUS_REJECTED
+        self.obj.status = Youth.APPLICATION_STATUS_REJECTED
         self.assertFalse(self.validator.valid())
         self.obj.rejection_date = '2015-01-01'
         self.obj.rejection_reason = 'stuff'
@@ -523,7 +527,7 @@ class TestYouthApplications(ModelTestCase):
 
 class TestAdultApplications(ModelTestCase):
 
-    """ Tests AdultApplications module """
+    """ Tests AdultApplications model """
 
     def setUp(self):
         """ Init """
@@ -540,8 +544,7 @@ class TestAdultApplications(ModelTestCase):
 
 
 class TestCharterApplications(ModelTestCase):
-
-    """ Tests CharterApplications module """
+    """ Tests CharterApplications model """
 
     def setUp(self):
         """ Init """
@@ -560,11 +563,11 @@ class TestCharterApplications(ModelTestCase):
 def init_data():
     """ Create records in DB for testing """
     if ENVIRONMENT == 'dev-persist':
-        data = TestYouthApplication.get_test_youth_data()
+        data = TestYouthApplicationController.get_test_youth_data()
         youth = Youth.Factory().construct(data)
         Youth.Persister().save(youth)
 
-        units = TestYouthApplication.get_test_unit_data()
+        units = TestYouthApplicationController.get_test_unit_data()
         for unit_data in units:
             unit = Unit.Factory().construct(unit_data)
             Unit.Persister().save(unit)
@@ -577,7 +580,7 @@ def clear_data():
         youth = Youth.Factory().construct(data)
         Youth.Persister().delete(youth)
 
-        units = TestYouthApplication.get_test_unit_data()
+        units = TestYouthApplicationController.get_test_unit_data()
         for unit_data in units:
             unit = Unit.Factory().construct(unit_data)
             Unit.Persister().delete(unit)
@@ -586,15 +589,15 @@ def clear_data():
 class TestUnitFactory(object):
 
     def load_by_uuid(self, uuid):
-        unit_data = TestYouthApplication.get_test_unit_data()
+        unit_data = TestYouthApplicationController.get_test_unit_data()
         return Unit.Factory().construct(unit_data[1])
 
 
-class TestYouthApplicationsPersister(object):
+class TestYouthApplicationPersister(object):
 
     def get_by_status(self, status):
-        test_data = TestYouthApplication.get_test_app_data()
-        return [YouthApplications.Factory().construct(test_data)]
+        test_data = TestYouthApplicationController.get_test_app_data()
+        return [Youth.ApplicationFactory().construct(test_data)]
 
 
 if __name__ == '__main__':
