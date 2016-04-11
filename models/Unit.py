@@ -1,4 +1,4 @@
-""" Units classes """
+""" Unit classes """
 from . import Base
 
 TYPE_PACK = 'Pack'
@@ -9,9 +9,9 @@ TYPE_SHIP = 'Ship'
 TYPE_POST = 'Post'
 
 
-class Units(Base.Object):
+class Unit(Base.Object):
 
-    """ Units class """
+    """ Unit class """
     def __init__(self):
         super(self.__class__, self).__init__()
         self.sponsoring_organization_id = ''
@@ -63,11 +63,11 @@ class Validator(Base.Validator):
 
 class Factory(Base.Factory):
 
-    """ Units Factory """
+    """ Unit Factory """
 
     @staticmethod
     def _get_object_class():
-        return Units
+        return Unit
 
     @staticmethod
     def _get_persister():
@@ -76,8 +76,8 @@ class Factory(Base.Factory):
 
 class Persister(Base.Persister):
 
-    """ Persists Units objects """
+    """ Persists Unit objects """
 
     @staticmethod
     def _get_table_name():
-        return 'Units'
+        return 'Unit'

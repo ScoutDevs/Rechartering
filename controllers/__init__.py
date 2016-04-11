@@ -1,6 +1,8 @@
 """
+Here be controllers
 
-Controllers are read-only; they can read from the DB, but never write to it.
+Controllers should support dependency injection and should be able to be tested
+completely free of DB & network dependencies.
 """
 
 

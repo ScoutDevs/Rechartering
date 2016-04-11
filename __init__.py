@@ -1,5 +1,7 @@
 # TODO: add Google-riffic docs everywhere
 # TODO: add data integrity check scripts
+# TODO: get answers to QUESTIONs
+# TODO: make architecture diagram
 """
 Copyright (C) 2016 Ben Reece
 

@@ -1,42 +1,42 @@
-""" SponsoringOrganizations classes """
+""" District classes """
 from . import Base
 
 
-class SponsoringOrganizations(Base.Object):
-    """ SponsoringOrganizations class """
+class District(Base.Object):
+    """ District class """
 
     def __init__(self):
         super(self.__class__, self).__init__()
-        self.subdistrict_id = ''
+        self.number = ''
         self.name = ''
 
     @staticmethod
     def get_uuid_prefix():
-        return 'spo'
+        return 'dst'
 
     def get_validator(self):
         return Validator(self)
 
 
 class Validator(Base.Validator):
-    """ SponsoringOrganization validator """
+    """ District validator """
 
     @staticmethod
     def get_field_requirements():
         return {
             'uuid': Base.FIELD_REQUIRED,
-            'subdistrict_id': Base.FIELD_REQUIRED,
+            'number': Base.FIELD_REQUIRED,
             'name': Base.FIELD_REQUIRED,
         }
 
 
 class Factory(Base.Factory):
 
-    """ SponsoringOrganizations Factory """
+    """ District Factory """
 
     @staticmethod
     def _get_object_class():
-        return SponsoringOrganizations
+        return District
 
     @staticmethod
     def _get_persister():
@@ -45,8 +45,8 @@ class Factory(Base.Factory):
 
 class Persister(Base.Persister):
 
-    """ Persists SponsoringOrganizations objects """
+    """ Persists District objects """
 
     @staticmethod
     def _get_table_name():
-        return 'SponsoringOrganizations'
+        return 'District'

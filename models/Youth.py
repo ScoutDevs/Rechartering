@@ -50,12 +50,6 @@ class Youth(Base.Object):  # pylint: disable=too-many-instance-attributes
             }
         return approval
 
-    def set_guardian_approval(self, approval):
-        """ Set guardian approval data """
-        self.guardian_approval_guardian_id = approval['guardian_approval_guardian_id']
-        self.guardian_approval_signature = approval['guardian_approval_signature']
-        self.guardian_approval_date = approval['guardian_approval_date']
-
 
 class Validator(Base.Validator):
     """ Youth validator """
@@ -73,7 +67,6 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-
     """ Youth Factory """
 
     @staticmethod
@@ -86,7 +79,6 @@ class Factory(Base.Factory):
 
 
 class Persister(Base.Persister):
-
     """ Persists Youth objects """
 
     @staticmethod

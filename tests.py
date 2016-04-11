@@ -9,13 +9,13 @@ from controllers import YouthApplication
 from models import AdultApplications
 from models import Base
 from models import CharterApplications
-from models import Districts
-from models import Guardians
-from models import SponsoringOrganizations
-from models import Subdistricts
-from models import Units
+from models import District
+from models import Guardian
+from models import SponsoringOrganization
+from models import Subdistrict
+from models import Unit
 from models import User
-from models import Volunteers
+from models import Volunteer
 from models import Youth
 from models import YouthApplications
 
@@ -26,9 +26,15 @@ class TestYouthApplication(unittest.TestCase):
     """ Test YouthApplication controller """
 
     def setUp(self):
-        app_data = self.__class__.get_test_app_data()
+        app_data = self.get_test_app_data()
         self.app = YouthApplications.Factory().construct(app_data)
-        self.controller = YouthApplication.YouthApplication()
+
+        application_persister = TestYouthApplicationsPersister()
+        unit_factory = TestUnitFactory()
+        self.controller = YouthApplication.YouthApplication(
+            application_persister,
+            unit_factory
+        )
 
     @staticmethod
     def get_test_app_data():
@@ -54,33 +60,33 @@ class TestYouthApplication(unittest.TestCase):
 
     @staticmethod
     def get_test_unit_data():
-        """ Test Units data """
+        """ Test Unit data """
         return [
             {
                 'uuid': 'unt-TEST-51',
                 'sponsoring_organization_id': 'spo-TEST-51',
-                'type': Units.TYPE_TROOP,
+                'type': Unit.TYPE_TROOP,
                 'number': 51,
                 'lds_unit': False,
             },
             {
                 'uuid': 'unt-TEST-123',
                 'sponsoring_organization_id': 'spo-TEST-123',
-                'type': Units.TYPE_TROOP,
+                'type': Unit.TYPE_TROOP,
                 'number': 1455,
                 'lds_unit': True,
             },
         ]
 
     def test_youth_lookup(self):
-        """ Test look_up_youth method """
+        """ Test find_duplicate_youth method """
         if ENVIRONMENT == 'dev-persist':
             data = self.__class__.get_test_youth_data()
-            duplicates = self.controller.look_up_youth(data)
+            duplicates = self.controller.find_duplicate_youth(data)
             self.assertNotEqual(0, len(duplicates))
 
             data['first_name'] = shortuuid.uuid()
-            duplicates = self.controller.look_up_youth(data)
+            duplicates = self.controller.find_duplicate_youth(data)
             self.assertEqual(0, len(duplicates))
 
     def test_status_search(self):
@@ -312,9 +318,9 @@ class TestYouth(ModelTestCase):
             self.persister.delete(original_obj)
 
 
-class TestVolunteers(ModelTestCase):
+class TestVolunteer(ModelTestCase):
 
-    """ Tests Volunteers module """
+    """ Tests Volunteer module """
 
     def setUp(self):
         """ Init """
@@ -327,16 +333,16 @@ class TestVolunteers(ModelTestCase):
             'first_name': 'Test',
             'last_name': "O'Test",
         }
-        self._set_up(Volunteers, obj_data)
+        self._set_up(Volunteer, obj_data)
 
     def test_uuid(self):
         """ Validate the UUID prefix """
         self.assertEquals('vol', self.obj.uuid[0:3])
 
 
-class TestGuardians(ModelTestCase):
+class TestGuardian(ModelTestCase):
 
-    """ Tests Guardians module """
+    """ Tests Guardian module """
 
     def setUp(self):
         """ Init """
@@ -346,16 +352,16 @@ class TestGuardians(ModelTestCase):
             'first_name': 'Test',
             'last_name': 'Testerson',
         }
-        self._set_up(Guardians, obj_data)
+        self._set_up(Guardian, obj_data)
 
     def test_uuid(self):
         """ Validate the UUID prefix """
         self.assertEquals('gdn', self.obj.uuid[0:3])
 
 
-class TestDistricts(ModelTestCase):
+class TestDistrict(ModelTestCase):
 
-    """ Tests Districts module """
+    """ Tests District module """
 
     def setUp(self):
         """ Init """
@@ -363,16 +369,16 @@ class TestDistricts(ModelTestCase):
             'number': '05',
             'name': 'Provo Peak',
         }
-        self._set_up(Districts, obj_data)
+        self._set_up(District, obj_data)
 
     def test_uuid(self):
         """ Validate the UUID prefix """
         self.assertEquals('dst', self.obj.uuid[0:3])
 
 
-class TestSubdistricts(ModelTestCase):
+class TestSubdistrict(ModelTestCase):
 
-    """ Tests Subdistricts module """
+    """ Tests Subdistrict module """
 
     def setUp(self):
         """ Init """
@@ -381,16 +387,16 @@ class TestSubdistricts(ModelTestCase):
             'number': '05-9',
             'name': 'Provo North Park Stake',
         }
-        self._set_up(Subdistricts, obj_data)
+        self._set_up(Subdistrict, obj_data)
 
     def test_uuid(self):
         """ Validate the UUID prefix """
         self.assertEquals('sbd', self.obj.uuid[0:3])
 
 
-class TestSponsoringOrganizations(ModelTestCase):
+class TestSponsoringOrganization(ModelTestCase):
 
-    """ Tests SponsoringOrganizations module """
+    """ Tests SponsoringOrganization module """
 
     def setUp(self):
         """ Init """
@@ -398,16 +404,16 @@ class TestSponsoringOrganizations(ModelTestCase):
             'subdistrict_id': '123123',
             'name': 'North Park 3rd Ward',
         }
-        self._set_up(SponsoringOrganizations, obj_data)
+        self._set_up(SponsoringOrganization, obj_data)
 
     def test_uuid(self):
         """ Validate the UUID prefix """
         self.assertEquals('spo', self.obj.uuid[0:3])
 
 
-class TestUnits(ModelTestCase):
+class TestUnit(ModelTestCase):
 
-    """ Tests Units module """
+    """ Tests Unit module """
 
     def setUp(self):
         """ Init """
@@ -416,7 +422,7 @@ class TestUnits(ModelTestCase):
             'type': 'Troop',
             'number': 1455,
         }
-        self._set_up(Units, obj_data)
+        self._set_up(Unit, obj_data)
 
     def test_uuid(self):
         """ Validate the UUID prefix """
@@ -560,8 +566,8 @@ def init_data():
 
         units = TestYouthApplication.get_test_unit_data()
         for unit_data in units:
-            unit = Units.Factory().construct(unit_data)
-            Units.Persister().save(unit)
+            unit = Unit.Factory().construct(unit_data)
+            Unit.Persister().save(unit)
 
 
 def clear_data():
@@ -573,8 +579,22 @@ def clear_data():
 
         units = TestYouthApplication.get_test_unit_data()
         for unit_data in units:
-            unit = Units.Factory().construct(unit_data)
-            Units.Persister().delete(unit)
+            unit = Unit.Factory().construct(unit_data)
+            Unit.Persister().delete(unit)
+
+
+class TestUnitFactory(object):
+
+    def load_by_uuid(self, uuid):
+        unit_data = TestYouthApplication.get_test_unit_data()
+        return Unit.Factory().construct(unit_data[1])
+
+
+class TestYouthApplicationsPersister(object):
+
+    def get_by_status(self, status):
+        test_data = TestYouthApplication.get_test_app_data()
+        return [YouthApplications.Factory().construct(test_data)]
 
 
 if __name__ == '__main__':

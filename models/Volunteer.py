@@ -1,12 +1,12 @@
 # pylint: disable=no-member
-""" Volunteers classes """
+""" Volunteer classes """
 import hashlib
 import re
 from . import Base
 
 
-class Volunteers(Base.Object):  # pylint: disable=too-many-instance-attributes
-    """ Volunteers class """
+class Volunteer(Base.Object):  # pylint: disable=too-many-instance-attributes
+    """ Volunteer class """
 
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -57,11 +57,11 @@ class Validator(Base.Validator):
 
 class Factory(Base.Factory):
 
-    """ Volunteers Factory """
+    """ Volunteer Factory """
 
     @staticmethod
     def _get_object_class():
-        return Volunteers
+        return Volunteer
 
     @staticmethod
     def _get_persister():
@@ -70,8 +70,8 @@ class Factory(Base.Factory):
 
 class Persister(Base.Persister):
 
-    """ Persists Volunteers objects """
+    """ Persists Volunteer objects """
 
     @staticmethod
     def _get_table_name():
-        return 'Volunteers'
+        return 'Volunteer'

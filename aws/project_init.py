@@ -56,14 +56,14 @@ def create_users_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 1,
-                'WriteCapacityUnits': 1,
+                'ReadCapacityUnit': 1,
+                'WriteCapacityUnit': 1,
             }
         )
         return table
@@ -112,8 +112,8 @@ def create_youth_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
                 {
@@ -128,14 +128,14 @@ def create_youth_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 1,
-                'WriteCapacityUnits': 1,
+                'ReadCapacityUnit': 1,
+                'WriteCapacityUnit': 1,
             }
         )
         return table
@@ -145,12 +145,12 @@ def create_youth_table():
 
 
 def create_volunteers_table():
-    """ Create the 'Volunteers' DynamoDB table """
+    """ Create the 'Volunteer' DynamoDB table """
 
     # Create the DynamoDB table.
     try:
         table = DYNAMODB.create_table(
-            TableName='Volunteers',
+            TableName='Volunteer',
             KeySchema=[
                 {
                     'AttributeName': 'uuid',
@@ -188,8 +188,8 @@ def create_volunteers_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
                 {
@@ -204,8 +204,8 @@ def create_volunteers_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
                 {
@@ -220,14 +220,14 @@ def create_volunteers_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 1,
-                'WriteCapacityUnits': 1,
+                'ReadCapacityUnit': 1,
+                'WriteCapacityUnit': 1,
             }
         )
         return table
@@ -237,12 +237,12 @@ def create_volunteers_table():
 
 
 def create_guardians_table():
-    """ Create the 'Guardians' DynamoDB table """
+    """ Create the 'Guardian' DynamoDB table """
 
     # Create the DynamoDB table.
     try:
         table = DYNAMODB.create_table(
-            TableName='Guardians',
+            TableName='Guardian',
             KeySchema=[
                 {
                     'AttributeName': 'uuid',
@@ -256,8 +256,8 @@ def create_guardians_table():
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 1,
-                'WriteCapacityUnits': 1,
+                'ReadCapacityUnit': 1,
+                'WriteCapacityUnit': 1,
             }
         )
         return table
@@ -267,12 +267,12 @@ def create_guardians_table():
 
 
 def create_districts_table():
-    """ Create the 'Districts' DynamoDB table """
+    """ Create the 'District' DynamoDB table """
 
     # Create the DynamoDB table.
     try:
         table = DYNAMODB.create_table(
-            TableName='Districts',
+            TableName='District',
             KeySchema=[
                 {
                     'AttributeName': 'uuid',
@@ -302,14 +302,14 @@ def create_districts_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 1,
-                'WriteCapacityUnits': 1,
+                'ReadCapacityUnit': 1,
+                'WriteCapacityUnit': 1,
             }
         )
         return table
@@ -319,12 +319,12 @@ def create_districts_table():
 
 
 def create_subdistricts_table():
-    """ Create the 'Subdistricts' DynamoDB table """
+    """ Create the 'Subdistrict' DynamoDB table """
 
     # Create the DynamoDB table.
     try:
         table = DYNAMODB.create_table(
-            TableName='Subdistricts',
+            TableName='Subdistrict',
             KeySchema=[
                 {
                     'AttributeName': 'uuid',
@@ -358,8 +358,8 @@ def create_subdistricts_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
                 {
@@ -374,14 +374,14 @@ def create_subdistricts_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 1,
-                'WriteCapacityUnits': 1,
+                'ReadCapacityUnit': 1,
+                'WriteCapacityUnit': 1,
             }
         )
         return table
@@ -391,12 +391,12 @@ def create_subdistricts_table():
 
 
 def create_sponsoring_orgs_table():
-    """ Create the 'SponsoringOrganizations' DynamoDB table """
+    """ Create the 'SponsoringOrganization' DynamoDB table """
 
     # Create the DynamoDB table.
     try:
         table = DYNAMODB.create_table(
-            TableName='SponsoringOrganizations',
+            TableName='SponsoringOrganization',
             KeySchema=[
                 {
                     'AttributeName': 'uuid',
@@ -426,14 +426,14 @@ def create_sponsoring_orgs_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 1,
-                'WriteCapacityUnits': 1,
+                'ReadCapacityUnit': 1,
+                'WriteCapacityUnit': 1,
             }
         )
         return table
@@ -443,12 +443,12 @@ def create_sponsoring_orgs_table():
 
 
 def create_units_table():
-    """ Create the 'Units' DynamoDB table """
+    """ Create the 'Unit' DynamoDB table """
 
     # Create the DynamoDB table.
     try:
         table = DYNAMODB.create_table(
-            TableName='Units',
+            TableName='Unit',
             KeySchema=[
                 {
                     'AttributeName': 'uuid',
@@ -482,8 +482,8 @@ def create_units_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
                 {
@@ -498,14 +498,14 @@ def create_units_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 1,
-                'WriteCapacityUnits': 1,
+                'ReadCapacityUnit': 1,
+                'WriteCapacityUnit': 1,
             }
         )
         return table
@@ -554,8 +554,8 @@ def create_youth_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
                 {
@@ -570,14 +570,14 @@ def create_youth_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 1,
-                'WriteCapacityUnits': 1,
+                'ReadCapacityUnit': 1,
+                'WriteCapacityUnit': 1,
             }
         )
         return table
@@ -626,8 +626,8 @@ def create_adult_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
                 {
@@ -642,14 +642,14 @@ def create_adult_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 1,
-                'WriteCapacityUnits': 1,
+                'ReadCapacityUnit': 1,
+                'WriteCapacityUnit': 1,
             }
         )
         return table
@@ -702,8 +702,8 @@ def create_charter_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
                 {
@@ -718,8 +718,8 @@ def create_charter_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
                 {
@@ -734,14 +734,14 @@ def create_charter_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnit': 1,
+                        'WriteCapacityUnit': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 1,
-                'WriteCapacityUnits': 1,
+                'ReadCapacityUnit': 1,
+                'WriteCapacityUnit': 1,
             }
         )
         return table
@@ -770,8 +770,8 @@ def create_record_log_table():
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 1,
-                'WriteCapacityUnits': 1,
+                'ReadCapacityUnit': 1,
+                'WriteCapacityUnit': 1,
             }
         )
         return table
@@ -796,15 +796,15 @@ def main():
     tables = {}
     tables['Users'] = create_users_table()
     tables['Youth'] = create_youth_table()
-    tables['Volunteers'] = create_volunteers_table()
-    tables['Guardians'] = create_guardians_table()
-    tables['Districts'] = create_districts_table()
+    tables['Volunteer'] = create_volunteers_table()
+    tables['Guardian'] = create_guardians_table()
+    tables['District'] = create_districts_table()
     wait(tables)
 
     tables = {}
-    tables['Subdistricts'] = create_subdistricts_table()
-    tables['SponsoringOrganizations'] = create_sponsoring_orgs_table()
-    tables['Units'] = create_units_table()
+    tables['Subdistrict'] = create_subdistricts_table()
+    tables['SponsoringOrganization'] = create_sponsoring_orgs_table()
+    tables['Unit'] = create_units_table()
     tables['YouthApplications'] = create_youth_apps_table()
     tables['AdultApplications'] = create_adult_apps_table()
     wait(tables)

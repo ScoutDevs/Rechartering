@@ -1,45 +1,44 @@
-""" Subdistricts classes """
+""" Guardian classes """
 from . import Base
 
 
-class Subdistricts(Base.Object):
-    """ Subdistricts class """
+class Guardian(Base.Object):
+    """ Guardian class """
 
     def __init__(self):
         super(self.__class__, self).__init__()
-        self.district_id = ''
-        self.number = ''
-        self.name = ''
+        self.first_name = ''
+        self.last_name = ''
+        self.youth = ''
 
     @staticmethod
     def get_uuid_prefix():
-        return 'sbd'
+        return 'gdn'
 
     def get_validator(self):
         return Validator(self)
 
 
 class Validator(Base.Validator):
-
-    """ Subdistrict Validator """
+    """ Guardian validator """
 
     @staticmethod
     def get_field_requirements():
         return {
             'uuid': Base.FIELD_REQUIRED,
-            'district_id': Base.FIELD_REQUIRED,
-            'number': Base.FIELD_REQUIRED,
-            'name': Base.FIELD_REQUIRED,
+            'first_name': Base.FIELD_REQUIRED,
+            'last_name': Base.FIELD_REQUIRED,
+            'youth': Base.FIELD_REQUIRED,
         }
 
 
 class Factory(Base.Factory):
 
-    """ Subdistricts Factory """
+    """ Guardian Factory """
 
     @staticmethod
     def _get_object_class():
-        return Subdistricts
+        return Guardian
 
     @staticmethod
     def _get_persister():
@@ -48,8 +47,8 @@ class Factory(Base.Factory):
 
 class Persister(Base.Persister):
 
-    """ Persists Subdistricts objects """
+    """ Persists Guardian objects """
 
     @staticmethod
     def _get_table_name():
-        return 'Subdistricts'
+        return 'Guardian'
