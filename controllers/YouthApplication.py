@@ -1,10 +1,11 @@
 # pylint: disable=import-error
-# TODO: implement security measures
-""" Youth Application controller """
+""" Youth Application Controller """
 from datetime import date
 from controllers import InvalidActionException
 from models import Unit
 from models import Youth
+
+# TODO: implement security measures
 
 
 class Controller(object):
@@ -19,21 +20,26 @@ class Controller(object):
         unit: Unit object
     """
 
-    def __init__(self, application_persister=None, unit_factory=None):
-        """ init """
+    def __init__(self,
+                 application_persister=Youth.ApplicationPersister(),
+                 unit_factory=Unit.Factory(),
+                 youth_factory=Youth.YouthFactory(),
+                 youth_persister=Youth.YouthPersister()):
+        """Dependency-injectable init
+
+        Args:
+            application_persister: Youth Application persister object
+            unit_factory: Unit factory object
+            youth_factory: Youth factory object
+            youth_persister: Youth persister object
+        """
         self.factory = Youth.ApplicationFactory()
-        if application_persister:
-            self.persister = application_persister
-        else:
-            self.persister = Youth.ApplicationPersister()
+        self.persister = application_persister
+        self.unit_factory = unit_factory
+        self.youth_factory = youth_factory
+        self.youth_persister = youth_persister
 
-        if unit_factory:
-            self.unit_factory = unit_factory
-        else:
-            self.unit_factory = Unit.Persister()
-
-    @staticmethod
-    def find_duplicate_youth(youth_data):
+    def find_duplicate_youth(self, youth_data):
         """Search to see if the youth is already in the system
 
         Duplicate records for the same individual are to be avoided as much
@@ -46,8 +52,8 @@ class Controller(object):
         Returns:
             List of Youth records who are potential duplicates
         """
-        youth = Youth.Factory().construct(youth_data)
-        duplicates = Youth.Persister().find_potential_duplicates(youth)
+        youth = self.youth_factory.construct(youth_data)
+        duplicates = self.youth_persister.find_potential_duplicates(youth)
         return duplicates
 
     def get_applications_by_status(self, status):
@@ -86,8 +92,7 @@ class Controller(object):
         app.validate()
         return app
 
-    @staticmethod
-    def _get_guardian_approval(app):
+    def _get_guardian_approval(self, app):
         """ Get the guardian approval on file
 
         If the user found an existing youth record to submit the application
@@ -99,11 +104,10 @@ class Controller(object):
         Returns:
             dict containing approval data, or empty dict
         """
-        youth = Youth.Factory().load_by_uuid(app.youth_id)
+        youth = self.youth_factory.load_by_uuid(app.youth_id)
         return youth.get_guardian_approval()
 
-    @staticmethod
-    def _get_youth_scoutnet_id(app):
+    def _get_youth_scoutnet_id(self, app):
         """Get the ScoutNet ID on file
 
         If the scout already exists in the system, this will find the ScoutNet
@@ -115,7 +119,7 @@ class Controller(object):
         Returns:
             int: the Youth's ScoutNet ID
         """
-        youth = Youth.Factory().load_by_uuid(app.youth_id)
+        youth = self.youth_factory.load_by_uuid(app.youth_id)
         return youth.scoutnet_id
 
     def submit_guardian_approval(self, app, data):

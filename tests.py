@@ -18,44 +18,51 @@ from models import User
 from models import Volunteer
 from models import Youth
 
-ENVIRONMENT = 'dev'  # 'dev-persist' for persistence tests
-
 
 class TestYouthApplicationController(unittest.TestCase):
     """ Test YouthApplicationController """
 
     def setUp(self):
-        app_data = self.get_test_app_data()
+        app_data = self.get_test_app_data()[0]
         self.app = Youth.ApplicationFactory().construct(app_data)
 
         application_persister = TestYouthApplicationPersister()
         unit_factory = TestUnitFactory()
+        youth_factory = TestYouthFactory()
+        youth_persister = TestYouthPersister()
         self.controller = YouthApplication.Controller(
             application_persister,
-            unit_factory
+            unit_factory,
+            youth_factory,
+            youth_persister
         )
 
     @staticmethod
     def get_test_app_data():
         """ Test Youth Application data """
-        return {
-            'unit_id': 'unt-TEST-123',
-            'scoutnet_id': 123,
-            'data': {}
-        }
+        return [
+            {
+                'unit_id': 'unt-TEST-123',
+                'scoutnet_id': 123,
+                'status': Youth.APPLICATION_STATUS_CREATED,
+            },
+        ]
 
     @staticmethod
     def get_test_youth_data():
         """ test Youths data """
-        return {
-            'uuid': 'yth-TEST-1',
-            'first_name': 'Matthew',
-            'last_name': 'Reece',
-            'date_of_birth': '2002-01-15',
-            'units': ['unt-TEST-123'],
-            'guardian_approval_guardian_id': 'grd-TEST-123',
-            'guardian_approval_signature': 'abcde',
-        }
+        return [
+            {
+                'uuid': 'yth-TEST-1',
+                'first_name': 'Matthew',
+                'last_name': 'Reece',
+                'date_of_birth': '2002-01-15',
+                'duplicate_hash': 'b94302d98d30a3e48ea80c7f4432a6f30661869f0a95e0096f50e84edc0fc09b',
+                'units': ['unt-TEST-123'],
+                'guardian_approval_guardian_id': 'grd-TEST-123',
+                'guardian_approval_signature': 'abcde',
+            },
+        ]
 
     @staticmethod
     def get_test_unit_data():
@@ -79,14 +86,13 @@ class TestYouthApplicationController(unittest.TestCase):
 
     def test_youth_lookup(self):
         """ Test find_duplicate_youth method """
-        if ENVIRONMENT == 'dev-persist':
-            data = self.__class__.get_test_youth_data()
-            duplicates = self.controller.find_duplicate_youth(data)
-            self.assertNotEqual(0, len(duplicates))
+        data = self.__class__.get_test_youth_data()[0]
+        duplicates = self.controller.find_duplicate_youth(data)
+        self.assertNotEqual(0, len(duplicates))
 
-            data['first_name'] = shortuuid.uuid()
-            duplicates = self.controller.find_duplicate_youth(data)
-            self.assertEqual(0, len(duplicates))
+        data['first_name'] = shortuuid.uuid()
+        duplicates = self.controller.find_duplicate_youth(data)
+        self.assertEqual(0, len(duplicates))
 
     def test_status_search(self):
         """ Test get_applications_by_status() """
@@ -120,45 +126,43 @@ class TestYouthApplicationController(unittest.TestCase):
 
     def test_guardian_approval_on_file(self):
         """ Test workflow when the guardian approval is on file """
-        if ENVIRONMENT == 'dev-persist':
-            data = self.__class__.get_test_youth_data()
-            self.app.youth_id = data['uuid']
-            self.app = self.controller.submit_application(self.app)
-            self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
+        data = self.__class__.get_test_youth_data()[0]
+        self.app.youth_id = data['uuid']
+        self.app = self.controller.submit_application(self.app)
+        self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
 
     def test_non_lds_flow(self):
         """ Test flow with non-LDS unit """
-        if ENVIRONMENT == 'dev-persist':
-            self.app.unit_id = 'unt-TEST-51'
-            self.app = self.controller.submit_application(self.app)
-            self.assertEqual(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL, self.app.status)
+        self.app.unit_id = 'unt-TEST-51'
+        self.app = self.controller.submit_application(self.app)
+        self.assertEqual(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL, self.app.status)
 
-            guardian_approval = {
-                'guardian_approval_guardian_id': 'grd-TEST-123',
-                'guardian_approval_signature': 'abcd',
-            }
-            self.app = self.controller.submit_guardian_approval(self.app, guardian_approval)
-            self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
+        guardian_approval = {
+            'guardian_approval_guardian_id': 'grd-TEST-123',
+            'guardian_approval_signature': 'abcd',
+        }
+        self.app = self.controller.submit_guardian_approval(self.app, guardian_approval)
+        self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
 
-            unit_approval = {
-                'unit_approval_user_id': 'usr-TEST-123',
-                'unit_approval_signature': 'abcd',
-            }
-            self.app = self.controller.submit_unit_approval(self.app, unit_approval)
-            self.assertEqual(Youth.APPLICATION_STATUS_FEE_PENDING, self.app.status)
+        unit_approval = {
+            'unit_approval_user_id': 'usr-TEST-123',
+            'unit_approval_signature': 'abcd',
+        }
+        self.app = self.controller.submit_unit_approval(self.app, unit_approval)
+        self.assertEqual(Youth.APPLICATION_STATUS_FEE_PENDING, self.app.status)
 
-            fee_data = {
-                'fee_payment_user_id': 'usr-TEST-123',
-                'fee_payment_receipt': 123
-            }
-            self.app = self.controller.pay_fees(self.app, fee_data)
-            self.assertEqual(Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET, self.app.status)
+        fee_data = {
+            'fee_payment_user_id': 'usr-TEST-123',
+            'fee_payment_receipt': 123
+        }
+        self.app = self.controller.pay_fees(self.app, fee_data)
+        self.assertEqual(Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET, self.app.status)
 
-            recording_data = {
-                'scoutnet_id': 123,
-            }
-            self.app = self.controller.mark_as_recorded(self.app, recording_data)
-            self.assertEqual(Youth.APPLICATION_STATUS_COMPLETE, self.app.status)
+        recording_data = {
+            'scoutnet_id': 123,
+        }
+        self.app = self.controller.mark_as_recorded(self.app, recording_data)
+        self.assertEqual(Youth.APPLICATION_STATUS_COMPLETE, self.app.status)
 
     def test_guardian_rejection(self):
         """ Test guardian rejection flow """
@@ -226,18 +230,6 @@ class ModelTestCase(unittest.TestCase):
         self.persister = module.Persister()
         self.validator = self.obj.get_validator()
 
-    def test_persistence(self):
-        """ Test persistence of object """
-        if hasattr(self, 'obj') and ENVIRONMENT == 'dev-persist':
-            self.persister.save(self.obj)
-
-            new_obj = self.factory.load_by_uuid(self.obj.uuid)
-            self.assertEquals(new_obj.uuid, self.obj.uuid)
-
-            self.persister.delete(self.obj)
-            with self.assertRaises(Base.RecordNotFoundException):
-                self.factory.load_by_uuid(self.obj.uuid)
-
     def test_validation(self):
         """ Test object validation """
         if hasattr(self, 'obj'):
@@ -296,27 +288,26 @@ class TestYouth(ModelTestCase):
 
     def test_duplicate_search(self):
         """ Test duplicate check """
-        if ENVIRONMENT == 'dev-persist':
-            obj_data = {
-                'duplicate_hash': 'foo',
-                'units': [123, 456],
-                'first_name': 'Test',
-                'last_name': 'McTesterton',
-                'date_of_birth': '2000-01-01',
-            }
+        obj_data = {
+            'duplicate_hash': 'foo',
+            'units': [123, 456],
+            'first_name': 'Test',
+            'last_name': 'McTesterton',
+            'date_of_birth': '2000-01-01',
+        }
 
-            original_obj = self.factory.construct(obj_data)
-            self.persister.save(original_obj)
+        original_obj = self.factory.construct(obj_data)
+        self.persister.save(original_obj)
 
-            duplicate_obj = self.factory.construct(obj_data)
-            duplicates = self.persister.find_potential_duplicates(duplicate_obj)
-            self.assertNotEqual(0, len(duplicates))
+        duplicate_obj = self.factory.construct(obj_data)
+        duplicates = self.persister.find_potential_duplicates(duplicate_obj)
+        self.assertNotEqual(0, len(duplicates))
 
-            duplicate_obj.date_of_birth = '1970-01-02'
-            duplicates = self.persister.find_potential_duplicates(duplicate_obj)
-            self.assertEqual(0, len(duplicates))
+        duplicate_obj.date_of_birth = '1970-01-02'
+        duplicates = self.persister.find_potential_duplicates(duplicate_obj)
+        self.assertEqual(0, len(duplicates))
 
-            self.persister.delete(original_obj)
+        self.persister.delete(original_obj)
 
 
 class TestVolunteer(ModelTestCase):
@@ -560,47 +551,50 @@ class TestCharterApplications(ModelTestCase):
         self.assertEquals('cap', self.obj.uuid[0:3])
 
 
-def init_data():
-    """ Create records in DB for testing """
-    if ENVIRONMENT == 'dev-persist':
-        data = TestYouthApplicationController.get_test_youth_data()
-        youth = Youth.Factory().construct(data)
-        Youth.Persister().save(youth)
-
-        units = TestYouthApplicationController.get_test_unit_data()
-        for unit_data in units:
-            unit = Unit.Factory().construct(unit_data)
-            Unit.Persister().save(unit)
-
-
-def clear_data():
-    """ Clean up test data """
-    if ENVIRONMENT == 'dev-persist':
-        data = TestYouthApplication.get_test_youth_data()
-        youth = Youth.Factory().construct(data)
-        Youth.Persister().delete(youth)
-
-        units = TestYouthApplicationController.get_test_unit_data()
-        for unit_data in units:
-            unit = Unit.Factory().construct(unit_data)
-            Unit.Persister().delete(unit)
-
-
-class TestUnitFactory(object):
+class TestUnitFactory(Unit.Factory):
 
     def load_by_uuid(self, uuid):
-        unit_data = TestYouthApplicationController.get_test_unit_data()
-        return Unit.Factory().construct(unit_data[1])
+        unit_list = TestYouthApplicationController.get_test_unit_data()
+        data = find_record_by_field('uuid', uuid, unit_list)
+        return self.construct(data)
 
 
 class TestYouthApplicationPersister(object):
 
     def get_by_status(self, status):
-        test_data = TestYouthApplicationController.get_test_app_data()
-        return [Youth.ApplicationFactory().construct(test_data)]
+        app_list = TestYouthApplicationController.get_test_app_data()
+        return [find_record_by_field('status', status, app_list)]
+
+
+class TestYouthFactory(Youth.YouthFactory):
+
+    def load_by_uuid(self, uuid):
+        youth_list = TestYouthApplicationController.get_test_youth_data()
+        data = find_record_by_field('uuid', uuid, youth_list)
+        return self.construct(data)
+
+
+class TestYouthPersister(object):
+
+    def find_potential_duplicates(self, youth):
+        youth_list = TestYouthApplicationController.get_test_youth_data()
+        try:
+            return [find_record_by_field('duplicate_hash', youth.get_record_hash(), youth_list)]
+        except Base.RecordNotFoundException:
+            return []
+
+
+def find_record_by_field(field_name, field_value, data):
+        record = None
+        for item in data:
+            if item[field_name] == field_value:
+                record = item
+                break
+        if record:
+            return record
+        else:
+            raise Base.RecordNotFoundException('Record matching {}="{}" not found'.format(field_name, field_value))
 
 
 if __name__ == '__main__':
-    init_data()
     unittest.main()
-    clear_data()

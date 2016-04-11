@@ -1,7 +1,12 @@
-# TODO: add Google-riffic docs everywhere
-# TODO: add data integrity check scripts
+# TODO: Lambda functions
+# TODO: swagger file
+# TODO: API Gateway
+# TODO: create swimlane branches; merge everything
+# TODO: Send email
 # TODO: get answers to QUESTIONs
-# TODO: make architecture diagram
+# TODO: add data integrity check scripts
+# TODO: add Google-riffic docstrings everywhere
+# TODO: encrypt SSNs
 """
 Copyright (C) 2016 Ben Reece
 

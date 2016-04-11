@@ -49,4 +49,4 @@ class Persister(Base.Persister):
 
     @staticmethod
     def _get_table_name():
-        return 'SponsoringOrganization'
+        return 'SponsoringOrganizations'
