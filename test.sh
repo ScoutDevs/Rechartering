@@ -1,5 +1,3 @@
 #!/bin/sh
 
-python -m models.tests
-python -m controllers.tests
-#coverage run --source models
+coverage run --source models,controllers tests.py && coverage report -m

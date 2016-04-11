@@ -1,5 +1,7 @@
+# pylint: disable=import-error
 """ Youth Application controller """
 from datetime import date
+from controllers import InvalidActionException
 from models import Units
 from models import Youth
 from models import YouthApplications
@@ -29,7 +31,7 @@ class YouthApplication(object):
         """ Submit the application """
         self._enforce_app_status(app, YouthApplications.STATUS_CREATED)
 
-        app.set_status(YouthApplications.STATUS_GUARDIAN_APPROVAL)
+        app.status = YouthApplications.STATUS_GUARDIAN_APPROVAL
 
         if app.youth_id:
             app.scoutnet_id = self._get_youth_scoutnet_id(app)
@@ -52,37 +54,52 @@ class YouthApplication(object):
         youth = Youth.Factory().load_by_uuid(app.youth_id)
         return youth.scoutnet_id
 
-    def submit_guardian_approval(self, app, approval):
+    def submit_guardian_approval(self, app, data):
         """ Submit guardian approval """
         self._enforce_app_status(app, YouthApplications.STATUS_GUARDIAN_APPROVAL)
-        if 'guardian_approval_date' not in approval or not approval['guardian_approval_date']:
-            approval['guardian_approval_date'] = date.today().isoformat()
+        if 'guardian_approval_date' not in data or not data['guardian_approval_date']:
+            data['guardian_approval_date'] = date.today().isoformat()
 
-        app.set_guardian_approval(approval)
-        app.set_status(YouthApplications.STATUS_UNIT_APPROVAL)
+        app.guardian_approval_guardian_id = data['guardian_approval_guardian_id']
+        app.guardian_approval_signature = data['guardian_approval_signature']
+        app.guardian_approval_date = data['guardian_approval_date']
+        app.status = YouthApplications.STATUS_UNIT_APPROVAL
 
         # LAMBDA-TODO: record on youth record
 
         app.validate()
         return app
 
-    def submit_guardian_rejection(self, app, rejection):
+    def submit_guardian_rejection(self, app, data):
         """ Submit guardian reject (non-approval) """
-        # TODO: implement this
-        pass
+        self._enforce_app_status(app, YouthApplications.STATUS_GUARDIAN_APPROVAL)
+        if 'rejection_reason' not in data:
+            data['rejection_reason'] = 'Guardian approval NOT granted'
+        if 'rejection_date' not in data:
+            data['rejection_date'] = date.today().isoformat()
 
-    def submit_unit_approval(self, app, approval):
+        app.rejection_reason = data['rejection_reason']
+        app.rejection_date = data['rejection_date']
+
+        app.status = YouthApplications.STATUS_REJECTED
+
+        app.validate()
+        return app
+
+    def submit_unit_approval(self, app, data):
         """ Submit unit approval """
         self._enforce_app_status(app, YouthApplications.STATUS_UNIT_APPROVAL)
-        if 'unit_approval_date' not in approval or not approval['unit_approval_date']:
-            approval['unit_approval_date'] = date.today().isoformat()
+        if 'unit_approval_date' not in data or not data['unit_approval_date']:
+            data['unit_approval_date'] = date.today().isoformat()
 
-        app.set_unit_approval(approval)
+        app.unit_approval_user_id = data['unit_approval_user_id']
+        app.unit_approval_signature = data['unit_approval_signature']
+        app.unit_approval_date = data['unit_approval_date']
 
         if self._is_application_for_lds_unit(app):
-            app.set_status(YouthApplications.STATUS_READY_FOR_SCOUTNET)
+            app.status = YouthApplications.STATUS_READY_FOR_SCOUTNET
         else:
-            app.set_status(YouthApplications.STATUS_FEE_PENDING)
+            app.status = YouthApplications.STATUS_FEE_PENDING
 
         app.validate()
         return app
@@ -92,10 +109,21 @@ class YouthApplication(object):
         unit = Units.Factory().load_by_uuid(app.unit_id)
         return unit.lds_unit
 
-    def submit_unit_rejection(self, app, rejection):
+    def submit_unit_rejection(self, app, data):
         """ Submit unit rejection (non-approval) """
-        # TODO: implement this
-        pass
+        self._enforce_app_status(app, YouthApplications.STATUS_UNIT_APPROVAL)
+        if 'rejection_reason' not in data:
+            data['rejection_reason'] = 'Guardian approval NOT granted'
+        if 'rejection_date' not in data:
+            data['rejection_date'] = date.today().isoformat()
+
+        app.rejection_reason = data['rejection_reason']
+        app.rejection_date = data['rejection_date']
+
+        app.status = YouthApplications.STATUS_REJECTED
+
+        app.validate()
+        return app
 
     def pay_fees(self, app, data):
         """
@@ -107,8 +135,10 @@ class YouthApplication(object):
         if 'fee_payment_date' not in data or not data['fee_payment_date']:
             data['fee_payment_date'] = date.today().isoformat()
 
-        app.set_fee_payment(data)
-        app.set_status(YouthApplications.STATUS_READY_FOR_SCOUTNET)
+        app.fee_payment_date = data['fee_payment_date']
+        app.fee_payment_user_id = data['fee_payment_user_id']
+        app.fee_payment_receipt = data['fee_payment_receipt']
+        app.status = YouthApplications.STATUS_READY_FOR_SCOUTNET
 
         app.validate()
         return app
@@ -125,8 +155,9 @@ class YouthApplication(object):
 
         # LAMBDA-TODO: create Youth record, or add unit to existing Youth record
 
-        app.set_recorded_in_scoutnet(data)
-        app.set_status(YouthApplications.STATUS_COMPLETE)
+        app.scoutnet_id = data['scoutnet_id']
+        app.recorded_in_scoutnet_date = data['date']
+        app.status = YouthApplications.STATUS_COMPLETE
 
         app.validate()
         return app
@@ -141,8 +172,3 @@ class YouthApplication(object):
                     app.status,
                 )
             )
-
-
-class InvalidActionException(Exception):
-    """ The action attempted is not valid """
-    pass
