@@ -22,8 +22,7 @@ class Subdistrict(Base.Object):
 class Validator(Base.Validator):
     """ Subdistrict Validator """
 
-    @staticmethod
-    def get_field_requirements():
+    def get_field_requirements(self):
         return {
             'uuid': Base.FIELD_REQUIRED,
             'district_id': Base.FIELD_REQUIRED,

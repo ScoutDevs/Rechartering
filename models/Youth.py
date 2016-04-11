@@ -51,7 +51,8 @@ class Youth(Base.Object):  # pylint: disable=too-many-instance-attributes
             }
         return approval
 
-    def get_factory(self):
+    @staticmethod
+    def get_factory():
         return YouthFactory()
 
 
@@ -61,8 +62,7 @@ class YouthValidator(Base.Validator):
     def prepare_for_validate(self):
         self.obj.duplicate_hash = self.obj.get_record_hash()
 
-    @staticmethod
-    def get_field_requirements():
+    def get_field_requirements(self):
         return {
             'uuid': Base.FIELD_REQUIRED,
             'duplicate_hash': Base.FIELD_REQUIRED,
@@ -137,7 +137,8 @@ class Application(Base.Object):  # pylint: disable=too-many-instance-attributes
     def get_validator(self):
         return ApplicationValidator(self)
 
-    def get_factory(self):
+    @staticmethod
+    def get_factory():
         return ApplicationFactory()
 
 

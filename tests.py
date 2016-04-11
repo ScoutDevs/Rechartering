@@ -2,7 +2,6 @@
 """ Tests everything! """
 
 import unittest
-import sys
 import shortuuid
 from controllers import InvalidActionException
 from controllers import YouthApplication
@@ -26,16 +25,34 @@ class TestYouthApplicationController(unittest.TestCase):
         app_data = self.get_test_app_data()[0]
         self.app = Youth.ApplicationFactory().construct(app_data)
 
+        user = User.Factory().construct(self.get_test_user_data()[0])
         application_persister = FakeYouthApplicationPersister()
         unit_factory = FakeUnitFactory()
         youth_factory = FakeYouthFactory()
         youth_persister = FakeYouthPersister()
         self.controller = YouthApplication.Controller(
+            user,
             application_persister,
             unit_factory,
             youth_factory,
             youth_persister
         )
+
+    @staticmethod
+    def get_test_user_data():
+        """ Test User data """
+        return [
+            {
+                'username': 'ben',
+                'password': 'ben',
+                'guardian_id': 'grd-TEST-1',
+                'roles': {
+                    'Council.Admin': [],
+                },
+                'positions': [
+                ]
+            },
+        ]
 
     @staticmethod
     def get_test_app_data():
@@ -230,7 +247,6 @@ class ModelTestCase(unittest.TestCase):
         """ Set up for all children """
         self.factory = module.Factory()
         self.obj = self.factory.construct(obj_data)
-        self.persister = module.Persister()
         self.validator = self.obj.get_validator()
 
     def test_validation(self):
@@ -255,13 +271,6 @@ class TestUser(ModelTestCase):
         """ Validate the UUID prefix """
         self.assertEquals('usr', self.obj.uuid[0:3])
 
-    def test_field_type_validation(self):
-        """ Ensure field type validation is occurring """
-        self.obj.roles = 'test'
-        if 1 in sys.argv and sys.argv[1] == '--test-persistence':
-            with self.assertRaises(Base.InvalidObjectException):
-                self._test_persistence()
-
     def test_password(self):
         """ Make sure passwords are being hashed correctly """
         hashed_password = '0f1128046248f83dc9b9ab187e16fad0ff596128f1524d05a9a77c4ad932f10a'
@@ -280,9 +289,9 @@ class TestYouth(ModelTestCase):
             'last_name': 'McTesterton',
             'date_of_birth': '2000-01-01',
         }
-        self.factory = Youth.YouthFactory()
+        self.factory = FakeYouthFactory()
         self.obj = self.factory.construct(obj_data)
-        self.persister = Youth.YouthPersister()
+        self.persister = FakeYouthPersister()
         self.validator = self.obj.get_validator()
 
     def test_uuid(self):
@@ -294,23 +303,18 @@ class TestYouth(ModelTestCase):
         obj_data = {
             'duplicate_hash': 'foo',
             'units': [123, 456],
-            'first_name': 'Test',
-            'last_name': 'McTesterton',
-            'date_of_birth': '2000-01-01',
+            'first_name': 'Matthew',
+            'last_name': 'Reece',
+            'date_of_birth': '2002-01-15',
         }
 
-        original_obj = self.factory.construct(obj_data)
-        self.persister.save(original_obj)
-
-        duplicate_obj = self.factory.construct(obj_data)
-        duplicates = self.persister.find_potential_duplicates(duplicate_obj)
+        obj = self.factory.construct(obj_data)
+        duplicates = self.persister.find_potential_duplicates(obj)
         self.assertNotEqual(0, len(duplicates))
 
-        duplicate_obj.date_of_birth = '1970-01-02'
-        duplicates = self.persister.find_potential_duplicates(duplicate_obj)
+        obj.date_of_birth = '1970-01-02'
+        duplicates = self.persister.find_potential_duplicates(obj)
         self.assertEqual(0, len(duplicates))
-
-        self.persister.delete(original_obj)
 
 
 class TestVolunteer(ModelTestCase):
@@ -441,7 +445,6 @@ class TestYouthApplication(ModelTestCase):
         }
         self.factory = Youth.ApplicationFactory()
         self.obj = self.factory.construct(obj_data)
-        self.persister = Youth.ApplicationPersister()
         self.validator = self.obj.get_validator()
 
     def test_validation(self):

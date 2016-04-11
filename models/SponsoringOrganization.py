@@ -21,8 +21,7 @@ class SponsoringOrganization(Base.Object):
 class Validator(Base.Validator):
     """ SponsoringOrganization validator """
 
-    @staticmethod
-    def get_field_requirements():
+    def get_field_requirements(self):
         return {
             'uuid': Base.FIELD_REQUIRED,
             'subdistrict_id': Base.FIELD_REQUIRED,

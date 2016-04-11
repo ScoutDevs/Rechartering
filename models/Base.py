@@ -44,8 +44,7 @@ class Validator(object):
     def __init__(self, obj):
         self.obj = obj
 
-    @staticmethod
-    def get_field_requirements():
+    def get_field_requirements(self):  # pylint: disable=no-self-use
         """
         Specify which fields are used, and whether they're required
 
@@ -139,10 +138,12 @@ class Factory(object):
 
     @staticmethod
     def _get_persister():
+        """ Get persister object """
         raise Exception('SYSTEM ERROR: persister not defined.')
 
     @staticmethod
     def _get_object_class():
+        """ Get object class """
         raise Exception('SYSTEM ERROR: class not defined.')
 
 

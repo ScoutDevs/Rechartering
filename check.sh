@@ -1,7 +1,7 @@
 #!/bin/sh
 
 flake8 .
-pylint *.py
-pylint aws
-pylint models
-pylint controllers
+pylint --rcfile=.pylintrc *.py
+pylint --rcfile=.pylintrc aws
+pylint --rcfile=.pylintrc models
+pylint --rcfile=.pylintrc controllers

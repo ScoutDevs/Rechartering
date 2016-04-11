@@ -40,8 +40,7 @@ class Validator(Base.Validator):
     def prepare_for_validate(self):
         self.obj.duplicate_hash = self.obj.get_record_hash()
 
-    @staticmethod
-    def get_field_requirements():
+    def get_field_requirements(self):
         return {
             'uuid': Base.FIELD_REQUIRED,
             'duplicate_hash': Base.FIELD_REQUIRED,

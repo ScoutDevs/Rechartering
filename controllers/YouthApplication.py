@@ -2,10 +2,10 @@
 """ Youth Application Controller """
 from datetime import date
 from controllers import InvalidActionException
+from controllers import require_status
+from controllers.Security import require_role
 from models import Unit
 from models import Youth
-
-# TODO: implement security measures
 
 
 class Controller(object):
@@ -20,7 +20,8 @@ class Controller(object):
         unit: Unit object
     """
 
-    def __init__(self,
+    def __init__(self,  # pylint: disable=too-many-arguments
+                 user,
                  application_persister=Youth.ApplicationPersister(),
                  unit_factory=Unit.Factory(),
                  youth_factory=Youth.YouthFactory(),
@@ -28,18 +29,22 @@ class Controller(object):
         """Dependency-injectable init
 
         Args:
+            user: User object, used to determine permissions
             application_persister: Youth Application persister object
             unit_factory: Unit factory object
             youth_factory: Youth factory object
             youth_persister: Youth persister object
         """
+        self.user = user
         self.factory = Youth.ApplicationFactory()
         self.persister = application_persister
         self.unit_factory = unit_factory
         self.youth_factory = youth_factory
         self.youth_persister = youth_persister
 
+    @require_role(['Unit.Admin', 'Guardian', 'SponsoringOrganization.Admin', 'Council.Employee'])
     def find_duplicate_youth(self, youth_data):
+        # TODO: Do we need some sort of captcha to protect this data?
         """Search to see if the youth is already in the system
 
         Duplicate records for the same individual are to be avoided as much
@@ -56,6 +61,7 @@ class Controller(object):
         duplicates = self.youth_persister.find_potential_duplicates(youth)
         return duplicates
 
+    @require_role('Council.Employee')
     def get_applications_by_status(self, status):
         """Load all applications matching the specified status
 
@@ -67,6 +73,8 @@ class Controller(object):
         results = self.persister.get_by_status(status)
         return results
 
+    # No specific rights required to submit an application
+    @require_status(Youth.APPLICATION_STATUS_CREATED)
     def submit_application(self, app):
         """Submit the application
 
@@ -79,7 +87,6 @@ class Controller(object):
         Returns:
             Application object (updated)
         """
-        self._enforce_app_status(app, Youth.APPLICATION_STATUS_CREATED)
         app.status = Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL
 
         if app.youth_id:
@@ -121,6 +128,8 @@ class Controller(object):
         youth = self.youth_factory.load_by_uuid(app.youth_id)
         return youth.scoutnet_id
 
+    @require_role('Guardian')
+    @require_status(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL)
     def submit_guardian_approval(self, app, data):
         """Submit guardian approval
 
@@ -142,7 +151,6 @@ class Controller(object):
         Raises:
             RecordNotFoundException
         """
-        self._enforce_app_status(app, Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL)
         if 'guardian_approval_date' not in data or not data['guardian_approval_date']:
             data['guardian_approval_date'] = date.today().isoformat()
 
@@ -152,7 +160,7 @@ class Controller(object):
         app.status = Youth.APPLICATION_STATUS_UNIT_APPROVAL
 
         if app.youth_id:
-            youth = Youth.YouthFactory().load_by_uuid(app.youth_id)
+            youth = self.youth_factory.load_by_uuid(app.youth_id)
             youth = self.grant_guardian_approval(youth, data)
             youth.validate()
         else:
@@ -161,7 +169,9 @@ class Controller(object):
         app.validate()
         return (app, youth)
 
-    def submit_guardian_rejection(self, app, data):
+    @require_role('Guardian')
+    @require_status(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL)
+    def submit_guardian_rejection(self, app, data):  # pylint: disable=no-self-use
         """Submit guardian reject (non-approval)
 
         If the guardian opts to NOT allow their youth to participate in the
@@ -178,7 +188,6 @@ class Controller(object):
         Returns:
             Application object (updated)
         """
-        self._enforce_app_status(app, Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL)
         if 'rejection_reason' not in data:
             data['rejection_reason'] = 'Guardian approval NOT granted'
         if 'rejection_date' not in data:
@@ -192,6 +201,8 @@ class Controller(object):
         app.validate()
         return app
 
+    @require_role(['Unit.Admin'])
+    @require_status(Youth.APPLICATION_STATUS_UNIT_APPROVAL)
     def submit_unit_approval(self, app, data):
         """Submit unit approval
 
@@ -207,7 +218,6 @@ class Controller(object):
         Returns:
             Application object (updated)
         """
-        self._enforce_app_status(app, Youth.APPLICATION_STATUS_UNIT_APPROVAL)
         if 'unit_approval_date' not in data or not data['unit_approval_date']:
             data['unit_approval_date'] = date.today().isoformat()
 
@@ -237,7 +247,9 @@ class Controller(object):
         unit = self.unit_factory.load_by_uuid(app.unit_id)
         return unit.lds_unit
 
-    def submit_unit_rejection(self, app, data):
+    @require_role('Unit.Admin')
+    @require_status(Youth.APPLICATION_STATUS_UNIT_APPROVAL)
+    def submit_unit_rejection(self, app, data):  # pylint: disable=no-self-use
         """Submit unit rejection (non-approval)
 
         In case of clerical error, change of address, etc., the unit may
@@ -252,7 +264,6 @@ class Controller(object):
         Returns:
             Application object (updated)
         """
-        self._enforce_app_status(app, Youth.APPLICATION_STATUS_UNIT_APPROVAL)
         if 'rejection_reason' not in data:
             data['rejection_reason'] = 'Guardian approval NOT granted'
         if 'rejection_date' not in data:
@@ -266,7 +277,9 @@ class Controller(object):
         app.validate()
         return app
 
-    def pay_fees(self, app, data):
+    @require_role('Council.Employee')
+    @require_status(Youth.APPLICATION_STATUS_FEE_PENDING)
+    def pay_fees(self, app, data):  # pylint: disable=no-self-use
         """Mark registration fees as paid
 
         Non-LDS units must pay the council directly to register youth.  Once the
@@ -288,7 +301,6 @@ class Controller(object):
 
         # QUESTION: is there some sort of transaction ID or receipt or something we can record here?
 
-        self._enforce_app_status(app, Youth.APPLICATION_STATUS_FEE_PENDING)
         if 'fee_payment_date' not in data or not data['fee_payment_date']:
             data['fee_payment_date'] = date.today().isoformat()
 
@@ -300,6 +312,8 @@ class Controller(object):
         app.validate()
         return app
 
+    @require_role('Council.Employee')
+    @require_status(Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET)
     def mark_as_recorded(self, app, data):
         """Mark the application as recorded in ScoutNet
 
@@ -316,7 +330,6 @@ class Controller(object):
         Returns:
             Application object (updated)
         """
-        self._enforce_app_status(app, Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET)
         if 'date' not in data:
             data['date'] = date.today().isoformat()
 
@@ -325,17 +338,17 @@ class Controller(object):
         app.status = Youth.APPLICATION_STATUS_COMPLETE
 
         if app.youth_id:
-            youth = Youth.YouthFactory().load_by_uuid(app.youth_id)
+            youth = self.youth_factory.load_by_uuid(app.youth_id)
         else:
-            youth = Youth.YouthFactory().construct_from_app(app)
+            youth = self.youth_factory.construct_from_app(app)
         youth.units.append(app.unit_id)
 
         app.validate()
         youth.validate()
         return app
 
-    @staticmethod
-    def grant_guardian_approval(youth, data):
+    @require_role('Guardian')
+    def grant_guardian_approval(self, youth, data):  # pylint: disable=no-self-use
         """Put guardian approval on file for their Youth
 
         When a guardian grants approval for a Youth to participate in the BSA,
@@ -352,8 +365,8 @@ class Controller(object):
         youth.guardian_approval_date = data['guardian_approval_date']
         return youth
 
-    @staticmethod
-    def revoke_guardian_approval(guardian, youth):
+    @require_role('Guardian')
+    def revoke_guardian_approval(self, guardian, youth):  # pylint: disable=no-self-use
         """Revokes guardian approval for the specified Youth
 
         If a guardian wishes to revoke their approval for a youth, they have
@@ -374,25 +387,3 @@ class Controller(object):
             return youth
         else:
             raise InvalidActionException('Only the guardian who granted approval can revoke it.')
-
-    @staticmethod
-    def _enforce_app_status(app, status):
-        """Enforces proper workflow
-
-        Specific actions are only allowed at specific times.  This will throw
-        an exception if the app isn't in the specified status.
-
-        Args:
-            app: Application object
-            status: Status to enforce
-        Raises:
-            InvalidActionException
-        """
-        if app.status != status:
-            raise InvalidActionException(
-                'Can only submit guardian approval for applications in "{}" status; current status: "{}"'.
-                format(
-                    status,
-                    app.status,
-                )
-            )

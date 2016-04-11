@@ -24,8 +24,7 @@ class AdultApplications(Base.Object):
 class Validator(Base.Validator):
     """ AdultApplication validator """
 
-    @staticmethod
-    def get_field_requirements():
+    def get_field_requirements(self):
         return {
             'uuid': Base.FIELD_REQUIRED,
             'status': Base.FIELD_REQUIRED,

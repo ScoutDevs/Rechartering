@@ -11,7 +11,7 @@ class User(Base.Object):
         self.username = ''
         self.password = ''
         self.guardian_id = ''
-        self.roles = []
+        self.roles = {}
         self.positions = []
 
     @staticmethod
@@ -31,8 +31,7 @@ class User(Base.Object):
 class Validator(Base.Validator):
     """ User validator """
 
-    @staticmethod
-    def get_field_requirements():
+    def get_field_requirements(self):
         return {
             'uuid': Base.FIELD_REQUIRED,
             'username': Base.FIELD_REQUIRED,
@@ -45,6 +44,12 @@ class Validator(Base.Validator):
 
 class Factory(Base.Factory):
     """ User Factory """
+
+    @staticmethod
+    def load_by_session(session_id):
+        """ Load the user based on the session UUID """
+        # TODO: implement this
+        return 'garbage'
 
     @staticmethod
     def _get_uuid_prefix():

@@ -22,8 +22,7 @@ class Guardian(Base.Object):
 class Validator(Base.Validator):
     """ Guardian validator """
 
-    @staticmethod
-    def get_field_requirements():
+    def get_field_requirements(self):
         return {
             'uuid': Base.FIELD_REQUIRED,
             'first_name': Base.FIELD_REQUIRED,
