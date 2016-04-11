@@ -1,6 +1,8 @@
 """ AdultApplications classes """
 from . import Base
 
+# TODO: encrypt & clean out SSNs
+
 
 class AdultApplications(Base.Object):
     """ AdultApplications class """

@@ -89,7 +89,6 @@ class Validator(object):
         """ Validates the object """
         errors = self.get_validation_errors()
         if errors:
-            # if sys.stdin.isatty() print errors
             raise InvalidObjectException(errors[0])
 
     def get_validation_errors(self):
