@@ -10,12 +10,12 @@ class District(Base.Object):
         self.number = ''
         self.name = ''
 
-    @staticmethod
-    def get_uuid_prefix():
-        return 'dst'
-
     def get_validator(self):
         return Validator(self)
+
+    @staticmethod
+    def get_factory():
+        return Factory()
 
 
 class Validator(Base.Validator):
@@ -31,8 +31,11 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-
     """ District Factory """
+
+    @staticmethod
+    def _get_uuid_prefix():
+        return 'dst'
 
     @staticmethod
     def _get_object_class():

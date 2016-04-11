@@ -11,12 +11,12 @@ class AdultApplications(Base.Object):
         self.org_id = ''
         self.data = {}
 
-    @staticmethod
-    def get_uuid_prefix():
-        return 'aap'
-
     def get_validator(self):
         return Validator(self)
+
+    @staticmethod
+    def get_factory():
+        return Factory()
 
 
 class Validator(Base.Validator):
@@ -34,6 +34,10 @@ class Validator(Base.Validator):
 class Factory(Base.Factory):
 
     """ AdultApplications Factory """
+
+    @staticmethod
+    def _get_uuid_prefix():
+        return 'aap'
 
     @staticmethod
     def _get_object_class():

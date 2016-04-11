@@ -11,12 +11,12 @@ class Guardian(Base.Object):
         self.last_name = ''
         self.youth = ''
 
-    @staticmethod
-    def get_uuid_prefix():
-        return 'gdn'
-
     def get_validator(self):
         return Validator(self)
+
+    @staticmethod
+    def get_factory():
+        return Factory()
 
 
 class Validator(Base.Validator):
@@ -33,8 +33,11 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-
     """ Guardian Factory """
+
+    @staticmethod
+    def _get_uuid_prefix():
+        return 'gdn'
 
     @staticmethod
     def _get_object_class():

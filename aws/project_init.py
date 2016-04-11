@@ -4,6 +4,7 @@ This initializes the project entirely within an AWS account.
 
 Sufficient permissions are needed for this to work.
 """
+from __future__ import print_function
 import boto3
 import botocore
 
@@ -784,9 +785,9 @@ def wait(tables):
     """ Wait for AWS to finish the table creation process """
     for table_name, table in tables.items():
         if table:
-            print "Waiting for '{}' table to finish being created...".format(table_name)
+            print("Waiting for '{}' table to finish being created...".format(table_name))
             table.meta.client.get_waiter('table_exists').wait(TableName=table_name)
-            print "Done!"
+            print("Done!")
 
 
 def main():

@@ -10,8 +10,8 @@ TYPE_POST = 'Post'
 
 
 class Unit(Base.Object):
-
     """ Unit class """
+
     def __init__(self):
         super(self.__class__, self).__init__()
         self.sponsoring_organization_id = ''
@@ -19,12 +19,12 @@ class Unit(Base.Object):
         self.lds_unit = True
         self.number = 0
 
-    @staticmethod
-    def get_uuid_prefix():
-        return 'unt'
-
     def get_validator(self):
         return Validator(self)
+
+    @staticmethod
+    def get_factory():
+        return Factory()
 
 
 class Validator(Base.Validator):
@@ -62,8 +62,11 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-
     """ Unit Factory """
+
+    @staticmethod
+    def _get_uuid_prefix():
+        return 'unt'
 
     @staticmethod
     def _get_object_class():

@@ -80,14 +80,13 @@ class Controller(object):
             Application object (updated)
         """
         self._enforce_app_status(app, Youth.APPLICATION_STATUS_CREATED)
-
         app.status = Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL
 
         if app.youth_id:
             app.scoutnet_id = self._get_youth_scoutnet_id(app)
             approval = self._get_guardian_approval(app)
             if approval:
-                app = self.submit_guardian_approval(app, approval)
+                (app, _) = self.submit_guardian_approval(app, approval)
 
         app.validate()
         return app
@@ -138,7 +137,10 @@ class Controller(object):
                 guardian_approval_date (optional): date of original guardian
                     approval for the youth; defaults to current date
         Returns:
-            Application object (updated)
+            tuple: Application object (updated),
+                and Youth object (possibly updated; None if no youth_id)
+        Raises:
+            RecordNotFoundException
         """
         self._enforce_app_status(app, Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL)
         if 'guardian_approval_date' not in data or not data['guardian_approval_date']:
@@ -149,10 +151,15 @@ class Controller(object):
         app.guardian_approval_date = data['guardian_approval_date']
         app.status = Youth.APPLICATION_STATUS_UNIT_APPROVAL
 
-        # LAMBDA-TODO: record on youth record
+        if app.youth_id:
+            youth = Youth.YouthFactory().load_by_uuid(app.youth_id)
+            youth = self.grant_guardian_approval(youth, data)
+            youth.validate()
+        else:
+            youth = None
 
         app.validate()
-        return app
+        return (app, youth)
 
     def submit_guardian_rejection(self, app, data):
         """Submit guardian reject (non-approval)
@@ -313,14 +320,37 @@ class Controller(object):
         if 'date' not in data:
             data['date'] = date.today().isoformat()
 
-        # LAMBDA-TODO: create Youth record, or add unit to existing Youth record
-
         app.scoutnet_id = data['scoutnet_id']
         app.recorded_in_scoutnet_date = data['date']
         app.status = Youth.APPLICATION_STATUS_COMPLETE
 
+        if app.youth_id:
+            youth = Youth.YouthFactory().load_by_uuid(app.youth_id)
+        else:
+            youth = Youth.YouthFactory().construct_from_app(app)
+        youth.units.append(app.unit_id)
+
         app.validate()
+        youth.validate()
         return app
+
+    @staticmethod
+    def grant_guardian_approval(youth, data):
+        """Put guardian approval on file for their Youth
+
+        When a guardian grants approval for a Youth to participate in the BSA,
+        we keep it on file until revoked.
+
+        Args:
+            youth: Youth object
+            data: dict containing approval data
+        Returns:
+            Youth object (updated)
+        """
+        youth.guardian_approval_guardian_id = data['guardian_approval_guardian_id']
+        youth.guardian_approval_signature = data['guardian_approval_signature']
+        youth.guardian_approval_date = data['guardian_approval_date']
+        return youth
 
     @staticmethod
     def revoke_guardian_approval(guardian, youth):

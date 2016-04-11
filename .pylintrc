@@ -2,7 +2,7 @@
 max-line-length=120
 
 [MESSAGES]
-disable=locally-disabled,duplicate-code
+disable=locally-disabled,duplicate-code,relative-import
 
 [REPORTS]
 reports=n

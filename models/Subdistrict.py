@@ -11,16 +11,15 @@ class Subdistrict(Base.Object):
         self.number = ''
         self.name = ''
 
-    @staticmethod
-    def get_uuid_prefix():
-        return 'sbd'
-
     def get_validator(self):
         return Validator(self)
 
+    @staticmethod
+    def get_factory():
+        return Factory()
+
 
 class Validator(Base.Validator):
-
     """ Subdistrict Validator """
 
     @staticmethod
@@ -34,8 +33,11 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-
     """ Subdistrict Factory """
+
+    @staticmethod
+    def _get_uuid_prefix():
+        return 'sbd'
 
     @staticmethod
     def _get_object_class():

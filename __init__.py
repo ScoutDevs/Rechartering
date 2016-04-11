@@ -1,4 +1,3 @@
-# TODO: Lambda functions
 # TODO: swagger file
 # TODO: API Gateway
 # TODO: create swimlane branches; merge everything
@@ -6,7 +5,7 @@
 # TODO: get answers to QUESTIONs
 # TODO: add data integrity check scripts
 # TODO: add Google-riffic docstrings everywhere
-# TODO: encrypt SSNs
+# TODO: encrypt & clean out SSNs
 """
 Copyright (C) 2016 Ben Reece
 
@@ -23,3 +22,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
+
+
+class ClientErrorException(Exception):
+    """ Client error """
+    pass

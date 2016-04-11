@@ -20,12 +20,12 @@ class User(Base.Object):
         hashed_password = hashlib.sha256(password).hexdigest()
         return hashed_password
 
-    @staticmethod
-    def get_uuid_prefix():
-        return 'usr'
-
     def get_validator(self):
         return Validator(self)
+
+    @staticmethod
+    def get_factory():
+        return Factory()
 
 
 class Validator(Base.Validator):
@@ -44,8 +44,11 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-
     """ User Factory """
+
+    @staticmethod
+    def _get_uuid_prefix():
+        return 'usr'
 
     @staticmethod
     def _get_object_class():

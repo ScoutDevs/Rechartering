@@ -11,12 +11,12 @@ class CharterApplications(Base.Object):
         self.year = 0
         self.status = ''
 
-    @staticmethod
-    def get_uuid_prefix():
-        return 'cap'
-
     def get_validator(self):
         return Validator(self)
+
+    @staticmethod
+    def get_factory():
+        return Factory()
 
 
 class Validator(Base.Validator):
@@ -36,6 +36,10 @@ class Validator(Base.Validator):
 class Factory(Base.Factory):
 
     """ CharterApplications Factory """
+
+    @staticmethod
+    def _get_uuid_prefix():
+        return 'cap'
 
     @staticmethod
     def _get_object_class():

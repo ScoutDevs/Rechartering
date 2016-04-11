@@ -30,10 +30,6 @@ class Youth(Base.Object):  # pylint: disable=too-many-instance-attributes
         self.guardian_approval_signature = ''
         self.guardian_approval_date = ''
 
-    @staticmethod
-    def get_uuid_prefix():
-        return 'yth'
-
     def get_validator(self):
         return YouthValidator(self)
 
@@ -43,9 +39,6 @@ class Youth(Base.Object):  # pylint: disable=too-many-instance-attributes
         match = regex.findall(self.first_name+self.last_name+self.date_of_birth)
         string = "".join(match)
         return hashlib.sha256(string).hexdigest()
-
-    def prepare_for_validate(self):
-        self.duplicate_hash = self.get_record_hash()
 
     def get_guardian_approval(self):
         """ Get guardian approval data """
@@ -58,9 +51,15 @@ class Youth(Base.Object):  # pylint: disable=too-many-instance-attributes
             }
         return approval
 
+    def get_factory(self):
+        return YouthFactory()
+
 
 class YouthValidator(Base.Validator):
     """ Youth validator """
+
+    def prepare_for_validate(self):
+        self.obj.duplicate_hash = self.obj.get_record_hash()
 
     @staticmethod
     def get_field_requirements():
@@ -76,6 +75,18 @@ class YouthValidator(Base.Validator):
 
 class YouthFactory(Base.Factory):
     """ Youth Factory """
+
+    def construct_from_app(self, app):
+        """ Constructs a Youth object from the application """
+        # construct will only populate fields that are defined in the class
+        youth = self.construct(app.__dict__)
+        # we don't want it to inherit the UUID from the app, though!
+        youth.uuid = self.get_uuid()
+        return youth
+
+    @staticmethod
+    def _get_uuid_prefix():
+        return 'yth'
 
     @staticmethod
     def _get_object_class():
@@ -119,13 +130,15 @@ class Application(Base.Object):  # pylint: disable=too-many-instance-attributes
         self.rejection_reason = ''
         self.youth_id = ''
         self.scoutnet_id = 0
-
-    @staticmethod
-    def get_uuid_prefix():
-        return 'yap'
+        self.first_name = ''
+        self.last_name = ''
+        self.date_of_birth = ''
 
     def get_validator(self):
         return ApplicationValidator(self)
+
+    def get_factory(self):
+        return ApplicationFactory()
 
 
 class ApplicationValidator(Base.Validator):
@@ -136,6 +149,9 @@ class ApplicationValidator(Base.Validator):
             'uuid': Base.FIELD_REQUIRED,
             'status': Base.FIELD_REQUIRED,
             'unit_id': Base.FIELD_REQUIRED,
+            'first_name': Base.FIELD_REQUIRED,
+            'last_name': Base.FIELD_REQUIRED,
+            'date_of_birth': Base.FIELD_REQUIRED,
         }
         status_field_requirements = ApplicationStatusValidator(self.obj.status).get_field_requirements()
         field_requirements.update(status_field_requirements)
@@ -207,8 +223,11 @@ class ApplicationStatusValidator(object):  # pylint: disable=too-few-public-meth
 
 
 class ApplicationFactory(Base.Factory):
-
     """ Youth Application Factory """
+
+    @staticmethod
+    def _get_uuid_prefix():
+        return 'yap'
 
     @staticmethod
     def _get_object_class():

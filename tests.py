@@ -2,8 +2,8 @@
 """ Tests everything! """
 
 import unittest
-import shortuuid
 import sys
+import shortuuid
 from controllers import InvalidActionException
 from controllers import YouthApplication
 from models import AdultApplications
@@ -26,10 +26,10 @@ class TestYouthApplicationController(unittest.TestCase):
         app_data = self.get_test_app_data()[0]
         self.app = Youth.ApplicationFactory().construct(app_data)
 
-        application_persister = TestYouthApplicationPersister()
-        unit_factory = TestUnitFactory()
-        youth_factory = TestYouthFactory()
-        youth_persister = TestYouthPersister()
+        application_persister = FakeYouthApplicationPersister()
+        unit_factory = FakeUnitFactory()
+        youth_factory = FakeYouthFactory()
+        youth_persister = FakeYouthPersister()
         self.controller = YouthApplication.Controller(
             application_persister,
             unit_factory,
@@ -45,6 +45,9 @@ class TestYouthApplicationController(unittest.TestCase):
                 'unit_id': 'unt-TEST-123',
                 'scoutnet_id': 123,
                 'status': Youth.APPLICATION_STATUS_CREATED,
+                'first_name': 'Ben',
+                'last_name': 'Reece',
+                'date_of_birth': '1970-01-01',
             },
         ]
 
@@ -108,7 +111,7 @@ class TestYouthApplicationController(unittest.TestCase):
             'guardian_approval_guardian_id': 'grd-TEST-123',
             'guardian_approval_signature': 'abcd',
         }
-        self.app = self.controller.submit_guardian_approval(self.app, guardian_approval)
+        (self.app, _) = self.controller.submit_guardian_approval(self.app, guardian_approval)
         self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
 
         unit_approval = {
@@ -141,7 +144,7 @@ class TestYouthApplicationController(unittest.TestCase):
             'guardian_approval_guardian_id': 'grd-TEST-123',
             'guardian_approval_signature': 'abcd',
         }
-        self.app = self.controller.submit_guardian_approval(self.app, guardian_approval)
+        (self.app, _) = self.controller.submit_guardian_approval(self.app, guardian_approval)
         self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
 
         unit_approval = {
@@ -182,7 +185,7 @@ class TestYouthApplicationController(unittest.TestCase):
             'guardian_approval_guardian_id': 'grd-TEST-123',
             'guardian_approval_signature': 'abcd',
         }
-        self.app = self.controller.submit_guardian_approval(self.app, guardian_approval)
+        (self.app, _) = self.controller.submit_guardian_approval(self.app, guardian_approval)
         self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
 
         data = {
@@ -431,6 +434,9 @@ class TestYouthApplication(ModelTestCase):
             'status': Youth.APPLICATION_STATUS_COMPLETE,
             'unit_id': 'unt-123',
             'scoutnet_id': 123,
+            'first_name': 'Ben',
+            'last_name': 'Reece',
+            'date_of_birth': '1980-01-01',
             'data': {}
         }
         self.factory = Youth.ApplicationFactory()
@@ -551,32 +557,42 @@ class TestCharterApplications(ModelTestCase):
         self.assertEquals('cap', self.obj.uuid[0:3])
 
 
-class TestUnitFactory(Unit.Factory):
+class FakeUnitFactory(Unit.Factory):  # pylint: disable=too-few-public-methods
+    """ Fake class for testing """
 
     def load_by_uuid(self, uuid):
+        """ Fake method for testing """
         unit_list = TestYouthApplicationController.get_test_unit_data()
         data = find_record_by_field('uuid', uuid, unit_list)
         return self.construct(data)
 
 
-class TestYouthApplicationPersister(object):
+class FakeYouthApplicationPersister(object):  # pylint: disable=too-few-public-methods
+    """ Fake class for testing """
 
-    def get_by_status(self, status):
+    @staticmethod
+    def get_by_status(status):
+        """ Fake method for testing """
         app_list = TestYouthApplicationController.get_test_app_data()
         return [find_record_by_field('status', status, app_list)]
 
 
-class TestYouthFactory(Youth.YouthFactory):
+class FakeYouthFactory(Youth.YouthFactory):  # pylint: disable=too-few-public-methods
+    """ Fake class for testing """
 
     def load_by_uuid(self, uuid):
+        """ Fake method for testing """
         youth_list = TestYouthApplicationController.get_test_youth_data()
         data = find_record_by_field('uuid', uuid, youth_list)
         return self.construct(data)
 
 
-class TestYouthPersister(object):
+class FakeYouthPersister(object):  # pylint: disable=too-few-public-methods
+    """ Fake class for testing """
 
-    def find_potential_duplicates(self, youth):
+    @staticmethod
+    def find_potential_duplicates(youth):
+        """ Fake method for testing """
         youth_list = TestYouthApplicationController.get_test_youth_data()
         try:
             return [find_record_by_field('duplicate_hash', youth.get_record_hash(), youth_list)]
@@ -585,15 +601,16 @@ class TestYouthPersister(object):
 
 
 def find_record_by_field(field_name, field_value, data):
-        record = None
-        for item in data:
-            if item[field_name] == field_value:
-                record = item
-                break
-        if record:
-            return record
-        else:
-            raise Base.RecordNotFoundException('Record matching {}="{}" not found'.format(field_name, field_value))
+    """ Finds a test data record by the specified field & value """
+    record = None
+    for item in data:
+        if item[field_name] == field_value:
+            record = item
+            break
+    if record:
+        return record
+    else:
+        raise Base.RecordNotFoundException('Record matching {}="{}" not found'.format(field_name, field_value))
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 flake8 .
-pylint .
+pylint *.py
 pylint aws
 pylint models
 pylint controllers

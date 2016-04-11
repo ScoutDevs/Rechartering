@@ -13,24 +13,7 @@ class Object(object):
     """ Base class """
 
     def __init__(self):
-        self.uuid = self.__class__.get_uuid_prefix()+'-'+shortuuid.uuid()
-
-    @staticmethod
-    def get_uuid_prefix():
-        """
-        UUID prefix to easily identify record types
-
-        Must be defined by the child class.
-        """
-        raise Exception('SYSTEM ERROR: prefix not defined.')
-
-    def prepare_for_validate(self):
-        """
-        Called by the persister prior to validation & storage
-
-        Useful for setting derived values.
-        """
-        pass
+        self.uuid = self.get_factory().get_uuid()
 
     def get_validator(self):  # pylint: disable=no-self-use
         """
@@ -39,6 +22,15 @@ class Object(object):
         Must be defined by the child class.
         """
         raise Exception('SYSTEM ERROR: validator not defined.')
+
+    @staticmethod
+    def get_factory():
+        """
+        Returns a Factory object
+
+        Must be defined by the child class.
+        """
+        raise Exception('SYSTEM ERROR: factory not defined.')
 
     def validate(self):
         """ Validate the object """
@@ -74,13 +66,21 @@ class Validator(object):
 
         return (valid, errors)
 
+    def prepare_for_validate(self):
+        """
+        Called by the persister prior to validation & storage
+
+        Useful for setting derived values.
+        """
+        pass
+
     def _validate(self):  # pylint: disable=no-self-use
         """ Any additional validation can be done in this method in the child """
         return (True, [])
 
     def valid(self):
         """ Determine validity of the object """
-        self.obj.prepare_for_validate()
+        self.prepare_for_validate()
         (requirements_valid, _) = self._validate_required_fields()
         (other_valid, _) = self._validate()
         return requirements_valid and other_valid
@@ -94,7 +94,7 @@ class Validator(object):
 
     def get_validation_errors(self):
         """ Provide errors associated with validation """
-        self.obj.prepare_for_validate()
+        self.prepare_for_validate()
         (_, requirements_errors) = self._validate_required_fields()
         (_, other_errors) = self._validate()
         return requirements_errors + other_errors
@@ -106,6 +106,19 @@ class Factory(object):
 
     def __init__(self):
         self.persister = self._get_persister()  # pylint: disable=assignment-from-no-return
+
+    @staticmethod
+    def _get_uuid_prefix():
+        """
+        UUID prefix to easily identify record types
+
+        Must be defined by the child class.
+        """
+        raise Exception('SYSTEM ERROR: prefix not defined.')
+
+    def get_uuid(self):
+        """ Generates a UUID """
+        return "{}-{}".format(self._get_uuid_prefix(), shortuuid.uuid())
 
     def load_by_uuid(self, uuid):
         """ Load by UUID """
