@@ -1,12 +1,15 @@
-# pylint: disable=no-member,attribute-defined-outside-init
-""" Tests everything! """
+# pylint: disable=no-member,attribute-defined-outside-init,import-error
+""" Tests YouthApplicationController """
 
 import unittest
 import shortuuid
+from . import FakeYouthApplicationPersister
+from . import FakeUnitFactory
+from . import FakeYouthFactory
+from . import FakeYouthPersister
 from controllers import InvalidActionException
 from controllers import YouthApplication
 from models import AdultApplications
-from models import Base
 from models import CharterApplications
 from models import District
 from models import Guardian
@@ -558,62 +561,6 @@ class TestCharterApplications(ModelTestCase):
     def test_uuid(self):
         """ Validate the UUID prefix """
         self.assertEquals('cap', self.obj.uuid[0:3])
-
-
-class FakeUnitFactory(Unit.Factory):  # pylint: disable=too-few-public-methods
-    """ Fake class for testing """
-
-    def load_by_uuid(self, uuid):
-        """ Fake method for testing """
-        unit_list = TestYouthApplicationController.get_test_unit_data()
-        data = find_record_by_field('uuid', uuid, unit_list)
-        return self.construct(data)
-
-
-class FakeYouthApplicationPersister(object):  # pylint: disable=too-few-public-methods
-    """ Fake class for testing """
-
-    @staticmethod
-    def get_by_status(status):
-        """ Fake method for testing """
-        app_list = TestYouthApplicationController.get_test_app_data()
-        return [find_record_by_field('status', status, app_list)]
-
-
-class FakeYouthFactory(Youth.YouthFactory):  # pylint: disable=too-few-public-methods
-    """ Fake class for testing """
-
-    def load_by_uuid(self, uuid):
-        """ Fake method for testing """
-        youth_list = TestYouthApplicationController.get_test_youth_data()
-        data = find_record_by_field('uuid', uuid, youth_list)
-        return self.construct(data)
-
-
-class FakeYouthPersister(object):  # pylint: disable=too-few-public-methods
-    """ Fake class for testing """
-
-    @staticmethod
-    def find_potential_duplicates(youth):
-        """ Fake method for testing """
-        youth_list = TestYouthApplicationController.get_test_youth_data()
-        try:
-            return [find_record_by_field('duplicate_hash', youth.get_record_hash(), youth_list)]
-        except Base.RecordNotFoundException:
-            return []
-
-
-def find_record_by_field(field_name, field_value, data):
-    """ Finds a test data record by the specified field & value """
-    record = None
-    for item in data:
-        if item[field_name] == field_value:
-            record = item
-            break
-    if record:
-        return record
-    else:
-        raise Base.RecordNotFoundException('Record matching {}="{}" not found'.format(field_name, field_value))
 
 
 if __name__ == '__main__':

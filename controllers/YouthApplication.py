@@ -1,5 +1,6 @@
 # pylint: disable=import-error
 """ Youth Application Controller """
+
 from datetime import date
 from controllers import InvalidActionException
 from controllers import require_status
