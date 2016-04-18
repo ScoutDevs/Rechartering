@@ -1,5 +1,5 @@
 # pylint: disable=no-member,attribute-defined-outside-init,import-error
-""" Tests models """
+"""Tests models"""
 
 import unittest
 from . import FakeYouthFactory
@@ -18,26 +18,26 @@ from models import Youth
 
 class ModelTestCase(unittest.TestCase):
 
-    """ Parent for all model tests """
+    """Parent for all model tests"""
 
     def _set_up(self, module, obj_data):
-        """ Set up for all children """
+        """Set up for all children"""
         self.factory = module.Factory()
         self.obj = self.factory.construct(obj_data)
         self.validator = self.obj.get_validator()
 
     def test_validation(self):
-        """ Test object validation """
+        """Test object validation"""
         if hasattr(self, 'obj'):
             self.assertTrue(self.validator.valid())
 
 
 class TestUser(ModelTestCase):
 
-    """ Tests User model """
+    """Tests User model"""
 
     def setUp(self):
-        """ Init """
+        """Init"""
         obj_data = {
             'username': 'foo',
             'password': 'bar',
@@ -45,23 +45,23 @@ class TestUser(ModelTestCase):
         self._set_up(User, obj_data)
 
     def test_uuid(self):
-        """ Validate the UUID prefix """
+        """Validate the UUID prefix"""
         self.assertEquals('usr', self.obj.uuid[0:3])
 
     def test_password(self):
-        """ Make sure passwords are being hashed correctly """
+        """Make sure passwords are being hashed correctly"""
         hashed_password = '0f1128046248f83dc9b9ab187e16fad0ff596128f1524d05a9a77c4ad932f10a'
         self.assertEquals(hashed_password, self.obj.hash_password('howdy'))
 
 
 class TestYouth(ModelTestCase):
-    """ Tests Youth model """
+    """Tests Youth model"""
 
     def setUp(self):
-        """ Init """
+        """Init"""
         obj_data = {
             'duplicate_hash': 'foo',
-            'units': [123, 456],
+            'units': ['123', '456'],
             'first_name': 'Test',
             'last_name': 'McTesterton',
             'date_of_birth': '2000-01-01',
@@ -72,14 +72,14 @@ class TestYouth(ModelTestCase):
         self.validator = self.obj.get_validator()
 
     def test_uuid(self):
-        """ Validate the UUID prefix """
+        """Validate the UUID prefix"""
         self.assertEquals('yth', self.obj.uuid[0:3])
 
     def test_duplicate_search(self):
-        """ Test duplicate check """
+        """Test duplicate check"""
         obj_data = {
             'duplicate_hash': 'foo',
-            'units': [123, 456],
+            'units': ['123', '456'],
             'first_name': 'Matthew',
             'last_name': 'Reece',
             'date_of_birth': '2002-01-15',
@@ -96,10 +96,10 @@ class TestYouth(ModelTestCase):
 
 class TestVolunteer(ModelTestCase):
 
-    """ Tests Volunteer model """
+    """Tests Volunteer model"""
 
     def setUp(self):
-        """ Init """
+        """Init"""
         obj_data = {
             'scoutnet_id': 123,
             'unit_id': 'unt-123',
@@ -112,16 +112,16 @@ class TestVolunteer(ModelTestCase):
         self._set_up(Volunteer, obj_data)
 
     def test_uuid(self):
-        """ Validate the UUID prefix """
+        """Validate the UUID prefix"""
         self.assertEquals('vol', self.obj.uuid[0:3])
 
 
 class TestGuardian(ModelTestCase):
 
-    """ Tests Guardian model """
+    """Tests Guardian model"""
 
     def setUp(self):
-        """ Init """
+        """Init"""
         obj_data = {
             'uuid': 'gdn-TEST-1',
             'youth': [123, 456],
@@ -131,16 +131,16 @@ class TestGuardian(ModelTestCase):
         self._set_up(Guardian, obj_data)
 
     def test_uuid(self):
-        """ Validate the UUID prefix """
+        """Validate the UUID prefix"""
         self.assertEquals('gdn', self.obj.uuid[0:3])
 
 
 class TestDistrict(ModelTestCase):
 
-    """ Tests District model """
+    """Tests District model"""
 
     def setUp(self):
-        """ Init """
+        """Init"""
         obj_data = {
             'number': '05',
             'name': 'Provo Peak',
@@ -148,16 +148,16 @@ class TestDistrict(ModelTestCase):
         self._set_up(District, obj_data)
 
     def test_uuid(self):
-        """ Validate the UUID prefix """
+        """Validate the UUID prefix"""
         self.assertEquals('dst', self.obj.uuid[0:3])
 
 
 class TestSubdistrict(ModelTestCase):
 
-    """ Tests Subdistrict model """
+    """Tests Subdistrict model"""
 
     def setUp(self):
-        """ Init """
+        """Init"""
         obj_data = {
             'district_id': '123123',
             'number': '05-9',
@@ -166,16 +166,16 @@ class TestSubdistrict(ModelTestCase):
         self._set_up(Subdistrict, obj_data)
 
     def test_uuid(self):
-        """ Validate the UUID prefix """
+        """Validate the UUID prefix"""
         self.assertEquals('sbd', self.obj.uuid[0:3])
 
 
 class TestSponsoringOrganization(ModelTestCase):
 
-    """ Tests SponsoringOrganization model """
+    """Tests SponsoringOrganization model"""
 
     def setUp(self):
-        """ Init """
+        """Init"""
         obj_data = {
             'subdistrict_id': '123123',
             'name': 'North Park 3rd Ward',
@@ -183,16 +183,16 @@ class TestSponsoringOrganization(ModelTestCase):
         self._set_up(SponsoringOrganization, obj_data)
 
     def test_uuid(self):
-        """ Validate the UUID prefix """
+        """Validate the UUID prefix"""
         self.assertEquals('spo', self.obj.uuid[0:3])
 
 
 class TestUnit(ModelTestCase):
 
-    """ Tests Unit model """
+    """Tests Unit model"""
 
     def setUp(self):
-        """ Init """
+        """Init"""
         obj_data = {
             'sponsoring_organization_id': '123123',
             'type': 'Troop',
@@ -201,16 +201,16 @@ class TestUnit(ModelTestCase):
         self._set_up(Unit, obj_data)
 
     def test_uuid(self):
-        """ Validate the UUID prefix """
+        """Validate the UUID prefix"""
         self.assertEquals('unt', self.obj.uuid[0:3])
 
 
 class TestYouthApplication(ModelTestCase):
 
-    """ Tests Youth Application model """
+    """Tests Youth Application model"""
 
     def setUp(self):
-        """ Init """
+        """Init"""
         obj_data = {
             'status': Youth.APPLICATION_STATUS_COMPLETE,
             'unit_id': 'unt-123',
@@ -225,19 +225,19 @@ class TestYouthApplication(ModelTestCase):
         self.validator = self.obj.get_validator()
 
     def test_validation(self):
-        """ Overriding general validation to do status-specific validation """
+        """Overriding general validation to do status-specific validation"""
         pass
 
     def test_persistence(self):
-        """ Overriding general validation to do status-specific validation """
+        """Overriding general validation to do status-specific validation"""
         pass
 
     def test_uuid(self):
-        """ Validate the UUID prefix """
+        """Validate the UUID prefix"""
         self.assertEquals('yap', self.obj.uuid[0:3])
 
     def test_guardian_signature(self):
-        """ Test guardian signature validation """
+        """Test guardian signature validation"""
         self.obj.status = Youth.APPLICATION_STATUS_UNIT_APPROVAL
         self.assertFalse(self.validator.valid())
         self.obj.guardian_approval_guardian_id = '123'
@@ -246,7 +246,7 @@ class TestYouthApplication(ModelTestCase):
         self.assertTrue(self.validator.valid())
 
     def test_unit_approval(self):
-        """ Test unit approval validation """
+        """Test unit approval validation"""
         self.obj.status = Youth.APPLICATION_STATUS_FEE_PENDING
         self.assertFalse(self.validator.valid())
         self.obj.guardian_approval_guardian_id = '123'
@@ -258,7 +258,7 @@ class TestYouthApplication(ModelTestCase):
         self.assertTrue(self.validator.valid())
 
     def test_fee_payment(self):
-        """ Test fee payment validation """
+        """Test fee payment validation"""
         self.obj.status = Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET
         self.assertFalse(self.validator.valid())
         self.obj.guardian_approval_guardian_id = '123'
@@ -270,7 +270,7 @@ class TestYouthApplication(ModelTestCase):
         self.assertTrue(self.validator.valid())
 
     def test_record(self):
-        """ Test ready for ScoutNet validation """
+        """Test ready for ScoutNet validation"""
         self.obj.status = Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET
         self.obj.guardian_approval_guardian_id = '123'
         self.obj.guardian_approval_signature = 'stuff'
@@ -281,7 +281,7 @@ class TestYouthApplication(ModelTestCase):
         self.assertTrue(self.validator.valid())
 
     def test_complete(self):
-        """ Test complete status """
+        """Test complete status"""
         self.obj.status = Youth.APPLICATION_STATUS_COMPLETE
         self.assertFalse(self.validator.valid())
         self.obj.guardian_approval_guardian_id = '123'
@@ -294,7 +294,7 @@ class TestYouthApplication(ModelTestCase):
         self.assertTrue(self.validator.valid())
 
     def test_rejected(self):
-        """ Test reject status """
+        """Test reject status"""
         self.obj.status = Youth.APPLICATION_STATUS_REJECTED
         self.assertFalse(self.validator.valid())
         self.obj.rejection_date = '2015-01-01'
@@ -304,10 +304,10 @@ class TestYouthApplication(ModelTestCase):
 
 class TestAdultApplications(ModelTestCase):
 
-    """ Tests AdultApplications model """
+    """Tests AdultApplications model"""
 
     def setUp(self):
-        """ Init """
+        """Init"""
         obj_data = {
             'status': 'Completed',
             'org_id': '123123',
@@ -316,15 +316,15 @@ class TestAdultApplications(ModelTestCase):
         self._set_up(AdultApplications, obj_data)
 
     def test_uuid(self):
-        """ Validate the UUID prefix """
+        """Validate the UUID prefix"""
         self.assertEquals('aap', self.obj.uuid[0:3])
 
 
 class TestCharterApplications(ModelTestCase):
-    """ Tests CharterApplications model """
+    """Tests CharterApplications model"""
 
     def setUp(self):
-        """ Init """
+        """Init"""
         obj_data = {
             'sponsoring_organization_id': '123123',
             'year': 2015,
@@ -333,7 +333,7 @@ class TestCharterApplications(ModelTestCase):
         self._set_up(CharterApplications, obj_data)
 
     def test_uuid(self):
-        """ Validate the UUID prefix """
+        """Validate the UUID prefix"""
         self.assertEquals('cap', self.obj.uuid[0:3])
 
 

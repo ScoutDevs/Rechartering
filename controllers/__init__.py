@@ -7,7 +7,7 @@ completely free of DB & network dependencies.
 
 
 def require_status(status):
-    """ Decorator for application functions """
+    """Decorator for application functions"""
     def wrap(func):  # pylint: disable=missing-docstring
         def inner(*args, **kwargs):  # pylint: disable=missing-docstring
             app = args[1]
@@ -25,5 +25,5 @@ def require_status(status):
 
 
 class InvalidActionException(Exception):
-    """ The action attempted is not valid """
+    """The action attempted is not valid"""
     pass

@@ -14,7 +14,7 @@ DYNAMODB = boto3.resource('dynamodb')
 
 
 def create_users_table():
-    """ Create the 'Users' DynamoDB table """
+    """Create the 'Users' DynamoDB table"""
 
     # Create the DynamoDB table.
     try:
@@ -39,6 +39,10 @@ def create_users_table():
                     'AttributeName': 'password',
                     'AttributeType': 'S',
                 },
+                {
+                    'AttributeName': 'session_uuid',
+                    'AttributeType': 'S',
+                },
             ],
             GlobalSecondaryIndexes=[
                 {
@@ -57,14 +61,30 @@ def create_users_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
+                    },
+                },
+                {
+                    'IndexName': 'session_uuid',
+                    'KeySchema': [
+                        {
+                            'AttributeName': 'session_uuid',
+                            'KeyType': 'HASH',
+                        },
+                    ],
+                    'Projection': {
+                        'ProjectionType': 'KEYS_ONLY',
+                    },
+                    'ProvisionedThroughput': {
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnit': 1,
-                'WriteCapacityUnit': 1,
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
             }
         )
         return table
@@ -73,13 +93,13 @@ def create_users_table():
             raise exc
 
 
-def create_youth_table():
-    """ Create the 'Youth' DynamoDB table """
+def create_people_table():
+    """Create the 'People' DynamoDB table"""
 
     # Create the DynamoDB table.
     try:
         table = DYNAMODB.create_table(
-            TableName='Youth',
+            TableName='People',
             KeySchema=[
                 {
                     'AttributeName': 'uuid',
@@ -99,6 +119,14 @@ def create_youth_table():
                     'AttributeName': 'scoutnet_id',
                     'AttributeType': 'N',
                 },
+                {
+                    'AttributeName': 'organization_uuid',
+                    'AttributeType': 'S',
+                },
+                {
+                    'AttributeName': 'user_uuid',
+                    'AttributeType': 'S',
+                },
             ],
             GlobalSecondaryIndexes=[
                 {
@@ -113,8 +141,8 @@ def create_youth_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
                     },
                 },
                 {
@@ -129,14 +157,46 @@ def create_youth_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
+                    },
+                },
+                {
+                    'IndexName': 'organization_uuid',
+                    'KeySchema': [
+                        {
+                            'AttributeName': 'organization_uuid',
+                            'KeyType': 'HASH',
+                        },
+                    ],
+                    'Projection': {
+                        'ProjectionType': 'KEYS_ONLY',
+                    },
+                    'ProvisionedThroughput': {
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
+                    },
+                },
+                {
+                    'IndexName': 'user_uuid',
+                    'KeySchema': [
+                        {
+                            'AttributeName': 'user_uuid',
+                            'KeyType': 'HASH',
+                        },
+                    ],
+                    'Projection': {
+                        'ProjectionType': 'KEYS_ONLY',
+                    },
+                    'ProvisionedThroughput': {
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnit': 1,
-                'WriteCapacityUnit': 1,
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
             }
         )
         return table
@@ -146,12 +206,12 @@ def create_youth_table():
 
 
 def create_volunteers_table():
-    """ Create the 'Volunteer' DynamoDB table """
+    """Create the 'Volunteer' DynamoDB table"""
 
     # Create the DynamoDB table.
     try:
         table = DYNAMODB.create_table(
-            TableName='Volunteer',
+            TableName='Volunteers',
             KeySchema=[
                 {
                     'AttributeName': 'uuid',
@@ -189,8 +249,8 @@ def create_volunteers_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
                     },
                 },
                 {
@@ -205,8 +265,8 @@ def create_volunteers_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
                     },
                 },
                 {
@@ -221,14 +281,14 @@ def create_volunteers_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnit': 1,
-                'WriteCapacityUnit': 1,
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
             }
         )
         return table
@@ -238,12 +298,12 @@ def create_volunteers_table():
 
 
 def create_guardians_table():
-    """ Create the 'Guardian' DynamoDB table """
+    """Create the 'Guardian' DynamoDB table"""
 
     # Create the DynamoDB table.
     try:
         table = DYNAMODB.create_table(
-            TableName='Guardian',
+            TableName='Guardians',
             KeySchema=[
                 {
                     'AttributeName': 'uuid',
@@ -257,8 +317,8 @@ def create_guardians_table():
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnit': 1,
-                'WriteCapacityUnit': 1,
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
             }
         )
         return table
@@ -267,13 +327,13 @@ def create_guardians_table():
             raise exc
 
 
-def create_districts_table():
-    """ Create the 'District' DynamoDB table """
+def create_organizations_table():
+    """Create the 'Organization' DynamoDB table"""
 
     # Create the DynamoDB table.
     try:
         table = DYNAMODB.create_table(
-            TableName='District',
+            TableName='Organizations',
             KeySchema=[
                 {
                     'AttributeName': 'uuid',
@@ -283,34 +343,62 @@ def create_districts_table():
             AttributeDefinitions=[
                 {
                     'AttributeName': 'uuid',
+                    'AttributeType': 'S',
+                },
+                {
+                    'AttributeName': 'parent_uuid',
                     'AttributeType': 'S',
                 },
                 {
                     'AttributeName': 'number',
                     'AttributeType': 'S',
                 },
+                {
+                    'AttributeName': 'type',
+                    'AttributeType': 'S',
+                },
             ],
             GlobalSecondaryIndexes=[
                 {
-                    'IndexName': 'district_number',
+                    'IndexName': 'parent_uuid',
+                    'KeySchema': [
+                        {
+                            'AttributeName': 'parent_uuid',
+                            'KeyType': 'HASH',
+                        },
+                    ],
+                    'Projection': {
+                        'ProjectionType': 'KEYS_ONLY',
+                    },
+                    'ProvisionedThroughput': {
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
+                    },
+                },
+                {
+                    'IndexName': 'number',
                     'KeySchema': [
                         {
                             'AttributeName': 'number',
                             'KeyType': 'HASH',
                         },
+                        {
+                            'AttributeName': 'type',
+                            'KeyType': 'RANGE',
+                        },
                     ],
                     'Projection': {
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnit': 1,
-                'WriteCapacityUnit': 1,
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
             }
         )
         return table
@@ -319,209 +407,13 @@ def create_districts_table():
             raise exc
 
 
-def create_subdistricts_table():
-    """ Create the 'Subdistrict' DynamoDB table """
+def create_applications_table():
+    """Create the 'Applications' DynamoDB table"""
 
     # Create the DynamoDB table.
     try:
         table = DYNAMODB.create_table(
-            TableName='Subdistrict',
-            KeySchema=[
-                {
-                    'AttributeName': 'uuid',
-                    'KeyType': 'HASH',
-                },
-            ],
-            AttributeDefinitions=[
-                {
-                    'AttributeName': 'uuid',
-                    'AttributeType': 'S',
-                },
-                {
-                    'AttributeName': 'district_id',
-                    'AttributeType': 'S',
-                },
-                {
-                    'AttributeName': 'number',
-                    'AttributeType': 'S',
-                },
-            ],
-            GlobalSecondaryIndexes=[
-                {
-                    'IndexName': 'district_id',
-                    'KeySchema': [
-                        {
-                            'AttributeName': 'district_id',
-                            'KeyType': 'HASH',
-                        },
-                    ],
-                    'Projection': {
-                        'ProjectionType': 'KEYS_ONLY',
-                    },
-                    'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
-                    },
-                },
-                {
-                    'IndexName': 'subdistrict_number',
-                    'KeySchema': [
-                        {
-                            'AttributeName': 'number',
-                            'KeyType': 'HASH',
-                        },
-                    ],
-                    'Projection': {
-                        'ProjectionType': 'KEYS_ONLY',
-                    },
-                    'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
-                    },
-                },
-            ],
-            ProvisionedThroughput={
-                'ReadCapacityUnit': 1,
-                'WriteCapacityUnit': 1,
-            }
-        )
-        return table
-    except botocore.exceptions.ClientError as exc:
-        if 'ResourceInUseException' not in exc.__str__():
-            raise exc
-
-
-def create_sponsoring_orgs_table():
-    """ Create the 'SponsoringOrganization' DynamoDB table """
-
-    # Create the DynamoDB table.
-    try:
-        table = DYNAMODB.create_table(
-            TableName='SponsoringOrganization',
-            KeySchema=[
-                {
-                    'AttributeName': 'uuid',
-                    'KeyType': 'HASH',
-                },
-            ],
-            AttributeDefinitions=[
-                {
-                    'AttributeName': 'uuid',
-                    'AttributeType': 'S',
-                },
-                {
-                    'AttributeName': 'subdistrict_id',
-                    'AttributeType': 'S',
-                },
-            ],
-            GlobalSecondaryIndexes=[
-                {
-                    'IndexName': 'subdistrict_id',
-                    'KeySchema': [
-                        {
-                            'AttributeName': 'subdistrict_id',
-                            'KeyType': 'HASH',
-                        },
-                    ],
-                    'Projection': {
-                        'ProjectionType': 'KEYS_ONLY',
-                    },
-                    'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
-                    },
-                },
-            ],
-            ProvisionedThroughput={
-                'ReadCapacityUnit': 1,
-                'WriteCapacityUnit': 1,
-            }
-        )
-        return table
-    except botocore.exceptions.ClientError as exc:
-        if 'ResourceInUseException' not in exc.__str__():
-            raise exc
-
-
-def create_units_table():
-    """ Create the 'Unit' DynamoDB table """
-
-    # Create the DynamoDB table.
-    try:
-        table = DYNAMODB.create_table(
-            TableName='Unit',
-            KeySchema=[
-                {
-                    'AttributeName': 'uuid',
-                    'KeyType': 'HASH',
-                },
-            ],
-            AttributeDefinitions=[
-                {
-                    'AttributeName': 'uuid',
-                    'AttributeType': 'S',
-                },
-                {
-                    'AttributeName': 'sponsoring_organization_id',
-                    'AttributeType': 'S',
-                },
-                {
-                    'AttributeName': 'number',
-                    'AttributeType': 'N',
-                },
-            ],
-            GlobalSecondaryIndexes=[
-                {
-                    'IndexName': 'sponsoring_organization_id',
-                    'KeySchema': [
-                        {
-                            'AttributeName': 'sponsoring_organization_id',
-                            'KeyType': 'HASH',
-                        },
-                    ],
-                    'Projection': {
-                        'ProjectionType': 'KEYS_ONLY',
-                    },
-                    'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
-                    },
-                },
-                {
-                    'IndexName': 'unit_number',
-                    'KeySchema': [
-                        {
-                            'AttributeName': 'number',
-                            'KeyType': 'HASH',
-                        },
-                    ],
-                    'Projection': {
-                        'ProjectionType': 'KEYS_ONLY',
-                    },
-                    'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
-                    },
-                },
-            ],
-            ProvisionedThroughput={
-                'ReadCapacityUnit': 1,
-                'WriteCapacityUnit': 1,
-            }
-        )
-        return table
-    except botocore.exceptions.ClientError as exc:
-        if 'ResourceInUseException' not in exc.__str__():
-            raise exc
-
-
-def create_youth_apps_table():
-    """ Create the 'YouthApplications' DynamoDB table """
-
-    # Create the DynamoDB table.
-    try:
-        table = DYNAMODB.create_table(
-            TableName='YouthApplications',
+            TableName='Applications',
             KeySchema=[
                 {
                     'AttributeName': 'uuid',
@@ -538,7 +430,7 @@ def create_youth_apps_table():
                     'AttributeType': 'S',
                 },
                 {
-                    'AttributeName': 'unit_id',
+                    'AttributeName': 'organization_uuid',
                     'AttributeType': 'S',
                 },
             ],
@@ -555,15 +447,15 @@ def create_youth_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
                     },
                 },
                 {
-                    'IndexName': 'unit_id',
+                    'IndexName': 'organization_uuid',
                     'KeySchema': [
                         {
-                            'AttributeName': 'unit_id',
+                            'AttributeName': 'organization_uuid',
                             'KeyType': 'HASH',
                         },
                     ],
@@ -571,14 +463,14 @@ def create_youth_apps_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnit': 1,
-                'WriteCapacityUnit': 1,
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
             }
         )
         return table
@@ -587,177 +479,13 @@ def create_youth_apps_table():
             raise exc
 
 
-def create_adult_apps_table():
-    """ Create the 'AdultApplications' DynamoDB table """
+def create_record_logs_table():
+    """Create the 'RecordLogs' DynamoDB table"""
 
     # Create the DynamoDB table.
     try:
         table = DYNAMODB.create_table(
-            TableName='AdultApplications',
-            KeySchema=[
-                {
-                    'AttributeName': 'uuid',
-                    'KeyType': 'HASH',
-                },
-            ],
-            AttributeDefinitions=[
-                {
-                    'AttributeName': 'uuid',
-                    'AttributeType': 'S',
-                },
-                {
-                    'AttributeName': 'org_id',
-                    'AttributeType': 'S',
-                },
-                {
-                    'AttributeName': 'status',
-                    'AttributeType': 'S',
-                },
-            ],
-            GlobalSecondaryIndexes=[
-                {
-                    'IndexName': 'status',
-                    'KeySchema': [
-                        {
-                            'AttributeName': 'status',
-                            'KeyType': 'HASH',
-                        },
-                    ],
-                    'Projection': {
-                        'ProjectionType': 'KEYS_ONLY',
-                    },
-                    'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
-                    },
-                },
-                {
-                    'IndexName': 'org_id',
-                    'KeySchema': [
-                        {
-                            'AttributeName': 'org_id',
-                            'KeyType': 'HASH',
-                        },
-                    ],
-                    'Projection': {
-                        'ProjectionType': 'KEYS_ONLY',
-                    },
-                    'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
-                    },
-                },
-            ],
-            ProvisionedThroughput={
-                'ReadCapacityUnit': 1,
-                'WriteCapacityUnit': 1,
-            }
-        )
-        return table
-    except botocore.exceptions.ClientError as exc:
-        if 'ResourceInUseException' not in exc.__str__():
-            raise exc
-
-
-def create_charter_apps_table():
-    """ Create the 'CharterApplications' DynamoDB table """
-
-    # Create the DynamoDB table.
-    try:
-        table = DYNAMODB.create_table(
-            TableName='CharterApplications',
-            KeySchema=[
-                {
-                    'AttributeName': 'uuid',
-                    'KeyType': 'HASH',
-                },
-            ],
-            AttributeDefinitions=[
-                {
-                    'AttributeName': 'uuid',
-                    'AttributeType': 'S',
-                },
-                {
-                    'AttributeName': 'sponsoring_organization_id',
-                    'AttributeType': 'S',
-                },
-                {
-                    'AttributeName': 'year',
-                    'AttributeType': 'N',
-                },
-                {
-                    'AttributeName': 'status',
-                    'AttributeType': 'S',
-                },
-            ],
-            GlobalSecondaryIndexes=[
-                {
-                    'IndexName': 'sponsoring_organization_id',
-                    'KeySchema': [
-                        {
-                            'AttributeName': 'sponsoring_organization_id',
-                            'KeyType': 'HASH',
-                        },
-                    ],
-                    'Projection': {
-                        'ProjectionType': 'KEYS_ONLY',
-                    },
-                    'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
-                    },
-                },
-                {
-                    'IndexName': 'year',
-                    'KeySchema': [
-                        {
-                            'AttributeName': 'year',
-                            'KeyType': 'HASH',
-                        },
-                    ],
-                    'Projection': {
-                        'ProjectionType': 'KEYS_ONLY',
-                    },
-                    'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
-                    },
-                },
-                {
-                    'IndexName': 'status',
-                    'KeySchema': [
-                        {
-                            'AttributeName': 'status',
-                            'KeyType': 'HASH',
-                        },
-                    ],
-                    'Projection': {
-                        'ProjectionType': 'KEYS_ONLY',
-                    },
-                    'ProvisionedThroughput': {
-                        'ReadCapacityUnit': 1,
-                        'WriteCapacityUnit': 1,
-                    },
-                },
-            ],
-            ProvisionedThroughput={
-                'ReadCapacityUnit': 1,
-                'WriteCapacityUnit': 1,
-            }
-        )
-        return table
-    except botocore.exceptions.ClientError as exc:
-        if 'ResourceInUseException' not in exc.__str__():
-            raise exc
-
-
-def create_record_log_table():
-    """ Create the 'RecordLog' DynamoDB table """
-
-    # Create the DynamoDB table.
-    try:
-        table = DYNAMODB.create_table(
-            TableName='RecordLog',
+            TableName='RecordLogs',
             KeySchema=[
                 {
                     'AttributeName': 'uuid',
@@ -771,8 +499,8 @@ def create_record_log_table():
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnit': 1,
-                'WriteCapacityUnit': 1,
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
             }
         )
         return table
@@ -782,7 +510,7 @@ def create_record_log_table():
 
 
 def wait(tables):
-    """ Wait for AWS to finish the table creation process """
+    """Wait for AWS to finish the table creation process"""
     for table_name, table in tables.items():
         if table:
             print("Waiting for '{}' table to finish being created...".format(table_name))
@@ -791,28 +519,15 @@ def wait(tables):
 
 
 def main():
-    """ main """
+    """main"""
 
     # DynamoDB
     tables = {}
     tables['Users'] = create_users_table()
-    tables['Youth'] = create_youth_table()
-    tables['Volunteer'] = create_volunteers_table()
-    tables['Guardian'] = create_guardians_table()
-    tables['District'] = create_districts_table()
-    wait(tables)
-
-    tables = {}
-    tables['Subdistrict'] = create_subdistricts_table()
-    tables['SponsoringOrganization'] = create_sponsoring_orgs_table()
-    tables['Unit'] = create_units_table()
-    tables['YouthApplications'] = create_youth_apps_table()
-    tables['AdultApplications'] = create_adult_apps_table()
-    wait(tables)
-
-    tables = {}
-    tables['CharterApplications'] = create_charter_apps_table()
-    tables['RecordLog'] = create_record_log_table()
+    tables['People'] = create_people_table()
+    tables['Organizations'] = create_organizations_table()
+    tables['Applications'] = create_applications_table()
+    tables['RecordLogs'] = create_record_logs_table()
     wait(tables)
 
     # API Gateway

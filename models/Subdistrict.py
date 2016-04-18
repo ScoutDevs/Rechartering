@@ -1,12 +1,14 @@
-""" Subdistrict classes """
+"""Subdistrict classes"""
 from . import Base
 
 
 class Subdistrict(Base.Object):
-    """ Subdistrict class """
+    """Subdistrict class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        self.type = ''
+        self.parent_uuid = ''
         self.district_id = ''
         self.number = ''
         self.name = ''
@@ -20,7 +22,7 @@ class Subdistrict(Base.Object):
 
 
 class Validator(Base.Validator):
-    """ Subdistrict Validator """
+    """Subdistrict Validator"""
 
     def get_field_requirements(self):
         return {
@@ -32,10 +34,10 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-    """ Subdistrict Factory """
+    """Subdistrict Factory"""
 
     @staticmethod
-    def _get_uuid_prefix():
+    def get_uuid_prefix():
         return 'sbd'
 
     @staticmethod
@@ -49,8 +51,8 @@ class Factory(Base.Factory):
 
 class Persister(Base.Persister):
 
-    """ Persists Subdistrict objects """
+    """Persists Subdistrict objects"""
 
     @staticmethod
     def _get_table_name():
-        return 'Subdistricts'
+        return 'Organizations'

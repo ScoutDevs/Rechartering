@@ -1,15 +1,16 @@
 # pylint: disable=no-member
-""" Volunteer classes """
+"""Volunteer classes"""
 import hashlib
 import re
 from . import Base
 
 
 class Volunteer(Base.Object):  # pylint: disable=too-many-instance-attributes
-    """ Volunteer class """
+    """Volunteer class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        self.user_uuid = ''
         self.duplicate_hash = ''
         self.unit_id = ''
         self.scoutnet_id = ''
@@ -23,7 +24,7 @@ class Volunteer(Base.Object):  # pylint: disable=too-many-instance-attributes
         return Validator(self)
 
     def get_record_hash(self):
-        """ Compile record hash to allow for easy duplicate checks """
+        """Compile record hash to allow for easy duplicate checks"""
         regex = re.compile('[0-9]+')
         numbers = regex.findall(self.ssn)
         string = "".join(numbers)
@@ -35,7 +36,7 @@ class Volunteer(Base.Object):  # pylint: disable=too-many-instance-attributes
 
 
 class Validator(Base.Validator):
-    """ Volunteer validator """
+    """Volunteer validator"""
 
     def prepare_for_validate(self):
         self.obj.duplicate_hash = self.obj.get_record_hash()
@@ -55,10 +56,10 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-    """ Volunteer Factory """
+    """Volunteer Factory"""
 
     @staticmethod
-    def _get_uuid_prefix():
+    def get_uuid_prefix():
         return 'vol'
 
     @staticmethod
@@ -72,8 +73,8 @@ class Factory(Base.Factory):
 
 class Persister(Base.Persister):
 
-    """ Persists Volunteer objects """
+    """Persists Volunteer objects"""
 
     @staticmethod
     def _get_table_name():
-        return 'Volunteers'
+        return 'People'

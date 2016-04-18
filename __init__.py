@@ -1,9 +1,9 @@
-# TODO: swagger file
-# TODO: API Gateway
-# TODO: API Gateway authentication:
+# TO-DO: swagger file
+# TO-DO: API Gateway
+# TO-DO: API Gateway authentication:
 #   http://docs.aws.amazon.com/apigateway/latest/developerguide/use-custom-authorizer.html
-# TODO: add data integrity check scripts
-# TODO: add Google-riffic docstrings everywhere
+# TO-DO: add data integrity check scripts
+# TO-DO: add Google-riffic docstrings everywhere
 """
 Copyright (C) 2016 Ben Reece
 
@@ -23,5 +23,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 class ClientErrorException(Exception):
-    """ Client error """
+    """Client error"""
     pass

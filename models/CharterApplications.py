@@ -1,9 +1,9 @@
-""" CharterApplications classes """
+"""CharterApplications classes"""
 from . import Base
 
 
 class CharterApplications(Base.Object):
-    """ CharterApplications class """
+    """CharterApplications class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -21,7 +21,7 @@ class CharterApplications(Base.Object):
 
 class Validator(Base.Validator):
 
-    """ CharterApplication validator """
+    """CharterApplication validator"""
 
     def get_field_requirements(self):
         return {
@@ -34,10 +34,10 @@ class Validator(Base.Validator):
 
 class Factory(Base.Factory):
 
-    """ CharterApplications Factory """
+    """CharterApplications Factory"""
 
     @staticmethod
-    def _get_uuid_prefix():
+    def get_uuid_prefix():
         return 'cap'
 
     @staticmethod
@@ -51,8 +51,8 @@ class Factory(Base.Factory):
 
 class Persister(Base.Persister):
 
-    """ Persists CharterApplications objects """
+    """Persists CharterApplications objects"""
 
     @staticmethod
     def _get_table_name():
-        return 'CharterApplications'
+        return 'Applications'

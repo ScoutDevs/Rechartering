@@ -1,5 +1,5 @@
 #!/usr/bin/python
-""" Creates sample data to prime the pump """
+"""Creates sample data to prime the pump"""
 
 from . import User
 

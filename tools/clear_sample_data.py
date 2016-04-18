@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # pylint: disable=no-member
-""" clears sample data to prime the pump """
+"""clears sample data to prime the pump"""
 
 from . import User
 from . import Youth
@@ -18,7 +18,7 @@ from . import sample_data
 
 
 def clear_objects(module, source_data):
-    """ Clear the objects from persistence """
+    """Clear the objects from persistence"""
     factory = module.Factory()
     persister = module.Persister()
 
@@ -28,7 +28,7 @@ def clear_objects(module, source_data):
 
 
 def main():
-    """ Clear all sample data """
+    """Clear all sample data"""
     clear_objects(User, sample_data.USER_DATA)
     clear_objects(Youth, sample_data.YOUTH_DATA)
     clear_objects(Volunteer, sample_data.VOLUNTEERS_DATA)

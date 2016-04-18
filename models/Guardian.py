@@ -1,12 +1,13 @@
-""" Guardian classes """
+"""Guardian classes"""
 from . import Base
 
 
 class Guardian(Base.Object):
-    """ Guardian class """
+    """Guardian class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        self.user_uuid = ''
         self.first_name = ''
         self.last_name = ''
         self.youth = ''
@@ -20,7 +21,7 @@ class Guardian(Base.Object):
 
 
 class Validator(Base.Validator):
-    """ Guardian validator """
+    """Guardian validator"""
 
     def get_field_requirements(self):
         return {
@@ -32,10 +33,10 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-    """ Guardian Factory """
+    """Guardian Factory"""
 
     @staticmethod
-    def _get_uuid_prefix():
+    def get_uuid_prefix():
         return 'gdn'
 
     @staticmethod
@@ -49,8 +50,8 @@ class Factory(Base.Factory):
 
 class Persister(Base.Persister):
 
-    """ Persists Guardian objects """
+    """Persists Guardian objects"""
 
     @staticmethod
     def _get_table_name():
-        return 'Guardians'
+        return 'People'

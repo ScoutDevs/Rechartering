@@ -1,10 +1,10 @@
 # pylint: disable=import-error
-""" Youth Application Controller """
+"""Youth Application Controller"""
 
 from datetime import date
-from controllers import InvalidActionException
-from controllers import require_status
-from controllers.Security import require_role
+from . import Youth as YouthController
+from . import require_status
+from .Security import require_role
 from models import Unit
 from models import Youth
 
@@ -25,8 +25,7 @@ class Controller(object):
                  user,
                  application_persister=Youth.ApplicationPersister(),
                  unit_factory=Unit.Factory(),
-                 youth_factory=Youth.YouthFactory(),
-                 youth_persister=Youth.YouthPersister()):
+                 youth_factory=Youth.YouthFactory()):
         """Dependency-injectable init
 
         Args:
@@ -34,33 +33,12 @@ class Controller(object):
             application_persister: Youth Application persister object
             unit_factory: Unit factory object
             youth_factory: Youth factory object
-            youth_persister: Youth persister object
         """
         self.user = user
         self.factory = Youth.ApplicationFactory()
         self.persister = application_persister
         self.unit_factory = unit_factory
         self.youth_factory = youth_factory
-        self.youth_persister = youth_persister
-
-    @require_role(['Unit.Admin', 'Guardian', 'SponsoringOrganization.Admin', 'Council.Employee'])
-    def find_duplicate_youth(self, youth_data):
-        # TODO: Do we need some sort of captcha to protect this data?
-        """Search to see if the youth is already in the system
-
-        Duplicate records for the same individual are to be avoided as much
-        as possible. This will check for duplicate youth already in the
-        system, allowing the user to submit an application using an existing
-        record rather than creating new one.
-
-        Args:
-            youth_data: dict containing the data describing the Youth
-        Returns:
-            List of Youth records who are potential duplicates
-        """
-        youth = self.youth_factory.construct(youth_data)
-        duplicates = self.youth_persister.find_potential_duplicates(youth)
-        return duplicates
 
     @require_role('Council.Employee')
     def get_applications_by_status(self, status):
@@ -100,7 +78,7 @@ class Controller(object):
         return app
 
     def _get_guardian_approval(self, app):
-        """ Get the guardian approval on file
+        """Get the guardian approval on file
 
         If the user found an existing youth record to submit the application
         for, then it's possible the guardian's approval could be on file.
@@ -113,21 +91,6 @@ class Controller(object):
         """
         youth = self.youth_factory.load_by_uuid(app.youth_id)
         return youth.get_guardian_approval()
-
-    def _get_youth_scoutnet_id(self, app):
-        """Get the ScoutNet ID on file
-
-        If the scout already exists in the system, this will find the ScoutNet
-        ID and apply it to this application for easy retrieval by the Council
-        staff.
-
-        Args:
-            app: Application object
-        Returns:
-            int: the Youth's ScoutNet ID
-        """
-        youth = self.youth_factory.load_by_uuid(app.youth_id)
-        return youth.scoutnet_id
 
     @require_role('Guardian')
     @require_status(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL)
@@ -162,7 +125,7 @@ class Controller(object):
 
         if app.youth_id:
             youth = self.youth_factory.load_by_uuid(app.youth_id)
-            youth = self.grant_guardian_approval(youth, data)
+            youth = YouthController.Controller(self.user).grant_guardian_approval(youth, data)
             youth.validate()
         else:
             youth = None
@@ -343,43 +306,17 @@ class Controller(object):
         youth.validate()
         return app
 
-    @require_role('Guardian')
-    def grant_guardian_approval(self, youth, data):  # pylint: disable=no-self-use
-        """Put guardian approval on file for their Youth
+    def _get_youth_scoutnet_id(self, app):
+        """Get the ScoutNet ID on file
 
-        When a guardian grants approval for a Youth to participate in the BSA,
-        we keep it on file until revoked.
-
-        Args:
-            youth: Youth object
-            data: dict containing approval data
-        Returns:
-            Youth object (updated)
-        """
-        youth.guardian_approval_guardian_id = data['guardian_approval_guardian_id']
-        youth.guardian_approval_signature = data['guardian_approval_signature']
-        youth.guardian_approval_date = data['guardian_approval_date']
-        return youth
-
-    @require_role('Guardian')
-    def revoke_guardian_approval(self, guardian, youth):  # pylint: disable=no-self-use
-        """Revokes guardian approval for the specified Youth
-
-        If a guardian wishes to revoke their approval for a youth, they have
-        that option.
+        If the scout already exists in the system, this will find the ScoutNet
+        ID and apply it to this application for easy retrieval by the Council
+        staff.
 
         Args:
-            guardian: Guardian object representing the guardian revoking approval
-            youth: Youth whose approval is being revoked
-        Raises:
-            InvalidActionException: when guardian doesn't match youth's approval
+            app: Application object
         Returns:
-            Youth object (updated)
+            int: the Youth's ScoutNet ID
         """
-        if guardian.id == youth.guardian_approval_guardian_id:
-            youth.guardian_approval_guardian_id = ''
-            youth.guardian_approval_signature = ''
-            youth.guardian_approval_date = ''
-            return youth
-        else:
-            raise InvalidActionException('Only the guardian who granted approval can revoke it.')
+        youth = self.youth_factory.load_by_uuid(app.youth_id)
+        return youth.scoutnet_id

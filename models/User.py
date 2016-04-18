@@ -1,10 +1,10 @@
-""" User classes """
+"""User classes"""
 import hashlib
 from . import Base
 
 
 class User(Base.Object):
-    """ User class """
+    """User class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -16,7 +16,7 @@ class User(Base.Object):
 
     @staticmethod
     def hash_password(password):
-        """ Hashes the password """
+        """Hashes the password"""
         hashed_password = hashlib.sha256(password).hexdigest()
         return hashed_password
 
@@ -29,7 +29,7 @@ class User(Base.Object):
 
 
 class Validator(Base.Validator):
-    """ User validator """
+    """User validator"""
 
     def get_field_requirements(self):
         return {
@@ -43,16 +43,16 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-    """ User Factory """
+    """User Factory"""
 
     @staticmethod
     def load_by_session(session_id):
-        """ Load the user based on the session UUID """
-        # TODO: implement this
-        return 'garbage'
+        """Load the user based on the session UUID"""
+        # TO-DO: implement this
+        return session_id
 
     @staticmethod
-    def _get_uuid_prefix():
+    def get_uuid_prefix():
         return 'usr'
 
     @staticmethod
@@ -66,7 +66,7 @@ class Factory(Base.Factory):
 
 class Persister(Base.Persister):
 
-    """ Persists User objects """
+    """Persists User objects"""
 
     @staticmethod
     def _get_table_name():

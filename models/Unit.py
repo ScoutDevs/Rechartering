@@ -1,4 +1,4 @@
-""" Unit classes """
+"""Unit classes"""
 from . import Base
 
 TYPE_PACK = 'Pack'
@@ -10,14 +10,16 @@ TYPE_POST = 'Post'
 
 
 class Unit(Base.Object):
-    """ Unit class """
+    """Unit class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
-        self.sponsoring_organization_id = ''
         self.type = ''
+        self.parent_uuid = ''
+        self.sponsoring_organization_id = ''
+        self.unit_type = ''
         self.lds_unit = True
-        self.number = 0
+        self.number = ''
 
     def get_validator(self):
         return Validator(self)
@@ -28,7 +30,7 @@ class Unit(Base.Object):
 
 
 class Validator(Base.Validator):
-    """ Unit validator """
+    """Unit validator"""
 
     def get_field_requirements(self):
         return {
@@ -61,10 +63,10 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-    """ Unit Factory """
+    """Unit Factory"""
 
     @staticmethod
-    def _get_uuid_prefix():
+    def get_uuid_prefix():
         return 'unt'
 
     @staticmethod
@@ -78,8 +80,8 @@ class Factory(Base.Factory):
 
 class Persister(Base.Persister):
 
-    """ Persists Unit objects """
+    """Persists Unit objects"""
 
     @staticmethod
     def _get_table_name():
-        return 'Units'
+        return 'Organizations'

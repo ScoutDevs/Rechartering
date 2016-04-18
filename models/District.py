@@ -1,12 +1,14 @@
-""" District classes """
+"""District classes"""
 from . import Base
 
 
 class District(Base.Object):
-    """ District class """
+    """District class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        self.type = ''
+        self.parent_uuid = 'COUNCIL'
         self.number = ''
         self.name = ''
 
@@ -19,7 +21,7 @@ class District(Base.Object):
 
 
 class Validator(Base.Validator):
-    """ District validator """
+    """District validator"""
 
     def get_field_requirements(self):
         return {
@@ -30,10 +32,10 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-    """ District Factory """
+    """District Factory"""
 
     @staticmethod
-    def _get_uuid_prefix():
+    def get_uuid_prefix():
         return 'dst'
 
     @staticmethod
@@ -47,8 +49,8 @@ class Factory(Base.Factory):
 
 class Persister(Base.Persister):
 
-    """ Persists District objects """
+    """Persists District objects"""
 
     @staticmethod
     def _get_table_name():
-        return 'Districts'
+        return 'Organizations'

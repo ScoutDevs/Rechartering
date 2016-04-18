@@ -1,5 +1,5 @@
 # pylint: disable=no-member
-""" Youth classes """
+"""Youth classes"""
 import hashlib
 import re
 from . import Base
@@ -14,10 +14,11 @@ APPLICATION_STATUS_REJECTED = 'Rejected'
 
 
 class Youth(Base.Object):  # pylint: disable=too-many-instance-attributes
-    """ Youth class """
+    """Youth class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        self.user_uuid = ''
         self.duplicate_hash = ''
         self.units = []
         self.scoutnet_id = ''
@@ -34,14 +35,14 @@ class Youth(Base.Object):  # pylint: disable=too-many-instance-attributes
         return YouthValidator(self)
 
     def get_record_hash(self):
-        """ Hash the record for easy duplicate checks """
+        """Hash the record for easy duplicate checks"""
         regex = re.compile('[a-zA-Z0-9]+')
         match = regex.findall(self.first_name+self.last_name+self.date_of_birth)
         string = "".join(match)
         return hashlib.sha256(string).hexdigest()
 
     def get_guardian_approval(self):
-        """ Get guardian approval data """
+        """Get guardian approval data"""
         approval = {}
         if self.guardian_approval_guardian_id:
             approval = {
@@ -57,7 +58,7 @@ class Youth(Base.Object):  # pylint: disable=too-many-instance-attributes
 
 
 class YouthValidator(Base.Validator):
-    """ Youth validator """
+    """Youth validator"""
 
     def prepare_for_validate(self):
         self.obj.duplicate_hash = self.obj.get_record_hash()
@@ -74,10 +75,10 @@ class YouthValidator(Base.Validator):
 
 
 class YouthFactory(Base.Factory):
-    """ Youth Factory """
+    """Youth Factory"""
 
     def construct_from_app(self, app):
-        """ Constructs a Youth object from the application """
+        """Constructs a Youth object from the application"""
         # construct will only populate fields that are defined in the class
         youth = self.construct(app.__dict__)
         # we don't want it to inherit the UUID from the app, though!
@@ -85,7 +86,7 @@ class YouthFactory(Base.Factory):
         return youth
 
     @staticmethod
-    def _get_uuid_prefix():
+    def get_uuid_prefix():
         return 'yth'
 
     @staticmethod
@@ -98,19 +99,19 @@ class YouthFactory(Base.Factory):
 
 
 class YouthPersister(Base.Persister):
-    """ Persists Youth objects """
+    """Persists Youth objects"""
 
     @staticmethod
     def _get_table_name():
-        return 'Youth'
+        return 'People'
 
     def find_potential_duplicates(self, youth):
-        """ Find duplicates based on hash """
-        return self.query(key='duplicate_hash', value=youth.get_record_hash())
+        """Find duplicates based on hash"""
+        return self.query({'duplicate_hash': youth.get_record_hash()})
 
 
 class Application(Base.Object):  # pylint: disable=too-many-instance-attributes
-    """ Youth Application class """
+    """Youth Application class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -143,7 +144,7 @@ class Application(Base.Object):  # pylint: disable=too-many-instance-attributes
 
 
 class ApplicationValidator(Base.Validator):
-    """ Youth Application validator """
+    """Youth Application validator"""
 
     def get_field_requirements(self):
         field_requirements = {
@@ -160,7 +161,7 @@ class ApplicationValidator(Base.Validator):
 
     @staticmethod
     def get_valid_statuses():
-        """ List of all valid statuses """
+        """List of all valid statuses"""
         return [
             APPLICATION_STATUS_CREATED,
             APPLICATION_STATUS_GUARDIAN_APPROVAL,
@@ -181,13 +182,13 @@ class ApplicationValidator(Base.Validator):
 
 
 class ApplicationStatusValidator(object):  # pylint: disable=too-few-public-methods
-    """ Validation based on the application status """
+    """Validation based on the application status"""
 
     def __init__(self, status):
         self.status = status
 
     def get_field_requirements(self):
-        """ Additional field requirements by status """
+        """Additional field requirements by status"""
         fields = {}
         if self.status in [
                 APPLICATION_STATUS_UNIT_APPROVAL,
@@ -224,10 +225,10 @@ class ApplicationStatusValidator(object):  # pylint: disable=too-few-public-meth
 
 
 class ApplicationFactory(Base.Factory):
-    """ Youth Application Factory """
+    """Youth Application Factory"""
 
     @staticmethod
-    def _get_uuid_prefix():
+    def get_uuid_prefix():
         return 'yap'
 
     @staticmethod
@@ -241,12 +242,12 @@ class ApplicationFactory(Base.Factory):
 
 class ApplicationPersister(Base.Persister):
 
-    """ Persists Youth Application objects """
+    """Persists Youth Application objects"""
 
     @staticmethod
     def _get_table_name():
-        return 'YouthApplications'
+        return 'Applications'
 
     def get_by_status(self, status):
-        """ Return applications matching the specified status """
-        return self.query(key='status', value=status)
+        """Return applications matching the specified status"""
+        return self.query({'status': status})

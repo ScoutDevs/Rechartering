@@ -1,5 +1,7 @@
-""" Base classes """
+"""Base classes"""
 from boto3.dynamodb.conditions import Key
+from . import RecordNotFoundException
+from . import InvalidObjectException
 import boto3
 import shortuuid
 
@@ -10,7 +12,7 @@ FIELD_OPTIONAL = 'optional'
 
 class Object(object):
 
-    """ Base class """
+    """Base class"""
 
     def __init__(self):
         self.uuid = self.get_factory().get_uuid()
@@ -33,13 +35,13 @@ class Object(object):
         raise Exception('SYSTEM ERROR: factory not defined.')
 
     def validate(self):
-        """ Validate the object """
+        """Validate the object"""
         return self.get_validator().validate()
 
 
 class Validator(object):
 
-    """ Validates data construct """
+    """Validates data construct"""
 
     def __init__(self, obj):
         self.obj = obj
@@ -53,7 +55,7 @@ class Validator(object):
         raise Exception('SYSTEM ERROR: field requirements not defined.')
 
     def _validate_required_fields(self):
-        """ Validate that the data provided includes all required fields """
+        """Validate that the data provided includes all required fields"""
         valid = True
         errors = []
 
@@ -74,24 +76,24 @@ class Validator(object):
         pass
 
     def _validate(self):  # pylint: disable=no-self-use
-        """ Any additional validation can be done in this method in the child """
+        """Any additional validation can be done in this method in the child"""
         return (True, [])
 
     def valid(self):
-        """ Determine validity of the object """
+        """Determine validity of the object"""
         self.prepare_for_validate()
         (requirements_valid, _) = self._validate_required_fields()
         (other_valid, _) = self._validate()
         return requirements_valid and other_valid
 
     def validate(self):
-        """ Validates the object """
+        """Validates the object"""
         errors = self.get_validation_errors()
         if errors:
             raise InvalidObjectException(errors[0])
 
     def get_validation_errors(self):
-        """ Provide errors associated with validation """
+        """Provide errors associated with validation"""
         self.prepare_for_validate()
         (_, requirements_errors) = self._validate_required_fields()
         (_, other_errors) = self._validate()
@@ -100,13 +102,13 @@ class Validator(object):
 
 class Factory(object):
 
-    """ Base Factory """
+    """Base Factory"""
 
     def __init__(self):
         self.persister = self._get_persister()  # pylint: disable=assignment-from-no-return
 
     @staticmethod
-    def _get_uuid_prefix():
+    def get_uuid_prefix():
         """
         UUID prefix to easily identify record types
 
@@ -115,20 +117,20 @@ class Factory(object):
         raise Exception('SYSTEM ERROR: prefix not defined.')
 
     def get_uuid(self):
-        """ Generates a UUID """
-        return "{}-{}".format(self._get_uuid_prefix(), shortuuid.uuid())
+        """Generates a UUID"""
+        return "{}-{}".format(self.get_uuid_prefix(), shortuuid.uuid())
 
     def load_by_uuid(self, uuid):
-        """ Load by UUID """
+        """Load by UUID"""
         return self.load_from_database({'uuid': uuid})
 
     def load_from_database(self, search_data):
-        """ Load from DB """
+        """Load from DB"""
         item_data = self.persister.get(search_data)
         return self.construct(item_data)
 
     def construct(self, data):
-        """ Create object from dict """
+        """Create object from dict"""
         klass = self._get_object_class()  # pylint: disable=assignment-from-no-return
         obj = klass()
         for key, _ in obj.__dict__.items():
@@ -138,25 +140,25 @@ class Factory(object):
 
     @staticmethod
     def _get_persister():
-        """ Get persister object """
+        """Get persister object"""
         raise Exception('SYSTEM ERROR: persister not defined.')
 
     @staticmethod
     def _get_object_class():
-        """ Get object class """
+        """Get object class"""
         raise Exception('SYSTEM ERROR: class not defined.')
 
 
 class Persister(object):
 
-    """ Persists objects """
+    """Persists objects"""
 
     def __init__(self):
         dynamodb = boto3.resource('dynamodb')
         self.table = dynamodb.Table(self._get_table_name())
 
     def save(self, obj):
-        """ Save to DB """
+        """Save to DB"""
         obj.get_validator().validate()
         persist_obj = self.__class__.get_persistable_object(obj)
         self.table.put_item(Item=persist_obj)
@@ -176,18 +178,29 @@ class Persister(object):
         return new_dict
 
     def get(self, key):
-        """ Load from DB """
+        """Load from DB"""
         item = self.table.get_item(Key=key)
         if 'Item' in item:
             return item['Item']
         else:
             raise RecordNotFoundException('Record not found')
 
-    def query(self, key, value):
-        """ Search DB with index and return 0 or more records """
+    def query(self, search_data):
+        """Search DB with index and return 0 or more records"""
+        expression = None
+        if '__index__' in search_data:
+            index_name = search_data['__index__']
+            del search_data['__index__']
+        for key, value in search_data.items():
+            if not index_name:
+                index_name = key
+            if expression:
+                expression = expression & Key(key).eq(value)
+            else:
+                expression = Key(key).eq(value)
         result = self.table.query(
-            IndexName=key,
-            KeyConditionExpression=Key(key).eq(value)
+            IndexName=index_name,
+            KeyConditionExpression=expression
         )
 
         if 'Items' in result:
@@ -198,20 +211,10 @@ class Persister(object):
         return items
 
     def delete(self, obj):
-        """ Delete from DB """
+        """Delete from DB"""
         self.table.delete_item(Key={'uuid': obj.uuid})
 
     @staticmethod
     def _get_table_name():
-        """ Must be implemented by child class. """
+        """Must be implemented by child class."""
         raise Exception('SYSTEM ERROR: No table name specified.')
-
-
-class RecordNotFoundException(Exception):
-    """ Record not found """
-    pass
-
-
-class InvalidObjectException(Exception):
-    """ Object is not in valid state """
-    pass

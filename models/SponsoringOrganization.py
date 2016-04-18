@@ -1,12 +1,14 @@
-""" SponsoringOrganization classes """
+"""SponsoringOrganization classes"""
 from . import Base
 
 
 class SponsoringOrganization(Base.Object):
-    """ SponsoringOrganization class """
+    """SponsoringOrganization class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        self.type = ''
+        self.parent_uuid = ''
         self.subdistrict_id = ''
         self.name = ''
 
@@ -19,7 +21,7 @@ class SponsoringOrganization(Base.Object):
 
 
 class Validator(Base.Validator):
-    """ SponsoringOrganization validator """
+    """SponsoringOrganization validator"""
 
     def get_field_requirements(self):
         return {
@@ -30,10 +32,10 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-    """ SponsoringOrganization Factory """
+    """SponsoringOrganization Factory"""
 
     @staticmethod
-    def _get_uuid_prefix():
+    def get_uuid_prefix():
         return 'spo'
 
     @staticmethod
@@ -47,8 +49,8 @@ class Factory(Base.Factory):
 
 class Persister(Base.Persister):
 
-    """ Persists SponsoringOrganization objects """
+    """Persists SponsoringOrganization objects"""
 
     @staticmethod
     def _get_table_name():
-        return 'SponsoringOrganizations'
+        return 'Organizations'
