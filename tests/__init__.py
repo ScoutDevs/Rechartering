@@ -37,6 +37,8 @@ class FakePersister(object):
     def query(self, search_data):
         """Finds test data records matching the search_data"""
         records = []
+        if '__index__' in search_data:
+            del search_data['__index__']
         for item in self.data:
             match = True
             for field_name, field_value in search_data.items():
@@ -136,7 +138,7 @@ class FakeDistrictPersister(FakePersister):
                 'type': Organization.ORG_TYPE_DISTRICT,
                 'parent_uuid': 'COUNCIL',
                 'name': 'Provo Peak',
-                'number': '05',
+                'number': '5',
             },
         ]
 
@@ -164,14 +166,14 @@ class FakeSubdistrictPersister(FakePersister):
                 'uuid': 'sbd-TEST-nps',
                 'type': Organization.ORG_TYPE_SUBDISTRICT,
                 'name': 'Provo North Park Stake',
-                'number': '05-6',
+                'number': '5-9',
                 'parent_uuid': 'dst-TEST-provopeak',
             },
             {
-                'uuid': 'sbd-TEST-pc',
+                'uuid': 'sbd-TEST-cu',
                 'type': Organization.ORG_TYPE_SUBDISTRICT,
-                'name': 'Provo City',
-                'number': '05-7',
+                'name': 'Community Units',
+                'number': '5-8',
                 'parent_uuid': 'dst-TEST-provopeak',
             },
         ]
@@ -198,15 +200,17 @@ class FakeSponsoringOrganizationPersister(FakePersister):
         return [
             {
                 'uuid': 'spo-TEST-np3',
-                'type': Organization.ORG_TYPE_SPONSORINGORGANIZATION,
+                'type': Organization.ORG_TYPE_SPONSORING_ORGANIZATION,
                 'name': 'North Park 3rd Ward',
+                'number': '1455',
                 'parent_uuid': 'sbd-TEST-nps',
             },
             {
-                'uuid': 'spo-TEST-provocity',
-                'type': Organization.ORG_TYPE_SPONSORINGORGANIZATION,
-                'name': 'Provo City',
-                'parent_uuid': 'sbd-TEST-pc',
+                'uuid': 'spo-TEST-pel',
+                'type': Organization.ORG_TYPE_SPONSORING_ORGANIZATION,
+                'name': 'Provo Elks Lodge',
+                'number': '51',
+                'parent_uuid': 'sbd-TEST-cu',
             },
         ]
 

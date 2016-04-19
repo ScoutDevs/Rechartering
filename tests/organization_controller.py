@@ -1,5 +1,5 @@
 # pylint: disable=no-member,attribute-defined-outside-init,import-error
-"""Tests YouthApplicationController"""
+"""Tests OrganizationController"""
 
 import unittest
 from . import FakeUnitFactory
@@ -54,7 +54,7 @@ class TestOrganizationController(unittest.TestCase):
         obj = self.controller.get('dst-TEST-provopeak')
         self.assertEqual('dst-TEST-provopeak', obj.uuid)
         self.assertEqual('Provo Peak', obj.name)
-        self.assertEqual('05', obj.number)
+        self.assertEqual('5', obj.number)
         self.assertEqual('COUNCIL', obj.parent_uuid)
 
     def test_get_subdistrict(self):
@@ -62,7 +62,7 @@ class TestOrganizationController(unittest.TestCase):
         obj = self.controller.get('sbd-TEST-nps')
         self.assertEqual('sbd-TEST-nps', obj.uuid)
         self.assertEqual('Provo North Park Stake', obj.name)
-        self.assertEqual('05-6', obj.number)
+        self.assertEqual('5-9', obj.number)
         self.assertEqual('dst-TEST-provopeak', obj.parent_uuid)
 
     def test_search_unit(self):

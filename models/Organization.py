@@ -3,7 +3,7 @@ from . import Base
 
 ORG_TYPE_DISTRICT = 'District'
 ORG_TYPE_SUBDISTRICT = 'Subdistrict'
-ORG_TYPE_SPONSORINGORGANIZATION = 'Sponsoring Organization'
+ORG_TYPE_SPONSORING_ORGANIZATION = 'Sponsoring Organization'
 ORG_TYPE_UNIT = 'Unit'
 
 

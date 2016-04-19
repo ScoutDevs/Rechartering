@@ -1,6 +1,7 @@
 """Base classes"""
 from boto3.dynamodb.conditions import Key
 from . import RecordNotFoundException
+from . import MultipleMatchException
 from . import InvalidObjectException
 import boto3
 import shortuuid
@@ -125,9 +126,18 @@ class Factory(object):
         return self.load_from_database({'uuid': uuid})
 
     def load_from_database(self, search_data):
-        """Load from DB"""
+        """Load from DB by primary key"""
         item_data = self.persister.get(search_data)
         return self.construct(item_data)
+
+    def load_from_database_query(self, search_data):
+        """Load from DB by secondary key"""
+        items = self.persister.query(search_data)
+        if len(items) == 0:
+            raise RecordNotFoundException('Record not found')
+        elif len(items) > 1:
+            raise MultipleMatchException('Multiple matches found')
+        return self.construct(items[0])
 
     def construct(self, data):
         """Create object from dict"""
@@ -178,7 +188,7 @@ class Persister(object):
         return new_dict
 
     def get(self, key):
-        """Load from DB"""
+        """Load from DB by primary key"""
         item = self.table.get_item(Key=key)
         if 'Item' in item:
             return item['Item']

@@ -4,6 +4,8 @@
 import unittest
 from . import FakeYouthFactory
 from . import FakeYouthPersister
+from . import FakeSponsoringOrganizationFactory
+from . import FakeSubdistrictFactory
 from models import AdultApplications
 from models import CharterApplications
 from models import District
@@ -158,11 +160,7 @@ class TestSubdistrict(ModelTestCase):
 
     def setUp(self):
         """Init"""
-        obj_data = {
-            'district_id': '123123',
-            'number': '05-9',
-            'name': 'Provo North Park Stake',
-        }
+        obj_data = FakeSubdistrictFactory().load_by_uuid('sbd-TEST-nps').__dict__
         self._set_up(Subdistrict, obj_data)
 
     def test_uuid(self):
@@ -176,10 +174,7 @@ class TestSponsoringOrganization(ModelTestCase):
 
     def setUp(self):
         """Init"""
-        obj_data = {
-            'subdistrict_id': '123123',
-            'name': 'North Park 3rd Ward',
-        }
+        obj_data = FakeSponsoringOrganizationFactory().load_by_uuid('spo-TEST-np3').__dict__
         self._set_up(SponsoringOrganization, obj_data)
 
     def test_uuid(self):

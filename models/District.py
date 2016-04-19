@@ -1,5 +1,7 @@
 """District classes"""
 from . import Base
+from . import Organization
+from . import RecordNotFoundException
 
 
 class District(Base.Object):
@@ -7,7 +9,7 @@ class District(Base.Object):
 
     def __init__(self):
         super(self.__class__, self).__init__()
-        self.type = ''
+        self.type = Organization.ORG_TYPE_DISTRICT
         self.parent_uuid = 'COUNCIL'
         self.number = ''
         self.name = ''
@@ -26,6 +28,7 @@ class Validator(Base.Validator):
     def get_field_requirements(self):
         return {
             'uuid': Base.FIELD_REQUIRED,
+            'type': Base.FIELD_REQUIRED,
             'number': Base.FIELD_REQUIRED,
             'name': Base.FIELD_REQUIRED,
         }
@@ -45,6 +48,24 @@ class Factory(Base.Factory):
     @staticmethod
     def _get_persister():
         return Persister()
+
+    def get_from_file_data(self, data):
+        """Load or create object from file dict"""
+        try:
+            obj = self.load_from_database_query(
+                {
+                    '__index__': 'number',
+                    'number': data['District No'],
+                    'type': Organization.ORG_TYPE_DISTRICT,
+                }
+            )
+        except RecordNotFoundException:
+            klass = self._get_object_class()
+            obj = klass()
+            obj.number = data['District No']
+            obj.name = data['District Name']
+            obj.validate()
+        return obj
 
 
 class Persister(Base.Persister):
