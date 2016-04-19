@@ -5,9 +5,9 @@ This initializes the project entirely within an AWS account.
 Sufficient permissions are needed for this to work.
 """
 from __future__ import print_function
+
 import boto3
 import botocore
-
 
 # Get the service resource.
 DYNAMODB = boto3.resource('dynamodb')

@@ -1,5 +1,6 @@
 """User classes"""
 import hashlib
+
 from . import Base
 
 

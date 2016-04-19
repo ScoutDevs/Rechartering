@@ -27,3 +27,8 @@ def require_status(status):
 class InvalidActionException(Exception):
     """The action attempted is not valid"""
     pass
+
+
+class ClientErrorException(Exception):
+    """Client error"""
+    pass

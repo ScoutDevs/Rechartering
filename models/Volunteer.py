@@ -2,6 +2,7 @@
 """Volunteer classes"""
 import hashlib
 import re
+
 from . import Base
 
 

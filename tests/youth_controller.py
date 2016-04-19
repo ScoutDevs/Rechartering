@@ -2,10 +2,12 @@
 """Tests Youth.Controller"""
 
 import unittest
+
+from controllers import Youth
+
 from . import FakeUserFactory
 from . import FakeYouthFactory
 from . import FakeYouthPersister
-from controllers import Youth
 
 
 class TestYouthApplicationController(unittest.TestCase):

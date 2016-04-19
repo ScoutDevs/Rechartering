@@ -4,6 +4,7 @@
 #   http://docs.aws.amazon.com/apigateway/latest/developerguide/use-custom-authorizer.html
 # TO-DO: add data integrity check scripts
 # TO-DO: add Google-riffic docstrings everywhere
+# TO-DO: Clean up dependency injection issue where we sometimes use factory, sometimes persister, sometimes both.
 """
 Copyright (C) 2016 Ben Reece
 
@@ -20,8 +21,3 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
-
-
-class ClientErrorException(Exception):
-    """Client error"""
-    pass

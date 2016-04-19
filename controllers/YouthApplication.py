@@ -2,11 +2,13 @@
 """Youth Application Controller"""
 
 from datetime import date
+
+from models import Unit
+from models import Youth
+
 from . import Youth as YouthController
 from . import require_status
 from .Security import require_role
-from models import Unit
-from models import Youth
 
 
 class Controller(object):

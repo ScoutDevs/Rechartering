@@ -16,8 +16,7 @@ class Unit(Base.Object):
         super(self.__class__, self).__init__()
         self.type = ''
         self.parent_uuid = ''
-        self.sponsoring_organization_id = ''
-        self.unit_type = ''
+        self.name = ''
         self.lds_unit = True
         self.number = ''
 
@@ -35,8 +34,8 @@ class Validator(Base.Validator):
     def get_field_requirements(self):
         return {
             'uuid': Base.FIELD_REQUIRED,
-            'sponsoring_organization_id': Base.FIELD_REQUIRED,
             'type': Base.FIELD_REQUIRED,
+            'name': Base.FIELD_REQUIRED,
             'number': Base.FIELD_REQUIRED,
         }
 
@@ -52,9 +51,9 @@ class Validator(Base.Validator):
         valid = True
         errors = []
 
-        if 'type' in self.obj.__dict__ and self.obj.type not in valid_types:
-            errors.append('Invalid unit type "{}"; valid types: {}'.format(
-                self.obj.type,
+        if 'name' in self.obj.__dict__ and self.obj.name not in valid_types:
+            errors.append('Invalid name "{}"; valid names: {}'.format(
+                self.obj.name,
                 ", ".join(valid_types)
                 ))
             valid = False

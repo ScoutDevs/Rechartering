@@ -2,6 +2,7 @@
 """Youth classes"""
 import hashlib
 import re
+
 from . import Base
 
 APPLICATION_STATUS_CREATED = 'Created'

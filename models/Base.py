@@ -1,11 +1,11 @@
 """Base classes"""
-from boto3.dynamodb.conditions import Key
-from . import RecordNotFoundException
-from . import MultipleMatchException
-from . import InvalidObjectException
+
 import boto3
 import shortuuid
 
+from . import InvalidObjectException
+from . import MultipleMatchException
+from . import RecordNotFoundException
 
 FIELD_REQUIRED = 'required'
 FIELD_OPTIONAL = 'optional'
@@ -38,6 +38,12 @@ class Object(object):
     def validate(self):
         """Validate the object"""
         return self.get_validator().validate()
+
+    def set_from_data(self, data):
+        """Update object from dict"""
+        for key, _ in self.__dict__.items():
+            if key in data:
+                self.__dict__[key] = data[key]
 
 
 class Validator(object):
@@ -205,9 +211,9 @@ class Persister(object):
             if not index_name:
                 index_name = key
             if expression:
-                expression = expression & Key(key).eq(value)
+                expression = expression & boto3.dynamodb.conditions.Key(key).eq(value)
             else:
-                expression = Key(key).eq(value)
+                expression = boto3.dynamodb.conditions.Key(key).eq(value)  # pylint: disable=redefined-variable-type
         result = self.table.query(
             IndexName=index_name,
             KeyConditionExpression=expression

@@ -4,8 +4,8 @@
 AWS Lambda needs nice, clean hooks.  This file provides those.
 """
 from controllers import YouthApplication
-from models import Youth
 from models import User
+from models import Youth
 
 
 def get_applications_by_status(event, context):

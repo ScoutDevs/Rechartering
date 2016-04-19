@@ -7,6 +7,9 @@ from models import SponsoringOrganization
 from models import Subdistrict
 from models import Unit
 
+from . import ClientErrorException
+from .Security import require_role
+
 
 class Controller(object):
     """Organization CRUD Controller
@@ -16,11 +19,13 @@ class Controller(object):
     """
 
     def __init__(self,  # pylint: disable=too-many-arguments
+                 user,
                  district_factory=District.Factory(),
                  subdistrict_factory=Subdistrict.Factory(),
                  sponsoringorganization_factory=SponsoringOrganization.Factory(),
                  unit_factory=Unit.Factory(),
                  organization_persister=Organization.Persister()):
+        self.user = user
         self.district_factory = district_factory
         self.subdistrict_factory = subdistrict_factory
         self.sponsoringorganization_factory = sponsoringorganization_factory
@@ -38,6 +43,7 @@ class Controller(object):
         """
         return self._get_factory_by_uuid(uuid).load_by_uuid(uuid)
 
+    @require_role('Council_Admin')
     def set(self, data):
         """Record-level create/update
 
@@ -48,8 +54,14 @@ class Controller(object):
             Updated Organization object (District, Subdistrict,
                 SponsoringOrganization, or Unit object)
         """
-        pass
+        if 'type' in data:
+            obj = self._get_factory_by_type(data['type']).construct(data)
+            obj.validate()
+            return obj
+        else:
+            raise ClientErrorException('Invalid organization type specified.')
 
+    @require_role('Council_Admin')
     def update(self, data):
         """Field-level create/update
 
@@ -60,7 +72,13 @@ class Controller(object):
             Updated Organization object (District, Subdistrict,
                 SponsoringOrganization, or Unit object)
         """
-        pass
+        if 'uuid' in data:
+            obj = self._get_factory_by_uuid(data['uuid']).load_by_uuid(data['uuid'])
+            obj.set_from_data(data)
+            obj.validate()
+            return obj
+        else:
+            raise ClientErrorException('No uuid specified.')
 
     def search(self, search_data):
         """Find
@@ -71,6 +89,26 @@ class Controller(object):
             list of Organization dicts
         """
         return self.organization_persister.query(search_data)
+
+    def _get_factory_by_type(self, org_type):
+        """Determines which model factory to use
+
+        Args:
+            type: string
+        Returns:
+            Factory object
+        """
+        if org_type == Organization.ORG_TYPE_UNIT:
+            factory = self.unit_factory
+        elif org_type == Organization.ORG_TYPE_SPONSORING_ORGANIZATION:
+            factory = self.sponsoringorganization_factory
+        elif org_type == Organization.ORG_TYPE_SUBDISTRICT:
+            factory = self.subdistrict_factory
+        elif org_type == Organization.ORG_TYPE_DISTRICT:
+            factory = self.district_factory
+        else:
+            raise ClientErrorException('Invalid organization type')
+        return factory
 
     def _get_factory_by_uuid(self, uuid):
         """Determines which model factory to use

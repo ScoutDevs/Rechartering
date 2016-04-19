@@ -2,10 +2,7 @@
 """Tests models"""
 
 import unittest
-from . import FakeYouthFactory
-from . import FakeYouthPersister
-from . import FakeSponsoringOrganizationFactory
-from . import FakeSubdistrictFactory
+
 from models import AdultApplications
 from models import CharterApplications
 from models import District
@@ -16,6 +13,11 @@ from models import Unit
 from models import User
 from models import Volunteer
 from models import Youth
+
+from . import FakeSponsoringOrganizationFactory
+from . import FakeSubdistrictFactory
+from . import FakeYouthFactory
+from . import FakeYouthPersister
 
 
 class ModelTestCase(unittest.TestCase):
@@ -190,7 +192,8 @@ class TestUnit(ModelTestCase):
         """Init"""
         obj_data = {
             'sponsoring_organization_id': '123123',
-            'type': 'Troop',
+            'type': 'Unit',
+            'name': 'Troop',
             'number': 1455,
         }
         self._set_up(Unit, obj_data)

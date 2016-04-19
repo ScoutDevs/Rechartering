@@ -1,6 +1,7 @@
 """AdultApplications classes"""
 from . import Base
 
+
 # TO-DO: encrypt & clean out SSNs
 
 

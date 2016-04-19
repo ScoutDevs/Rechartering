@@ -1,13 +1,15 @@
 # pylint: disable=no-member,attribute-defined-outside-init,import-error
 """Tests OrganizationController"""
 
-import unittest
 import os
-from . import FakeUserFactory
-from . import FakeDistrictFactory
-from . import FakeSubdistrictFactory
-from . import FakeSponsoringOrganizationFactory
+import unittest
+
 from controllers import OrganizationImport
+
+from . import FakeDistrictFactory
+from . import FakeSponsoringOrganizationFactory
+from . import FakeSubdistrictFactory
+from . import FakeUserFactory
 
 
 class TestOrganizationImportController(unittest.TestCase):

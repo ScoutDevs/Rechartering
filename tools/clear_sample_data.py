@@ -3,17 +3,17 @@
 # pylint: disable=no-member
 """clears sample data to prime the pump"""
 
-from . import User
-from . import Youth
-from . import Volunteer
-from . import Guardian
-from . import District
-from . import Subdistrict
-from . import SponsoringOrganization
-from . import Unit
-from . import YouthApplications
 from . import AdultApplications
 from . import CharterApplications
+from . import District
+from . import Guardian
+from . import SponsoringOrganization
+from . import Subdistrict
+from . import Unit
+from . import User
+from . import Volunteer
+from . import Youth
+from . import YouthApplications
 from . import sample_data
 
 

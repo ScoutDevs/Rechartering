@@ -2,14 +2,16 @@
 """Tests YouthApplicationController"""
 
 import unittest
-from . import FakeYouthApplicationPersister
-from . import FakeUnitFactory
-from . import FakeUserFactory
-from . import FakeYouthApplicationFactory
-from . import FakeYouthFactory
+
 from controllers import InvalidActionException
 from controllers import YouthApplication
 from models import Youth
+
+from . import FakeUnitFactory
+from . import FakeUserFactory
+from . import FakeYouthApplicationFactory
+from . import FakeYouthApplicationPersister
+from . import FakeYouthFactory
 
 
 class TestYouthApplicationController(unittest.TestCase):
