@@ -69,7 +69,7 @@ class Validator(object):
         for key, value in self.get_field_requirements().items():
             if value == FIELD_REQUIRED:
                 if key not in self.obj.__dict__ or not self.obj.__dict__[key]:
-                    errors.append("Missing required field {}".format(key))
+                    errors.append('Missing required field "{}"'.format(key))
                     valid = False
 
         return (valid, errors)
@@ -97,6 +97,7 @@ class Validator(object):
         """Validates the object"""
         errors = self.get_validation_errors()
         if errors:
+            print self.obj.__dict__
             raise InvalidObjectException(errors[0])
 
     def get_validation_errors(self):

@@ -55,16 +55,16 @@ class Factory(Base.Factory):
             obj = self.load_from_database_query(
                 {
                     '__index__': 'number',
-                    'number': data['District No'],
+                    'number': data['district_number'].strip(),
                     'type': Organization.ORG_TYPE_DISTRICT,
                 }
             )
         except RecordNotFoundException:
             klass = self._get_object_class()
             obj = klass()
-            obj.number = data['District No']
-            obj.name = data['District Name']
-            obj.validate()
+        obj.number = data['district_number'].strip()
+        obj.name = data['district_name'].strip()
+        obj.validate()
         return obj
 
 

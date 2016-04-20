@@ -3,8 +3,10 @@
 
 AWS Lambda needs nice, clean hooks.  This file provides those.
 """
+# TODO: Race conditions cause major duplications in the DB :/
 from __future__ import print_function
 
+import json
 import urllib
 
 import boto3
@@ -16,6 +18,9 @@ from models import District
 from models import SponsoringOrganization
 from models import Subdistrict
 from models import User
+
+TOPIC_ARN = 'arn:aws:sns:us-west-2:480058411585:organization_update'
+SNS = boto3.client('sns')
 
 
 def get(event, context):
@@ -62,29 +67,40 @@ def import_data(event, context):
         raise exc
 
     controller = _get_import_controller(event, context)
-    data = controller.process_s3_object(response)
-    num_processed = _store_data(data)
 
-    return {
+    num_processed = 0
+
+    for record in controller.process_s3_object(response):
+        _queue_update(record)
+        num_processed = num_processed + 1
+
+    response = {
         'records_processed': num_processed,
     }
+    print(response)
+    return response
 
 
-def _store_data(data):
-    """Store the objects that have been processed"""
-    num_processed = _store(data['districts'], District.Persister())
-    num_processed = num_processed + _store(data['subdistricts'], Subdistrict.Persister())
-    num_processed = num_processed + _store(data['sponsoring_organizations'], SponsoringOrganization.Persister())
-    return num_processed
+def _queue_update(data):
+    SNS.publish(
+        TopicArn=TOPIC_ARN,
+        Subject='Organization update message',
+        Message=json.dumps(data),
+    )
 
 
-def _store(data, persister):
-    """Store the objects"""
-    num_processed = 0
-    for obj in data:
-        num_processed = num_processed + 1
-        persister.save(obj)
-    return num_processed
+def process_record(event, context):
+    """Lambda facade for Organization.Controller.process_record method"""
+    controller = _get_import_controller(event, context)
+    message = event['Records'][0]['Sns']['Message']
+    data = json.loads(message)
+
+    (district, subdistrict, sporg) = controller.process_record(data)
+
+    District.Persister().save(district)
+    Subdistrict.Persister().save(subdistrict)
+    SponsoringOrganization.Persister().save(sporg)
+    return ''
 
 
 def _get_controller(event, context):
@@ -95,5 +111,4 @@ def _get_controller(event, context):
 
 def _get_import_controller(event, context):
     """Creates and returns the Controller object"""
-    user = User.Factory().load_by_session(context['session_id'])
-    return OrganizationImport.Controller(user)
+    return OrganizationImport.Controller()

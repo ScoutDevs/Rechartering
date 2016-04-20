@@ -371,8 +371,8 @@ def create_organizations_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnits': 5,
+                        'WriteCapacityUnits': 5,
                     },
                 },
                 {
@@ -391,14 +391,14 @@ def create_organizations_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 1,
-                        'WriteCapacityUnits': 1,
+                        'ReadCapacityUnits': 5,
+                        'WriteCapacityUnits': 5,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 1,
-                'WriteCapacityUnits': 1,
+                'ReadCapacityUnits': 5,
+                'WriteCapacityUnits': 5,
             }
         )
         return table
@@ -533,8 +533,9 @@ def main():
     # API Gateway
 
     # S3 Buckets
+    #   S3 Static Web Site
 
-    # S3 Static Web Site
+    # SNS topics
 
     # Lambda
 

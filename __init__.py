@@ -5,6 +5,9 @@
 # TO-DO: add data integrity check scripts
 # TO-DO: add Google-riffic docstrings everywhere
 # TO-DO: Clean up dependency injection issue where we sometimes use factory, sometimes persister, sometimes both.
+# TO-DO: Clean up string concatenation using '+'
+# TO-DO: Log monitoring
+# TO-DO: Backups
 """
 Copyright (C) 2016 Ben Reece
 

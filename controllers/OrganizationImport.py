@@ -8,6 +8,8 @@ from models import District
 from models import SponsoringOrganization
 from models import Subdistrict
 
+from . import ClientErrorException
+
 
 class Controller(object):
     """Organization Import Controller
@@ -21,11 +23,9 @@ class Controller(object):
     """
 
     def __init__(self,
-                 user,
                  district_factory=District.Factory(),
                  subdistrict_factory=Subdistrict.Factory(),
                  sponsoringorganization_factory=SponsoringOrganization.Factory()):
-        self.user = user
         self.district_factory = district_factory
         self.subdistrict_factory = subdistrict_factory
         self.sponsoringorganization_factory = sponsoringorganization_factory
@@ -35,30 +35,33 @@ class Controller(object):
 
         Args:
             s3_object: boto3 s3_object object
-        Returns:
-            dict
+        Yields:
+            tuple: of district, subdistrict, and sporg
         """
         data = s3_object['Body'].read()
         data_file = StringIO.StringIO(data)
-        return self._process_file(data_file)
+        for record in self._process_file(data_file):
+            yield record
 
     def process_file(self, filename):
         """Process the data as it comes in from a local file
 
         Args:
             filename: name of local file
-        Returns:
+        Yields:
             dict
         """
-        with open(filename) as tsv_file:
-            return self._process_file(tsv_file)
+        with open(filename) as data_file:
+            for record in self._process_file(data_file):
+                yield record
 
     def _process_file(self, data_file):
         """Processes the data file provided by the council
 
         The council can drop off a data file into an S3 bucket for processing.
-        This action kicks off a Lambda function which calls this method.  The
-        file the council provides is a flat file with the following fields:
+        That action kicks off a Lambda function which calls this method.  The
+        file the council provides is a tab-delimited flat file with the following
+        fields:
             District No
             District Name
             Sub District #
@@ -71,31 +74,70 @@ class Controller(object):
 
         Args:
             data_file: file containing data
-        Returns:
+        Yields:
             dict
         """
         reader = csv.DictReader(data_file, dialect=csv.excel_tab)
-        districts = {}
-        subdistricts = {}
-        sponsoring_organizations = {}
+        self._validate_headers(reader)
 
+        row_num = 1
         for row in reader:
-            if row['District No'] not in districts:
-                district = self._process_district(row)
-                districts[district.number] = district
-            if row['Sub District #'] not in subdistricts:
-                subdistrict = self._process_subdistrict(row, districts[row['District No']])
-                subdistricts[subdistrict.number] = subdistrict
-            if row['Unit No'] not in sponsoring_organizations:
-                subdistrict_number = subdistricts[row['District No'] + '-' + row['Sub District #']]
-                sponsoring_organization = self._process_sponsoring_organization(row, subdistrict_number)
-                sponsoring_organizations[sponsoring_organization.number] = sponsoring_organization
+            row_num = row_num + 1
 
-        return {
-            'districts': districts,
-            'subdistricts': subdistricts,
-            'sponsoring_organizations': sponsoring_organizations,
-        }
+            if not self._is_valid_record(row):
+                continue
+
+            record = {
+                'district_number': row['District No'],
+                'district_name': row['District Name'],
+                'subdistrict_number': row['District No'] + '-' + row['Sub District #'],
+                'subdistrict_name': row['Stake/Sub District Name'],
+                'sporg_name': row['Ward/Sponsoring Org'],
+                'sporg_number': row['Unit No'],
+            }
+
+            yield record
+
+    @staticmethod
+    def _validate_headers(reader):
+        for header in Controller._get_required_headers():
+            if header not in reader.fieldnames:
+                raise ClientErrorException('Invalid file format.  Header "'+header+'" not found.')
+
+    @staticmethod
+    def _get_required_headers():
+        return [
+            'District No',
+            'District Name',
+            'Sub District #',
+            'Stake/Sub District Name',
+            'Unit No',
+            'Ward/Sponsoring Org',
+        ]
+
+    @staticmethod
+    def _is_valid_record(row):
+        valid = True
+        for header in Controller._get_required_headers():
+            if not row[header]:
+                valid = False
+                break
+        return valid
+
+    def process_record(self, record):
+        """Processes an organization file record as provided by the council
+
+        Args:
+            record: dict
+        Returns:
+            tuple: district, subdistrict, sporg objects
+        """
+        # TO-DO: This needs to be injectable, since the UNPC approach doesn't
+        # appear to be the standard
+        district = self._process_district(record)
+        subdistrict = self._process_subdistrict(record, district)
+        sporg = self._process_sponsoring_organization(record, subdistrict)
+        return (district, subdistrict, sporg)
 
     def _process_district(self, data):
         """Process the data for a District

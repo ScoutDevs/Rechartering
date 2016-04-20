@@ -57,16 +57,16 @@ class Factory(Base.Factory):
                 {
                     '__index__': 'number',
                     'type': Organization.ORG_TYPE_SPONSORING_ORGANIZATION,
-                    'number': data['Unit No'],
+                    'number': data['sporg_number'].strip(),
                 }
             )
         except RecordNotFoundException:
             klass = self._get_object_class()
             obj = klass()
-            obj.name = data['Ward/Sponsoring Org']
-            obj.number = data['Unit No']
-            obj.parent_uuid = subdistrict.uuid
-            obj.validate()
+        obj.name = data['sporg_name'].strip()
+        obj.number = data['sporg_number'].strip()
+        obj.parent_uuid = subdistrict.uuid
+        obj.validate()
         return obj
 
 
