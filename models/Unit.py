@@ -1,5 +1,6 @@
-""" Unit classes """
+"""Unit classes"""
 from . import Base
+from . import Organization
 
 TYPE_PACK = 'Pack'
 TYPE_TROOP = 'Troop'
@@ -9,32 +10,33 @@ TYPE_SHIP = 'Ship'
 TYPE_POST = 'Post'
 
 
-class Unit(Base.Object):
-    """ Unit class """
+class Unit(Organization.Object):
+    """Unit class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
-        self.sponsoring_organization_id = ''
-        self.type = ''
+        self.type = Organization.ORG_TYPE_UNIT
+        self.parent_uuid = ''
+        self.name = ''
         self.lds_unit = True
-        self.number = 0
+        self.number = ''
 
     def get_validator(self):
         return Validator(self)
 
     @staticmethod
-    def get_factory():
-        return Factory()
+    def get_uuid_prefix():
+        return 'unt'
 
 
-class Validator(Base.Validator):
-    """ Unit validator """
+class Validator(Organization.Validator):
+    """Unit validator"""
 
     def get_field_requirements(self):
         return {
             'uuid': Base.FIELD_REQUIRED,
-            'sponsoring_organization_id': Base.FIELD_REQUIRED,
             'type': Base.FIELD_REQUIRED,
+            'name': Base.FIELD_REQUIRED,
             'number': Base.FIELD_REQUIRED,
         }
 
@@ -50,9 +52,9 @@ class Validator(Base.Validator):
         valid = True
         errors = []
 
-        if 'type' in self.obj.__dict__ and self.obj.type not in valid_types:
-            errors.append('Invalid unit type "{}"; valid types: {}'.format(
-                self.obj.type,
+        if 'name' in self.obj.to_dict() and self.obj.name not in valid_types:
+            errors.append('Invalid name "{}"; valid names: {}'.format(
+                self.obj.name,
                 ", ".join(valid_types)
                 ))
             valid = False
@@ -61,25 +63,21 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-    """ Unit Factory """
-
-    @staticmethod
-    def _get_uuid_prefix():
-        return 'unt'
+    """Unit Factory"""
 
     @staticmethod
     def _get_object_class():
         return Unit
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         return Persister()
 
 
 class Persister(Base.Persister):
 
-    """ Persists Unit objects """
+    """Persists Unit objects"""
 
     @staticmethod
     def _get_table_name():
-        return 'Units'
+        return 'Organizations'

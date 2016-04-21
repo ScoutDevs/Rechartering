@@ -1,14 +1,16 @@
-""" AdultApplications classes """
+"""AdultApplications classes"""
 from . import Base
 
-# TODO: encrypt & clean out SSNs
+
+# TO-DO: encrypt & clean out SSNs
 
 
 class AdultApplications(Base.Object):
-    """ AdultApplications class """
+    """AdultApplications class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        self.uuid = self.get_uuid()
         self.status = ''
         self.org_id = ''
         self.data = {}
@@ -17,12 +19,12 @@ class AdultApplications(Base.Object):
         return Validator(self)
 
     @staticmethod
-    def get_factory():
-        return Factory()
+    def get_uuid_prefix():
+        return 'aap'
 
 
 class Validator(Base.Validator):
-    """ AdultApplication validator """
+    """AdultApplication validator"""
 
     def get_field_requirements(self):
         return {
@@ -34,25 +36,21 @@ class Validator(Base.Validator):
 
 class Factory(Base.Factory):
 
-    """ AdultApplications Factory """
-
-    @staticmethod
-    def _get_uuid_prefix():
-        return 'aap'
+    """AdultApplications Factory"""
 
     @staticmethod
     def _get_object_class():
         return AdultApplications
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         return Persister()
 
 
 class Persister(Base.Persister):
 
-    """ Persists AdultApplications objects """
+    """Persists AdultApplications objects"""
 
     @staticmethod
     def _get_table_name():
-        return 'AdultApplications'
+        return 'Applications'

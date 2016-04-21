@@ -1,128 +1,294 @@
 # pylint: disable=no-member,attribute-defined-outside-init,import-error
-""" General functionality for use across tests """
+"""General functionality for use across tests"""
 
+from models import COUNCIL_ID
 from models import Base
+from models import District
+from models import Organization
+from models import Subdistrict
+from models import SponsoringOrganization
 from models import Unit
+from models import User
 from models import Youth
 
 
-class FakeUnitFactory(Unit.Factory):  # pylint: disable=too-few-public-methods,no-init
-    """ Fake class for testing """
+class FakePersister(object):
+    """Fake persister"""
 
-    def load_by_uuid(self, uuid):
-        """ Fake method for testing """
-        unit_list = get_test_unit_data()
-        data = find_record_by_field('uuid', uuid, unit_list)
-        return self.construct(data)
+    def __init__(self, data):
+        self.data = data
+
+    def get(self, search_data):
+        """Finds a test data record by the search_data"""
+        record = None
+        for item in self.data:
+            match = True
+            for field_name, field_value in search_data.items():
+                if item[field_name] != field_value:
+                    match = False
+                    break
+            if match:
+                record = item
+                break
+        if record:
+            return record
+        else:
+            raise Base.RecordNotFoundException('No record found that matches requested criteria.')
+
+    def query(self, search_data):
+        """Finds test data records matching the search_data"""
+        records = []
+        if '__index__' in search_data:
+            del search_data['__index__']
+        for item in self.data:
+            match = True
+            for field_name, field_value in search_data.items():
+                if item[field_name] != field_value:
+                    match = False
+                    break
+            if match:
+                records.append(item)
+        return records
 
 
-class FakeYouthApplicationPersister(object):  # pylint: disable=too-few-public-methods
-    """ Fake class for testing """
+class FakeUserFactory(User.Factory):  # pylint: disable=too-few-public-methods,no-init
+    """Fake class for testing"""
 
     @staticmethod
-    def get_by_status(status):
-        """ Fake method for testing """
-        app_list = get_test_app_data()
-        return [find_record_by_field('status', status, app_list)]
+    def get_persister():
+        """Get corresponding persister"""
+        return FakeUserPersister()
+
+
+class FakeUserPersister(FakePersister):
+    """Test persister"""
+
+    def __init__(self):
+        data = [
+            {
+                'uuid': 'usr-ben',
+                'username': 'ben',
+                'password': 'ben',
+                'guardian_id': 'grd-TEST-1',
+                'roles': {
+                    'Council.Admin': [],
+                },
+                'positions': [
+                ]
+            },
+        ]
+        super(FakeUserPersister, self).__init__(data)
+
+
+class FakeUnitFactory(Unit.Factory):  # pylint: disable=too-few-public-methods,no-init
+    """Fake class for testing"""
+
+    @staticmethod
+    def get_persister():
+        """Get corresponding persister"""
+        return FakeUnitPersister()
+
+
+class FakeUnitPersister(FakePersister):
+    """Test persister"""
+
+    def __init__(self):
+        super(FakeUnitPersister, self).__init__(self.get_test_data())
+
+    @staticmethod
+    def get_test_data():
+        """Test data definition"""
+        return [
+            {
+                'uuid': 'unt-51.spo-51.sbd-5-8.dst-5.cnl-'+COUNCIL_ID,
+                'type': Organization.ORG_TYPE_UNIT,
+                'parent_uuid': 'spo-51.sbd-5-8.dst-5.cnl-'+COUNCIL_ID,
+                'name': Unit.TYPE_TROOP,
+                'number': '51',
+                'lds_unit': False,
+            },
+            {
+                'uuid': 'unt-1455.spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
+                'type': Organization.ORG_TYPE_UNIT,
+                'parent_uuid': 'spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
+                'name': Unit.TYPE_TROOP,
+                'number': '1455',
+                'lds_unit': True,
+            },
+        ]
+
+
+class FakeDistrictFactory(District.Factory):  # pylint: disable=too-few-public-methods,no-init
+    """Fake class for testing"""
+
+    @staticmethod
+    def get_persister():
+        """Get corresponding persister"""
+        return FakeDistrictPersister()
+
+
+class FakeDistrictPersister(FakePersister):
+    """Test persister"""
+
+    @staticmethod
+    def get_test_data():
+        """Test data definition"""
+        return [
+            {
+                'uuid': 'dst-5.cnl-'+COUNCIL_ID,
+                'type': Organization.ORG_TYPE_DISTRICT,
+                'parent_uuid': 'cnl-'+COUNCIL_ID,
+                'name': 'Provo Peak',
+                'number': '5',
+            },
+        ]
+
+    def __init__(self):
+        super(FakeDistrictPersister, self).__init__(self.get_test_data())
+
+
+class FakeSubdistrictFactory(Subdistrict.Factory):  # pylint: disable=too-few-public-methods,no-init
+    """Fake class for testing"""
+
+    @staticmethod
+    def get_persister():
+        """Get corresponding persister"""
+        return FakeSubdistrictPersister()
+
+
+class FakeSubdistrictPersister(FakePersister):
+    """Test persister"""
+
+    @staticmethod
+    def get_test_data():
+        """Test data definition"""
+        return [
+            {
+                'uuid': 'sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
+                'type': Organization.ORG_TYPE_SUBDISTRICT,
+                'name': 'Provo North Park Stake',
+                'number': '5-9',
+                'parent_uuid': 'dst-5.cnl-'+COUNCIL_ID,
+            },
+            {
+                'uuid': 'sbd-5-8.dst-5.cnl-'+COUNCIL_ID,
+                'type': Organization.ORG_TYPE_SUBDISTRICT,
+                'name': 'Community Units',
+                'number': '5-8',
+                'parent_uuid': 'dst-5.cnl-'+COUNCIL_ID,
+            },
+        ]
+
+    def __init__(self):
+        super(FakeSubdistrictPersister, self).__init__(self.get_test_data())
+
+
+class FakeSponsoringOrganizationFactory(SponsoringOrganization.Factory):  # pylint: disable=no-init,too-few-public-methods,line-too-long
+    """Fake class for testing"""
+
+    @staticmethod
+    def get_persister():
+        """Get corresponding persister"""
+        return FakeSponsoringOrganizationPersister()
+
+
+class FakeSponsoringOrganizationPersister(FakePersister):
+    """Test persister"""
+
+    @staticmethod
+    def get_test_data():
+        """Test data definition"""
+        return [
+            {
+                'uuid': 'spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
+                'type': Organization.ORG_TYPE_SPONSORING_ORGANIZATION,
+                'name': 'North Park 3rd Ward',
+                'number': '1455',
+                'parent_uuid': 'sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
+            },
+            {
+                'uuid': 'spo-51.sbd-5-8.dst-5.cnl-'+COUNCIL_ID,
+                'type': Organization.ORG_TYPE_SPONSORING_ORGANIZATION,
+                'name': 'Provo Elks Lodge',
+                'number': '51',
+                'parent_uuid': 'sbd-5-8.dst-5.cnl-'+COUNCIL_ID,
+            },
+        ]
+
+    def __init__(self):
+        super(FakeSponsoringOrganizationPersister, self).__init__(self.get_test_data())
+
+
+class FakeYouthApplicationFactory(Youth.ApplicationFactory):  # pylint: disable=too-few-public-methods,no-init
+    """Fake class for testing"""
+
+    @staticmethod
+    def get_persister():
+        """Get corresponding persister"""
+        return FakeYouthApplicationPersister()
+
+
+class FakeYouthApplicationPersister(FakePersister):
+    """Fake class for testing"""
+
+    def __init__(self):
+        data = [
+            {
+                'uuid': 'yap-TEST-1',
+                'unit_id': 'unt-1455.spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
+                'scoutnet_id': 123,
+                'status': Youth.APPLICATION_STATUS_CREATED,
+                'first_name': 'Ben',
+                'last_name': 'Reece',
+                'date_of_birth': '1970-01-01',
+            },
+        ]
+        super(FakeYouthApplicationPersister, self).__init__(data)
+
+    def get_by_status(self, status):
+        """Fake method for testing"""
+        return self.query({'status': status})
 
 
 class FakeYouthFactory(Youth.YouthFactory):  # pylint: disable=too-few-public-methods,no-init
-    """ Fake class for testing """
-
-    def load_by_uuid(self, uuid):
-        """ Fake method for testing """
-        youth_list = get_test_youth_data()
-        data = find_record_by_field('uuid', uuid, youth_list)
-        return self.construct(data)
-
-
-class FakeYouthPersister(object):  # pylint: disable=too-few-public-methods
-    """ Fake class for testing """
+    """Fake class for testing"""
 
     @staticmethod
-    def find_potential_duplicates(youth):
-        """ Fake method for testing """
-        youth_list = get_test_youth_data()
-        try:
-            return [find_record_by_field('duplicate_hash', youth.get_record_hash(), youth_list)]
-        except Base.RecordNotFoundException:
-            return []
+    def get_persister():
+        """Get corresponding persister"""
+        return FakeYouthPersister()
 
 
-def find_record_by_field(field_name, field_value, data):
-    """ Finds a test data record by the specified field & value """
-    record = None
-    for item in data:
-        if item[field_name] == field_value:
-            record = item
-            break
-    if record:
-        return record
-    else:
-        raise Base.RecordNotFoundException('Record matching {}="{}" not found'.format(field_name, field_value))
+class FakeYouthPersister(FakePersister):
+    """Fake class for testing"""
 
-
-def get_test_user_data():
-    """ Test User data """
-    return [
-        {
-            'username': 'ben',
-            'password': 'ben',
-            'guardian_id': 'grd-TEST-1',
-            'roles': {
-                'Council.Admin': [],
+    def __init__(self):
+        data = [
+            {
+                'uuid': 'yth-TEST-1',
+                'first_name': 'Matthew',
+                'last_name': 'Reece',
+                'date_of_birth': '2002-01-15',
+                'duplicate_hash': 'b94302d98d30a3e48ea80c7f4432a6f30661869f0a95e0096f50e84edc0fc09b',
+                'units': ['unt-TEST-1455'],
+                'guardian_approval_guardian_id': 'grd-TEST-123',
+                'guardian_approval_signature': 'abcde',
             },
-            'positions': [
-            ]
-        },
-    ]
+        ]
+        super(FakeYouthPersister, self).__init__(data)
+
+    def find_potential_duplicates(self, youth):
+        """Fake method for testing"""
+        return self.query({'duplicate_hash': youth.get_record_hash()})
 
 
-def get_test_app_data():
-    """ Test Youth Application data """
-    return [
-        {
-            'unit_id': 'unt-TEST-123',
-            'scoutnet_id': 123,
-            'status': Youth.APPLICATION_STATUS_CREATED,
-            'first_name': 'Ben',
-            'last_name': 'Reece',
-            'date_of_birth': '1970-01-01',
-        },
-    ]
+class FakeOrganizationPersister(FakePersister):
+    """Test persister"""
 
-
-def get_test_youth_data():
-    """ test Youths data """
-    return [
-        {
-            'uuid': 'yth-TEST-1',
-            'first_name': 'Matthew',
-            'last_name': 'Reece',
-            'date_of_birth': '2002-01-15',
-            'duplicate_hash': 'b94302d98d30a3e48ea80c7f4432a6f30661869f0a95e0096f50e84edc0fc09b',
-            'units': ['unt-TEST-123'],
-            'guardian_approval_guardian_id': 'grd-TEST-123',
-            'guardian_approval_signature': 'abcde',
-        },
-    ]
-
-
-def get_test_unit_data():
-    """ Test Unit data """
-    return [
-        {
-            'uuid': 'unt-TEST-51',
-            'sponsoring_organization_id': 'spo-TEST-51',
-            'type': Unit.TYPE_TROOP,
-            'number': 51,
-            'lds_unit': False,
-        },
-        {
-            'uuid': 'unt-TEST-123',
-            'sponsoring_organization_id': 'spo-TEST-123',
-            'type': Unit.TYPE_TROOP,
-            'number': 1455,
-            'lds_unit': True,
-        },
-    ]
+    def __init__(self):
+        data = \
+            FakeUnitPersister.get_test_data() + \
+            FakeDistrictPersister.get_test_data() + \
+            FakeSubdistrictPersister.get_test_data() + \
+            FakeSponsoringOrganizationPersister.get_test_data()
+        super(FakeOrganizationPersister, self).__init__(data)

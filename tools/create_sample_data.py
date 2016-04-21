@@ -1,24 +1,24 @@
 #!/usr/bin/python
 
 # pylint: disable=no-member
-""" Creates sample data to prime the pump """
+"""Creates sample data to prime the pump"""
 
-from . import User
-from . import Youth
-from . import Volunteer
-from . import Guardian
-from . import District
-from . import Subdistrict
-from . import SponsoringOrganization
-from . import Unit
-from . import YouthApplications
 from . import AdultApplications
 from . import CharterApplications
+from . import District
+from . import Guardian
+from . import SponsoringOrganization
+from . import Subdistrict
+from . import Unit
+from . import User
+from . import Volunteer
+from . import Youth
+from . import YouthApplications
 from . import sample_data
 
 
 def create_objects(module, source_data):
-    """ Create and persist objects """
+    """Create and persist objects"""
     factory = module.Factory()
     persister = module.Persister()
 
@@ -28,7 +28,7 @@ def create_objects(module, source_data):
 
 
 def main():
-    """ Create all the objects from the sample data """
+    """Create all the objects from the sample data"""
     create_objects(User, sample_data.USER_DATA)
     create_objects(Youth, sample_data.YOUTH_DATA)
     create_objects(Volunteer, sample_data.VOLUNTEERS_DATA)
