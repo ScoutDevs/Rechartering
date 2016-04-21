@@ -1,5 +1,6 @@
 """Unit classes"""
 from . import Base
+from . import Organization
 
 TYPE_PACK = 'Pack'
 TYPE_TROOP = 'Troop'
@@ -9,12 +10,12 @@ TYPE_SHIP = 'Ship'
 TYPE_POST = 'Post'
 
 
-class Unit(Base.Object):
+class Unit(Organization.Object):
     """Unit class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
-        self.type = ''
+        self.type = Organization.ORG_TYPE_UNIT
         self.parent_uuid = ''
         self.name = ''
         self.lds_unit = True
@@ -24,11 +25,11 @@ class Unit(Base.Object):
         return Validator(self)
 
     @staticmethod
-    def get_factory():
-        return Factory()
+    def get_uuid_prefix():
+        return 'unt'
 
 
-class Validator(Base.Validator):
+class Validator(Organization.Validator):
     """Unit validator"""
 
     def get_field_requirements(self):
@@ -51,7 +52,7 @@ class Validator(Base.Validator):
         valid = True
         errors = []
 
-        if 'name' in self.obj.__dict__ and self.obj.name not in valid_types:
+        if 'name' in self.obj.to_dict() and self.obj.name not in valid_types:
             errors.append('Invalid name "{}"; valid names: {}'.format(
                 self.obj.name,
                 ", ".join(valid_types)
@@ -65,15 +66,11 @@ class Factory(Base.Factory):
     """Unit Factory"""
 
     @staticmethod
-    def get_uuid_prefix():
-        return 'unt'
-
-    @staticmethod
     def _get_object_class():
         return Unit
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         return Persister()
 
 

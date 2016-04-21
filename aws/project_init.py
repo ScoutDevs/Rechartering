@@ -371,8 +371,8 @@ def create_organizations_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 5,
-                        'WriteCapacityUnits': 5,
+                        'ReadCapacityUnits': 10,
+                        'WriteCapacityUnits': 10,
                     },
                 },
                 {
@@ -391,14 +391,14 @@ def create_organizations_table():
                         'ProjectionType': 'KEYS_ONLY',
                     },
                     'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 5,
-                        'WriteCapacityUnits': 5,
+                        'ReadCapacityUnits': 10,
+                        'WriteCapacityUnits': 10,
                     },
                 },
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 5,
-                'WriteCapacityUnits': 5,
+                'ReadCapacityUnits': 10,
+                'WriteCapacityUnits': 10,
             }
         )
         return table

@@ -4,22 +4,20 @@ from . import Organization
 from . import RecordNotFoundException
 
 
-class Subdistrict(Base.Object):
+class Subdistrict(Organization.Object):
     """Subdistrict class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
         self.type = Organization.ORG_TYPE_SUBDISTRICT
         self.parent_uuid = ''
-        self.number = ''
-        self.name = ''
 
     def get_validator(self):
         return Validator(self)
 
     @staticmethod
-    def get_factory():
-        return Factory()
+    def get_uuid_prefix():
+        return 'sbd'
 
 
 class Validator(Base.Validator):
@@ -39,15 +37,11 @@ class Factory(Base.Factory):
     """Subdistrict Factory"""
 
     @staticmethod
-    def get_uuid_prefix():
-        return 'sbd'
-
-    @staticmethod
     def _get_object_class():
         return Subdistrict
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         return Persister()
 
     def get_from_file_data(self, data, district):

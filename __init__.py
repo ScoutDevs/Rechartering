@@ -8,6 +8,7 @@
 # TO-DO: Clean up string concatenation using '+'
 # TO-DO: Log monitoring
 # TO-DO: Backups
+# TO-DO: Deal with ProvisionedThroughputExceededException DynamoDB Exceptions
 """
 Copyright (C) 2016 Ben Reece
 

@@ -25,22 +25,34 @@ class Controller(object):
 
     def __init__(self,  # pylint: disable=too-many-arguments
                  user,
-                 application_persister=Youth.ApplicationPersister(),
-                 unit_factory=Unit.Factory(),
-                 youth_factory=Youth.YouthFactory()):
+                 application_factory=None,
+                 unit_factory=None,
+                 youth_factory=None):
         """Dependency-injectable init
 
         Args:
             user: User object, used to determine permissions
-            application_persister: Youth Application persister object
+            application_factory: Youth Application factory object
             unit_factory: Unit factory object
             youth_factory: Youth factory object
         """
         self.user = user
-        self.factory = Youth.ApplicationFactory()
-        self.persister = application_persister
-        self.unit_factory = unit_factory
-        self.youth_factory = youth_factory
+        if application_factory:
+            self.factory = application_factory
+        else:
+            self.factory = Youth.ApplicationFactory()
+
+        self.persister = self.factory.get_persister()
+
+        if unit_factory:
+            self.unit_factory = unit_factory
+        else:
+            self.unit_factory = Unit.Factory()
+
+        if youth_factory:
+            self.youth_factory = youth_factory
+        else:
+            youth_factory = Youth.YouthFactory()
 
     @require_role('Council.Employee')
     def get_applications_by_status(self, status):
@@ -127,7 +139,8 @@ class Controller(object):
 
         if app.youth_id:
             youth = self.youth_factory.load_by_uuid(app.youth_id)
-            youth = YouthController.Controller(self.user).grant_guardian_approval(youth, data)
+            controller = YouthController.Controller(self.user, self.youth_factory)
+            youth = controller.grant_guardian_approval(youth, data)
             youth.validate()
         else:
             youth = None

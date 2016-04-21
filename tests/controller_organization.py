@@ -6,6 +6,7 @@ import unittest
 from controllers import ClientErrorException
 from controllers import Organization
 from models import Organization as OrganizationModel
+from models import COUNCIL_ID
 from models import RecordNotFoundException
 
 from . import FakeDistrictFactory
@@ -20,7 +21,7 @@ class TestOrganizationController(unittest.TestCase):
     """Test OrganizationController"""
 
     def setUp(self):
-        user = FakeUserFactory().load_by_uuid('usr-TEST-ben')
+        user = FakeUserFactory().load_by_uuid('usr-ben')
         district_factory = FakeDistrictFactory()
         subdistrict_factory = FakeSubdistrictFactory()
         sponsoringorganization_factory = FakeSponsoringOrganizationFactory()
@@ -37,11 +38,11 @@ class TestOrganizationController(unittest.TestCase):
 
     def test_get_unit(self):
         """Test 'get' functionality"""
-        obj = self.controller.get('unt-TEST-51')
-        self.assertEqual('unt-TEST-51', obj.uuid)
+        obj = self.controller.get('unt-51.spo-51.sbd-5-8.dst-5.cnl-'+COUNCIL_ID)
+        self.assertEqual('unt-51.spo-51.sbd-5-8.dst-5.cnl-'+COUNCIL_ID, obj.uuid)
         self.assertEqual('Troop', obj.name)
         self.assertEqual('51', obj.number)
-        self.assertEqual('spo-TEST-provocity', obj.parent_uuid)
+        self.assertEqual('spo-51.sbd-5-8.dst-5.cnl-'+COUNCIL_ID, obj.parent_uuid)
 
         with self.assertRaises(RecordNotFoundException):
             obj = self.controller.get('unt-NULL')
@@ -50,26 +51,26 @@ class TestOrganizationController(unittest.TestCase):
 
     def test_get_sponsoring_org(self):
         """Test 'get' functionality"""
-        obj = self.controller.get('spo-TEST-np3')
-        self.assertEqual('spo-TEST-np3', obj.uuid)
+        obj = self.controller.get('spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID)
+        self.assertEqual('spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID, obj.uuid)
         self.assertEqual('North Park 3rd Ward', obj.name)
-        self.assertEqual('sbd-TEST-nps', obj.parent_uuid)
+        self.assertEqual('sbd-5-9.dst-5.cnl-'+COUNCIL_ID, obj.parent_uuid)
 
     def test_get_district(self):
         """Test 'get' functionality"""
-        obj = self.controller.get('dst-TEST-provopeak')
-        self.assertEqual('dst-TEST-provopeak', obj.uuid)
+        obj = self.controller.get('dst-5.cnl-'+COUNCIL_ID)
+        self.assertEqual('dst-5.cnl-'+COUNCIL_ID, obj.uuid)
         self.assertEqual('Provo Peak', obj.name)
         self.assertEqual('5', obj.number)
-        self.assertEqual('COUNCIL', obj.parent_uuid)
+        self.assertEqual('cnl-'+COUNCIL_ID, obj.parent_uuid)
 
     def test_get_subdistrict(self):
         """Test 'get' functionality"""
-        obj = self.controller.get('sbd-TEST-nps')
-        self.assertEqual('sbd-TEST-nps', obj.uuid)
+        obj = self.controller.get('sbd-5-9.dst-5.cnl-'+COUNCIL_ID)
+        self.assertEqual('sbd-5-9.dst-5.cnl-'+COUNCIL_ID, obj.uuid)
         self.assertEqual('Provo North Park Stake', obj.name)
         self.assertEqual('5-9', obj.number)
-        self.assertEqual('dst-TEST-provopeak', obj.parent_uuid)
+        self.assertEqual('dst-5.cnl-'+COUNCIL_ID, obj.parent_uuid)
 
     def test_search_unit(self):
         """Test 'search' functionality"""
@@ -79,43 +80,43 @@ class TestOrganizationController(unittest.TestCase):
         }
         response = self.controller.search(search_data)
         self.assertEqual(1, len(response))
-        self.assertEqual('unt-TEST-1455', response[0]['uuid'])
+        self.assertEqual('unt-1455.spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID, response[0]['uuid'])
 
         search_data = {
-            'parent_uuid': 'sbd-TEST-nps',
+            'parent_uuid': 'sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
         }
         response = self.controller.search(search_data)
         self.assertEqual(1, len(response))
-        self.assertEqual('spo-TEST-np3', response[0]['uuid'])
+        self.assertEqual('spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID, response[0]['uuid'])
 
     def test_set(self):
         """Test 'set' method"""
-        orig_obj = self.controller.get('unt-TEST-1455')
-        data = orig_obj.__dict__
+        orig_obj = self.controller.get('unt-1455.spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID)
+        data = orig_obj.to_dict()
         data['name'] = 'Pack'
         obj = self.controller.set(data)
-        self.assertEqual('unt-TEST-1455', obj.uuid)
+        self.assertEqual('unt-1455.spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID, obj.uuid)
         self.assertEqual('Pack', obj.name)
 
-        orig_obj = self.controller.get('spo-TEST-np3')
-        data = orig_obj.__dict__
+        orig_obj = self.controller.get('spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID)
+        data = orig_obj.to_dict()
         data['name'] = 'TEST NAME'
         obj = self.controller.set(data)
-        self.assertEqual('spo-TEST-np3', obj.uuid)
+        self.assertEqual('spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID, obj.uuid)
         self.assertEqual('TEST NAME', obj.name)
 
-        orig_obj = self.controller.get('sbd-TEST-nps')
-        data = orig_obj.__dict__
+        orig_obj = self.controller.get('sbd-5-9.dst-5.cnl-'+COUNCIL_ID)
+        data = orig_obj.to_dict()
         data['name'] = 'TEST NAME'
         obj = self.controller.set(data)
-        self.assertEqual('sbd-TEST-nps', obj.uuid)
+        self.assertEqual('sbd-5-9.dst-5.cnl-'+COUNCIL_ID, obj.uuid)
         self.assertEqual('TEST NAME', obj.name)
 
-        orig_obj = self.controller.get('dst-TEST-provopeak')
-        data = orig_obj.__dict__
+        orig_obj = self.controller.get('dst-5.cnl-'+COUNCIL_ID)
+        data = orig_obj.to_dict()
         data['name'] = 'TEST NAME'
         obj = self.controller.set(data)
-        self.assertEqual('dst-TEST-provopeak', obj.uuid)
+        self.assertEqual('dst-5.cnl-'+COUNCIL_ID, obj.uuid)
         self.assertEqual('TEST NAME', obj.name)
 
         with self.assertRaises(ClientErrorException):
@@ -127,11 +128,11 @@ class TestOrganizationController(unittest.TestCase):
     def test_update(self):
         """Test 'update' method"""
         data = {
-            'uuid': 'unt-TEST-1455',
+            'uuid': 'unt-1455.spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
             'name': 'Pack',
         }
         obj = self.controller.update(data)
-        self.assertEqual('unt-TEST-1455', obj.uuid)
+        self.assertEqual('unt-1455.spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID, obj.uuid)
         self.assertEqual('Pack', obj.name)
         self.assertEqual('1455', obj.number)
 

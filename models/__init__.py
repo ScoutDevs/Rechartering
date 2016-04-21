@@ -1,5 +1,7 @@
 """Models Package"""
 
+COUNCIL_ID = '591'
+
 
 class RecordNotFoundException(Exception):
     """Record not found"""

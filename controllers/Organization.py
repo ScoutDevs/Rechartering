@@ -20,17 +20,33 @@ class Controller(object):
 
     def __init__(self,  # pylint: disable=too-many-arguments
                  user,
-                 district_factory=District.Factory(),
-                 subdistrict_factory=Subdistrict.Factory(),
-                 sponsoringorganization_factory=SponsoringOrganization.Factory(),
-                 unit_factory=Unit.Factory(),
-                 organization_persister=Organization.Persister()):
+                 district_factory=None,
+                 subdistrict_factory=None,
+                 sporg_factory=None,
+                 unit_factory=None,
+                 organization_persister=None):
         self.user = user
-        self.district_factory = district_factory
-        self.subdistrict_factory = subdistrict_factory
-        self.sponsoringorganization_factory = sponsoringorganization_factory
-        self.unit_factory = unit_factory
-        self.organization_persister = organization_persister
+
+        if district_factory:
+            self.district_factory = district_factory
+        else:
+            self.district_factory = District.Factory()
+        if subdistrict_factory:
+            self.subdistrict_factory = subdistrict_factory
+        else:
+            self.subdistrict_factory = Subdistrict.Factory()
+        if sporg_factory:
+            self.sporg_factory = sporg_factory
+        else:
+            self.sporg_factory = SponsoringOrganization.Factory()
+        if unit_factory:
+            self.unit_factory = unit_factory
+        else:
+            self.unit_factory = Unit.Factory()
+        if organization_persister:
+            self.organization_persister = organization_persister
+        else:
+            self.organization_persister = Organization.Persister()
 
     def get(self, uuid):
         """Get
@@ -38,7 +54,7 @@ class Controller(object):
         Args:
             uuid: string
         Returns:
-            Organization object (District, Subdistrict, SponsoringOrganization,
+            Organization object (District, Subdistrict, sporg,
             or Unit object)
         """
         return self._get_factory_by_uuid(uuid).load_by_uuid(uuid)
@@ -52,7 +68,7 @@ class Controller(object):
                 record in its entirety
         Returns:
             Updated Organization object (District, Subdistrict,
-                SponsoringOrganization, or Unit object)
+                sporg, or Unit object)
         """
         if 'type' in data:
             obj = self._get_factory_by_type(data['type']).construct(data)
@@ -70,7 +86,7 @@ class Controller(object):
                 existing record
         Returns:
             Updated Organization object (District, Subdistrict,
-                SponsoringOrganization, or Unit object)
+                sporg, or Unit object)
         """
         if 'uuid' in data:
             obj = self._get_factory_by_uuid(data['uuid']).load_by_uuid(data['uuid'])
@@ -101,7 +117,7 @@ class Controller(object):
         if org_type == Organization.ORG_TYPE_UNIT:
             factory = self.unit_factory
         elif org_type == Organization.ORG_TYPE_SPONSORING_ORGANIZATION:
-            factory = self.sponsoringorganization_factory
+            factory = self.sporg_factory
         elif org_type == Organization.ORG_TYPE_SUBDISTRICT:
             factory = self.subdistrict_factory
         elif org_type == Organization.ORG_TYPE_DISTRICT:
@@ -132,6 +148,6 @@ class Controller(object):
         return [
             self.district_factory,
             self.subdistrict_factory,
-            self.sponsoringorganization_factory,
+            self.sporg_factory,
             self.unit_factory,
         ]

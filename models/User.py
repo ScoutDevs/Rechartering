@@ -9,6 +9,7 @@ class User(Base.Object):
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        self.uuid = self.get_uuid()
         self.username = ''
         self.password = ''
         self.guardian_id = ''
@@ -25,8 +26,8 @@ class User(Base.Object):
         return Validator(self)
 
     @staticmethod
-    def get_factory():
-        return Factory()
+    def get_uuid_prefix():
+        return 'usr'
 
 
 class Validator(Base.Validator):
@@ -53,15 +54,11 @@ class Factory(Base.Factory):
         return session_id
 
     @staticmethod
-    def get_uuid_prefix():
-        return 'usr'
-
-    @staticmethod
     def _get_object_class():
         return User
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         return Persister()
 
 

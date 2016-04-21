@@ -1,25 +1,24 @@
 """District classes"""
+from . import COUNCIL_ID
 from . import Base
 from . import Organization
 from . import RecordNotFoundException
 
 
-class District(Base.Object):
+class District(Organization.Object):
     """District class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
         self.type = Organization.ORG_TYPE_DISTRICT
-        self.parent_uuid = 'COUNCIL'
-        self.number = ''
-        self.name = ''
+        self.parent_uuid = 'cnl-'+COUNCIL_ID
 
     def get_validator(self):
         return Validator(self)
 
     @staticmethod
-    def get_factory():
-        return Factory()
+    def get_uuid_prefix():
+        return 'dst'
 
 
 class Validator(Base.Validator):
@@ -38,15 +37,11 @@ class Factory(Base.Factory):
     """District Factory"""
 
     @staticmethod
-    def get_uuid_prefix():
-        return 'dst'
-
-    @staticmethod
     def _get_object_class():
         return District
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         return Persister()
 
     def get_from_file_data(self, data):

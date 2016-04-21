@@ -7,6 +7,7 @@ class Guardian(Base.Object):
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        self.uuid = self.get_uuid()
         self.user_uuid = ''
         self.first_name = ''
         self.last_name = ''
@@ -16,8 +17,8 @@ class Guardian(Base.Object):
         return Validator(self)
 
     @staticmethod
-    def get_factory():
-        return Factory()
+    def get_uuid_prefix():
+        return 'gdn'
 
 
 class Validator(Base.Validator):
@@ -36,15 +37,11 @@ class Factory(Base.Factory):
     """Guardian Factory"""
 
     @staticmethod
-    def get_uuid_prefix():
-        return 'gdn'
-
-    @staticmethod
     def _get_object_class():
         return Guardian
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         return Persister()
 
 

@@ -5,12 +5,12 @@ import unittest
 
 from controllers import InvalidActionException
 from controllers import YouthApplication
+from models import COUNCIL_ID
 from models import Youth
 
 from . import FakeUnitFactory
 from . import FakeUserFactory
 from . import FakeYouthApplicationFactory
-from . import FakeYouthApplicationPersister
 from . import FakeYouthFactory
 
 
@@ -20,13 +20,13 @@ class TestYouthApplicationController(unittest.TestCase):
     def setUp(self):
         self.app = FakeYouthApplicationFactory().load_by_uuid('yap-TEST-1')
 
-        user = FakeUserFactory().load_by_uuid('usr-TEST-ben')
-        application_persister = FakeYouthApplicationPersister()
+        user = FakeUserFactory().load_by_uuid('usr-ben')
+        application_factory = FakeYouthApplicationFactory()
         unit_factory = FakeUnitFactory()
         youth_factory = FakeYouthFactory()
         self.controller = YouthApplication.Controller(
             user,
-            application_persister,
+            application_factory,
             unit_factory,
             youth_factory,
         )
@@ -49,7 +49,7 @@ class TestYouthApplicationController(unittest.TestCase):
         self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
 
         unit_approval = {
-            'unit_approval_user_id': 'usr-TEST-123',
+            'unit_approval_user_id': 'usr-ben',
             'unit_approval_signature': 'abcd',
         }
         self.app = self.controller.submit_unit_approval(self.app, unit_approval)
@@ -70,7 +70,7 @@ class TestYouthApplicationController(unittest.TestCase):
 
     def test_non_lds_flow(self):
         """Test flow with non-LDS unit"""
-        self.app.unit_id = 'unt-TEST-51'
+        self.app.unit_id = 'unt-51.spo-51.sbd-5-8.dst-5.cnl-'+COUNCIL_ID
         self.app = self.controller.submit_application(self.app)
         self.assertEqual(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL, self.app.status)
 

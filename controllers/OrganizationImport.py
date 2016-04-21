@@ -23,12 +23,23 @@ class Controller(object):
     """
 
     def __init__(self,
-                 district_factory=District.Factory(),
-                 subdistrict_factory=Subdistrict.Factory(),
-                 sponsoringorganization_factory=SponsoringOrganization.Factory()):
-        self.district_factory = district_factory
-        self.subdistrict_factory = subdistrict_factory
-        self.sponsoringorganization_factory = sponsoringorganization_factory
+                 district_factory=None,
+                 subdistrict_factory=None,
+                 sporg_factory=None):
+        if district_factory:
+            self.district_factory = district_factory
+        else:
+            self.district_factory = District.Factory()
+
+        if subdistrict_factory:
+            self.subdistrict_factory = subdistrict_factory
+        else:
+            self.subdistrict_factory = Subdistrict.Factory()
+
+        if sporg_factory:
+            self.sporg_factory = sporg_factory
+        else:
+            self.sporg_factory = SponsoringOrganization.Factory()
 
     def process_s3_object(self, s3_object):
         """Process the data as it comes in from S3
@@ -165,6 +176,6 @@ class Controller(object):
         Args:
             data: dict from file data
         Returns:
-            SponsoringOrganization object
+            sporg object
         """
-        return self.sponsoringorganization_factory.get_from_file_data(data, subdistrict)
+        return self.sporg_factory.get_from_file_data(data, subdistrict)

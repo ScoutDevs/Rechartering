@@ -4,22 +4,20 @@ from . import Organization
 from . import RecordNotFoundException
 
 
-class SponsoringOrganization(Base.Object):
+class SponsoringOrganization(Organization.Object):
     """SponsoringOrganization class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
         self.type = Organization.ORG_TYPE_SPONSORING_ORGANIZATION
         self.parent_uuid = ''
-        self.name = ''
-        self.number = ''
 
     def get_validator(self):
         return Validator(self)
 
     @staticmethod
-    def get_factory():
-        return Factory()
+    def get_uuid_prefix():
+        return 'spo'
 
 
 class Validator(Base.Validator):
@@ -39,15 +37,11 @@ class Factory(Base.Factory):
     """SponsoringOrganization Factory"""
 
     @staticmethod
-    def get_uuid_prefix():
-        return 'spo'
-
-    @staticmethod
     def _get_object_class():
         return SponsoringOrganization
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         return Persister()
 
     def get_from_file_data(self, data, subdistrict):

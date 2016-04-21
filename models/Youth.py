@@ -19,6 +19,7 @@ class Youth(Base.Object):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        self.uuid = self.get_uuid()
         self.user_uuid = ''
         self.duplicate_hash = ''
         self.units = []
@@ -54,8 +55,8 @@ class Youth(Base.Object):  # pylint: disable=too-many-instance-attributes
         return approval
 
     @staticmethod
-    def get_factory():
-        return YouthFactory()
+    def get_uuid_prefix():
+        return 'yth'
 
 
 class YouthValidator(Base.Validator):
@@ -81,21 +82,17 @@ class YouthFactory(Base.Factory):
     def construct_from_app(self, app):
         """Constructs a Youth object from the application"""
         # construct will only populate fields that are defined in the class
-        youth = self.construct(app.__dict__)
+        youth = self.construct(app.to_dict(), invalid_field_exceptions=False)
         # we don't want it to inherit the UUID from the app, though!
-        youth.uuid = self.get_uuid()
+        youth.uuid = youth.get_uuid()
         return youth
-
-    @staticmethod
-    def get_uuid_prefix():
-        return 'yth'
 
     @staticmethod
     def _get_object_class():
         return Youth
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         return YouthPersister()
 
 
@@ -116,6 +113,7 @@ class Application(Base.Object):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        self.uuid = self.get_uuid()
         self.unit_id = ''
         self.status = APPLICATION_STATUS_CREATED
         self.guardian_approval_guardian_id = ''
@@ -140,8 +138,8 @@ class Application(Base.Object):  # pylint: disable=too-many-instance-attributes
         return ApplicationValidator(self)
 
     @staticmethod
-    def get_factory():
-        return ApplicationFactory()
+    def get_uuid_prefix():
+        return 'yap'
 
 
 class ApplicationValidator(Base.Validator):
@@ -229,15 +227,11 @@ class ApplicationFactory(Base.Factory):
     """Youth Application Factory"""
 
     @staticmethod
-    def get_uuid_prefix():
-        return 'yap'
-
-    @staticmethod
     def _get_object_class():
         return Application
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         return ApplicationPersister()
 
 

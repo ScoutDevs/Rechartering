@@ -16,7 +16,7 @@ class Object(object):
     """Base class"""
 
     def __init__(self):
-        self.uuid = self.get_factory().get_uuid()
+        pass
 
     def get_validator(self):  # pylint: disable=no-self-use
         """
@@ -26,15 +26,6 @@ class Object(object):
         """
         raise Exception('SYSTEM ERROR: validator not defined.')
 
-    @staticmethod
-    def get_factory():
-        """
-        Returns a Factory object
-
-        Must be defined by the child class.
-        """
-        raise Exception('SYSTEM ERROR: factory not defined.')
-
     def validate(self):
         """Validate the object"""
         return self.get_validator().validate()
@@ -43,7 +34,36 @@ class Object(object):
         """Update object from dict"""
         for key, _ in self.__dict__.items():
             if key in data:
-                self.__dict__[key] = data[key]
+                setattr(self, key, data[key])
+
+    def to_dict(self):
+        """Convert object to dict"""
+        data = {}
+        for key, val in self.__dict__.items():
+            if key[0] != '_':
+                data[key] = val
+            else:
+                data[key[1:]] = val
+        return data
+
+    def fields(self):
+        """Return list of object properties"""
+        fields = []
+        for key, _ in self.__dict__.items():
+            if key[0] == '_':
+                fields.append(key[1:])
+            else:
+                fields.append(key)
+        return fields
+
+    def get_uuid(self):
+        """Generates a UUID"""
+        return "{}-{}".format(self.get_uuid_prefix(), shortuuid.uuid())
+
+    @staticmethod
+    def get_uuid_prefix():
+        """Must be implemented by child"""
+        raise Exception('Invalid implementation.')
 
 
 class Validator(object):
@@ -68,7 +88,7 @@ class Validator(object):
 
         for key, value in self.get_field_requirements().items():
             if value == FIELD_REQUIRED:
-                if key not in self.obj.__dict__ or not self.obj.__dict__[key]:
+                if key not in self.obj.to_dict() or not self.obj.to_dict()[key]:
                     errors.append('Missing required field "{}"'.format(key))
                     valid = False
 
@@ -97,7 +117,6 @@ class Validator(object):
         """Validates the object"""
         errors = self.get_validation_errors()
         if errors:
-            print self.obj.__dict__
             raise InvalidObjectException(errors[0])
 
     def get_validation_errors(self):
@@ -113,50 +132,55 @@ class Factory(object):
     """Base Factory"""
 
     def __init__(self):
-        self.persister = self._get_persister()  # pylint: disable=assignment-from-no-return
-
-    @staticmethod
-    def get_uuid_prefix():
-        """
-        UUID prefix to easily identify record types
-
-        Must be defined by the child class.
-        """
-        raise Exception('SYSTEM ERROR: prefix not defined.')
-
-    def get_uuid(self):
-        """Generates a UUID"""
-        return "{}-{}".format(self.get_uuid_prefix(), shortuuid.uuid())
+        self.__persister = None
 
     def load_by_uuid(self, uuid):
         """Load by UUID"""
         return self.load_from_database({'uuid': uuid})
 
+    @classmethod
+    def get_uuid_prefix(cls):
+        """Get UUID prefix"""
+        return cls._get_object_class().get_uuid_prefix()
+
     def load_from_database(self, search_data):
         """Load from DB by primary key"""
-        item_data = self.persister.get(search_data)
+        item_data = self._persister.get(search_data)
         return self.construct(item_data)
 
     def load_from_database_query(self, search_data):
         """Load from DB by secondary key"""
-        items = self.persister.query(search_data)
+        items = self._persister.query(search_data)
         if len(items) == 0:
             raise RecordNotFoundException('Record not found')
         elif len(items) > 1:
             raise MultipleMatchException('Multiple matches found')
         return self.construct(items[0])
 
-    def construct(self, data):
+    def construct(self, data, invalid_field_exceptions=True):
         """Create object from dict"""
         klass = self._get_object_class()  # pylint: disable=assignment-from-no-return
         obj = klass()
-        for key, _ in obj.__dict__.items():
-            if key in data:
-                obj.__dict__[key] = data[key]
+
+        for key, _ in data.items():
+            if key in obj.fields():
+                try:
+                    setattr(obj, key, data[key])
+                except AttributeError:
+                    pass
+            else:
+                if invalid_field_exceptions:
+                    raise Exception('Unknown "{}" field "{}"'.format(klass.__name__, key))
         return obj
 
+    @property
+    def _persister(self):
+        if not self.__persister:
+            self.__persister = self.get_persister()  # pylint: disable=assignment-from-no-return
+        return self.__persister
+
     @staticmethod
-    def _get_persister():
+    def get_persister():
         """Get persister object"""
         raise Exception('SYSTEM ERROR: persister not defined.')
 
@@ -189,7 +213,7 @@ class Persister(object):
         DynamoDB won't store empty fields, so get rid of 'em
         """
         new_dict = {}
-        for key, val in obj.__dict__.items():
+        for key, val in obj.to_dict().items():
             if val != '':
                 new_dict[key] = val
         return new_dict

@@ -6,6 +6,7 @@ import unittest
 
 from controllers import ClientErrorException
 from controllers import OrganizationImport
+from models import COUNCIL_ID
 
 from . import FakeDistrictFactory
 from . import FakeSponsoringOrganizationFactory
@@ -41,9 +42,9 @@ class TestOrganizationImportController(unittest.TestCase):
         self.assertEqual(3, len(districts))
         self.assertEqual(6, len(subdistricts))
         self.assertEqual(8, len(sporgs))
-        self.assertEqual('dst-TEST-provopeak', districts['5'].uuid)
-        self.assertEqual('sbd-TEST-nps', subdistricts['5-9'].uuid)
-        self.assertEqual('spo-TEST-np3', sporgs['1455'].uuid)
+        self.assertEqual('dst-5.cnl-'+COUNCIL_ID, districts['5'].uuid)
+        self.assertEqual('sbd-5-9.dst-5.cnl-'+COUNCIL_ID, subdistricts['5-9'].uuid)
+        self.assertEqual('spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID, sporgs['1455'].uuid)
 
         with self.assertRaises(ClientErrorException):
             filename = os.path.join(os.path.dirname(__file__), 'data/orgs_bad.tsv')

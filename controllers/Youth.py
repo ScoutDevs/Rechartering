@@ -11,18 +11,21 @@ class Controller(object):
 
     def __init__(self,
                  user,
-                 youth_factory=Youth.YouthFactory(),
-                 youth_persister=Youth.YouthPersister()):
+                 youth_factory=None):
         """Dependency-injectable init
 
         Args:
             user: User object, used to determine permissions
             youth_factory: Youth factory object
-            youth_persister: Youth persister object
         """
         self.user = user
-        self.youth_factory = youth_factory
-        self.youth_persister = youth_persister
+
+        if youth_factory:
+            self.youth_factory = youth_factory
+        else:
+            self.youth_factory = Youth.YouthFactory()
+
+        self.youth_persister = self.youth_factory.get_persister()
 
     @require_role(['Unit.Admin', 'Guardian', 'SponsoringOrganization.Admin', 'Council.Employee'])
     def find_duplicate_youth(self, youth_data):

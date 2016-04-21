@@ -1,6 +1,7 @@
 # pylint: disable=no-member,attribute-defined-outside-init,import-error
 """General functionality for use across tests"""
 
+from models import COUNCIL_ID
 from models import Base
 from models import District
 from models import Organization
@@ -54,7 +55,7 @@ class FakeUserFactory(User.Factory):  # pylint: disable=too-few-public-methods,n
     """Fake class for testing"""
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         """Get corresponding persister"""
         return FakeUserPersister()
 
@@ -65,7 +66,7 @@ class FakeUserPersister(FakePersister):
     def __init__(self):
         data = [
             {
-                'uuid': 'usr-TEST-ben',
+                'uuid': 'usr-ben',
                 'username': 'ben',
                 'password': 'ben',
                 'guardian_id': 'grd-TEST-1',
@@ -83,7 +84,7 @@ class FakeUnitFactory(Unit.Factory):  # pylint: disable=too-few-public-methods,n
     """Fake class for testing"""
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         """Get corresponding persister"""
         return FakeUnitPersister()
 
@@ -99,17 +100,17 @@ class FakeUnitPersister(FakePersister):
         """Test data definition"""
         return [
             {
-                'uuid': 'unt-TEST-51',
+                'uuid': 'unt-51.spo-51.sbd-5-8.dst-5.cnl-'+COUNCIL_ID,
                 'type': Organization.ORG_TYPE_UNIT,
-                'parent_uuid': 'spo-TEST-provocity',
+                'parent_uuid': 'spo-51.sbd-5-8.dst-5.cnl-'+COUNCIL_ID,
                 'name': Unit.TYPE_TROOP,
                 'number': '51',
                 'lds_unit': False,
             },
             {
-                'uuid': 'unt-TEST-1455',
+                'uuid': 'unt-1455.spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
                 'type': Organization.ORG_TYPE_UNIT,
-                'parent_uuid': 'spo-TEST-np3',
+                'parent_uuid': 'spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
                 'name': Unit.TYPE_TROOP,
                 'number': '1455',
                 'lds_unit': True,
@@ -121,7 +122,7 @@ class FakeDistrictFactory(District.Factory):  # pylint: disable=too-few-public-m
     """Fake class for testing"""
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         """Get corresponding persister"""
         return FakeDistrictPersister()
 
@@ -134,9 +135,9 @@ class FakeDistrictPersister(FakePersister):
         """Test data definition"""
         return [
             {
-                'uuid': 'dst-TEST-provopeak',
+                'uuid': 'dst-5.cnl-'+COUNCIL_ID,
                 'type': Organization.ORG_TYPE_DISTRICT,
-                'parent_uuid': 'COUNCIL',
+                'parent_uuid': 'cnl-'+COUNCIL_ID,
                 'name': 'Provo Peak',
                 'number': '5',
             },
@@ -150,7 +151,7 @@ class FakeSubdistrictFactory(Subdistrict.Factory):  # pylint: disable=too-few-pu
     """Fake class for testing"""
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         """Get corresponding persister"""
         return FakeSubdistrictPersister()
 
@@ -163,18 +164,18 @@ class FakeSubdistrictPersister(FakePersister):
         """Test data definition"""
         return [
             {
-                'uuid': 'sbd-TEST-nps',
+                'uuid': 'sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
                 'type': Organization.ORG_TYPE_SUBDISTRICT,
                 'name': 'Provo North Park Stake',
                 'number': '5-9',
-                'parent_uuid': 'dst-TEST-provopeak',
+                'parent_uuid': 'dst-5.cnl-'+COUNCIL_ID,
             },
             {
-                'uuid': 'sbd-TEST-cu',
+                'uuid': 'sbd-5-8.dst-5.cnl-'+COUNCIL_ID,
                 'type': Organization.ORG_TYPE_SUBDISTRICT,
                 'name': 'Community Units',
                 'number': '5-8',
-                'parent_uuid': 'dst-TEST-provopeak',
+                'parent_uuid': 'dst-5.cnl-'+COUNCIL_ID,
             },
         ]
 
@@ -186,7 +187,7 @@ class FakeSponsoringOrganizationFactory(SponsoringOrganization.Factory):  # pyli
     """Fake class for testing"""
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         """Get corresponding persister"""
         return FakeSponsoringOrganizationPersister()
 
@@ -199,18 +200,18 @@ class FakeSponsoringOrganizationPersister(FakePersister):
         """Test data definition"""
         return [
             {
-                'uuid': 'spo-TEST-np3',
+                'uuid': 'spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
                 'type': Organization.ORG_TYPE_SPONSORING_ORGANIZATION,
                 'name': 'North Park 3rd Ward',
                 'number': '1455',
-                'parent_uuid': 'sbd-TEST-nps',
+                'parent_uuid': 'sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
             },
             {
-                'uuid': 'spo-TEST-pel',
+                'uuid': 'spo-51.sbd-5-8.dst-5.cnl-'+COUNCIL_ID,
                 'type': Organization.ORG_TYPE_SPONSORING_ORGANIZATION,
                 'name': 'Provo Elks Lodge',
                 'number': '51',
-                'parent_uuid': 'sbd-TEST-cu',
+                'parent_uuid': 'sbd-5-8.dst-5.cnl-'+COUNCIL_ID,
             },
         ]
 
@@ -222,7 +223,7 @@ class FakeYouthApplicationFactory(Youth.ApplicationFactory):  # pylint: disable=
     """Fake class for testing"""
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         """Get corresponding persister"""
         return FakeYouthApplicationPersister()
 
@@ -234,7 +235,7 @@ class FakeYouthApplicationPersister(FakePersister):
         data = [
             {
                 'uuid': 'yap-TEST-1',
-                'unit_id': 'unt-TEST-1455',
+                'unit_id': 'unt-1455.spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
                 'scoutnet_id': 123,
                 'status': Youth.APPLICATION_STATUS_CREATED,
                 'first_name': 'Ben',
@@ -253,7 +254,7 @@ class FakeYouthFactory(Youth.YouthFactory):  # pylint: disable=too-few-public-me
     """Fake class for testing"""
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         """Get corresponding persister"""
         return FakeYouthPersister()
 

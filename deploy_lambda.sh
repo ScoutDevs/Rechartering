@@ -22,4 +22,5 @@ cd -
 
 
 # HELPFUL:
-# aws lambda update-function-code --function-name import_organization_data --zip-file fileb://~/paperless_registration.zip
+aws lambda update-function-code --function-name import_organization_data --zip-file fileb://~/paperless_registration.zip
+aws lambda update-function-code --function-name update_organization --zip-file fileb://~/paperless_registration.zip

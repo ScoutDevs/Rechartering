@@ -3,19 +3,17 @@
 
 import unittest
 
+from models import COUNCIL_ID
 from models import AdultApplications
 from models import CharterApplications
-from models import District
 from models import Guardian
 from models import SponsoringOrganization
-from models import Subdistrict
 from models import Unit
 from models import User
 from models import Volunteer
 from models import Youth
 
 from . import FakeSponsoringOrganizationFactory
-from . import FakeSubdistrictFactory
 from . import FakeYouthFactory
 from . import FakeYouthPersister
 
@@ -139,44 +137,13 @@ class TestGuardian(ModelTestCase):
         self.assertEquals('gdn', self.obj.uuid[0:3])
 
 
-class TestDistrict(ModelTestCase):
-
-    """Tests District model"""
-
-    def setUp(self):
-        """Init"""
-        obj_data = {
-            'number': '05',
-            'name': 'Provo Peak',
-        }
-        self._set_up(District, obj_data)
-
-    def test_uuid(self):
-        """Validate the UUID prefix"""
-        self.assertEquals('dst', self.obj.uuid[0:3])
-
-
-class TestSubdistrict(ModelTestCase):
-
-    """Tests Subdistrict model"""
-
-    def setUp(self):
-        """Init"""
-        obj_data = FakeSubdistrictFactory().load_by_uuid('sbd-TEST-nps').__dict__
-        self._set_up(Subdistrict, obj_data)
-
-    def test_uuid(self):
-        """Validate the UUID prefix"""
-        self.assertEquals('sbd', self.obj.uuid[0:3])
-
-
 class TestSponsoringOrganization(ModelTestCase):
 
     """Tests SponsoringOrganization model"""
 
     def setUp(self):
         """Init"""
-        obj_data = FakeSponsoringOrganizationFactory().load_by_uuid('spo-TEST-np3').__dict__
+        obj_data = FakeSponsoringOrganizationFactory().load_by_uuid('spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID).to_dict()
         self._set_up(SponsoringOrganization, obj_data)
 
     def test_uuid(self):
@@ -191,7 +158,7 @@ class TestUnit(ModelTestCase):
     def setUp(self):
         """Init"""
         obj_data = {
-            'sponsoring_organization_id': '123123',
+            'parent_uuid': '123123',
             'type': 'Unit',
             'name': 'Troop',
             'number': 1455,
@@ -216,7 +183,6 @@ class TestYouthApplication(ModelTestCase):
             'first_name': 'Ben',
             'last_name': 'Reece',
             'date_of_birth': '1980-01-01',
-            'data': {}
         }
         self.factory = Youth.ApplicationFactory()
         self.obj = self.factory.construct(obj_data)
@@ -309,7 +275,6 @@ class TestAdultApplications(ModelTestCase):
         obj_data = {
             'status': 'Completed',
             'org_id': '123123',
-            'data': {},
         }
         self._set_up(AdultApplications, obj_data)
 

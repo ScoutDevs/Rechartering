@@ -3,7 +3,6 @@
 
 AWS Lambda needs nice, clean hooks.  This file provides those.
 """
-# TODO: Race conditions cause major duplications in the DB :/
 from __future__ import print_function
 
 import json
@@ -27,7 +26,7 @@ def get(event, context):
     """Lambda facade for Organization.Controller.get method"""
     controller = _get_controller(event, context)
     obj = controller.get(event['uuid'])
-    return obj.__dict__
+    return obj.to_dict()
 
 
 def search(event, context):
@@ -42,7 +41,7 @@ def post(event, context):
     controller = _get_controller(event, context)
     obj = controller.set(event['data'])
     OrganizationModel.Persister().save(obj)
-    return obj.__dict__
+    return obj.to_dict()
 
 
 def put(event, context):
@@ -50,7 +49,7 @@ def put(event, context):
     controller = _get_controller(event, context)
     obj = controller.update(event['data'])
     OrganizationModel.Persister().save(obj)
-    return obj.__dict__
+    return obj.to_dict()
 
 
 def import_data(event, context):
@@ -73,6 +72,8 @@ def import_data(event, context):
     for record in controller.process_s3_object(response):
         _queue_update(record)
         num_processed = num_processed + 1
+        if 'test' in event['Records'][0] and num_processed >= 100:
+            break
 
     response = {
         'records_processed': num_processed,

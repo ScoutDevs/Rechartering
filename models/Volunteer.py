@@ -11,6 +11,7 @@ class Volunteer(Base.Object):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        self.uuid = self.get_uuid()
         self.user_uuid = ''
         self.duplicate_hash = ''
         self.unit_id = ''
@@ -32,8 +33,8 @@ class Volunteer(Base.Object):  # pylint: disable=too-many-instance-attributes
         return hashlib.sha256(string).hexdigest()
 
     @staticmethod
-    def get_factory():
-        return Factory()
+    def get_uuid_prefix():
+        return 'vol'
 
 
 class Validator(Base.Validator):
@@ -60,15 +61,11 @@ class Factory(Base.Factory):
     """Volunteer Factory"""
 
     @staticmethod
-    def get_uuid_prefix():
-        return 'vol'
-
-    @staticmethod
     def _get_object_class():
         return Volunteer
 
     @staticmethod
-    def _get_persister():
+    def get_persister():
         return Persister()
 
 
