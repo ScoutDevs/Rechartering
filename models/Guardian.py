@@ -11,7 +11,7 @@ class Guardian(Base.Object):
         self.user_uuid = ''
         self.first_name = ''
         self.last_name = ''
-        self.youth = ''
+        self.youth = []
 
     def get_validator(self):
         return Validator(self)
@@ -27,6 +27,7 @@ class Validator(Base.Validator):
     def get_field_requirements(self):
         return {
             'uuid': Base.FIELD_REQUIRED,
+            'user_uuid': Base.FIELD_REQUIRED,
             'first_name': Base.FIELD_REQUIRED,
             'last_name': Base.FIELD_REQUIRED,
             'youth': Base.FIELD_REQUIRED,

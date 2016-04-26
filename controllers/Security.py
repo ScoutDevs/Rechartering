@@ -1,7 +1,13 @@
 """Security"""
 
+ROLE_COUNCIL_ADMIN = 'Council.Admin'
+ROLE_COUNCIL_EMPLOYEE = 'Council.Employee'
+ROLE_SPORG_ADMIN = 'SponsoringOrganization.Admin'
+ROLE_UNIT_ADMIN = 'Unit.Admin'
+ROLE_GUARDIAN = 'Guardian'
 
-def user_has_permission(user, roles, data=None):
+
+def user_has_permission(user, roles):
     """Permissions check against the user
 
     Checks the user's roles & associations to Youth, Units, etc. to
@@ -11,40 +17,41 @@ def user_has_permission(user, roles, data=None):
     # TO-DO: add unit tests for this
     if roles is str:
         roles = [roles]
-    if 'Council.Admin' in user.roles:
+    if ROLE_COUNCIL_ADMIN in user.roles:
         # Council admins can do ANYTHING!
         permission = True
-    elif 'Council.Employee' in roles and 'Council.Employee' in user.roles:
+    elif ROLE_COUNCIL_EMPLOYEE in roles and ROLE_COUNCIL_EMPLOYEE in user.roles:
         permission = True
-    elif 'SponsoringOrganization.Admin' in roles and 'SponsoringOrganization.Admin' in user.roles:
-        permission = user_has_sponsoring_organization_permission(user, data)
-    elif 'Unit.Admin' in roles and 'Unit.Admin' in user.roles:
-        permission = user_has_unit_permission(user, data)
-    elif 'Guardian' in roles and 'Guardian' in user.roles:
-        permission = user_has_guardian_permission(user, data)
+    elif ROLE_SPORG_ADMIN in roles and ROLE_SPORG_ADMIN in user.roles:
+        permission = True
+    elif ROLE_UNIT_ADMIN in roles and ROLE_UNIT_ADMIN in user.roles:
+        permission = True
+    elif ROLE_GUARDIAN in roles and ROLE_GUARDIAN in user.roles:
+        permission = True
     else:
         permission = False
     return permission
 
 
-def user_has_sponsoring_organization_permission(user, data):  # pylint: disable=invalid-name
+def user_has_sponsoring_organization_permission(user, *args):  # pylint: disable=invalid-name
     """Determines whether the user has access to the sponsoring organization"""
     # TO-DO: implement this
-    if user and data:
+    if user and args:
         return True
 
 
-def user_has_unit_permission(user, data):
+def user_has_unit_permission(user, *args):
     """Determines whether the user has access to the unit"""
     # TO-DO: implement this
-    if user and data:
+    if user and args:
         return True
 
 
-def user_has_guardian_permission(user, data):
+def user_has_guardian_permission(user, *args):
     """Determines whether the user has access to the youth"""
     # TO-DO: implement this
-    if user and data:
+    print args
+    if user and args:
         return True
 
 

@@ -3,6 +3,7 @@
 
 from datetime import date
 
+import Security
 from models import Unit
 from models import Youth
 
@@ -54,7 +55,7 @@ class Controller(object):
         else:
             youth_factory = Youth.YouthFactory()
 
-    @require_role('Council.Employee')
+    @require_role(Security.ROLE_COUNCIL_EMPLOYEE)
     def get_applications_by_status(self, status):
         """Load all applications matching the specified status
 
@@ -106,7 +107,7 @@ class Controller(object):
         youth = self.youth_factory.load_by_uuid(app.youth_id)
         return youth.get_guardian_approval()
 
-    @require_role('Guardian')
+    @require_role(Security.ROLE_GUARDIAN)
     @require_status(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL)
     def submit_guardian_approval(self, app, data):
         """Submit guardian approval
@@ -148,7 +149,7 @@ class Controller(object):
         app.validate()
         return (app, youth)
 
-    @require_role('Guardian')
+    @require_role(Security.ROLE_GUARDIAN)
     @require_status(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL)
     def submit_guardian_rejection(self, app, data):  # pylint: disable=no-self-use
         """Submit guardian reject (non-approval)
@@ -180,7 +181,7 @@ class Controller(object):
         app.validate()
         return app
 
-    @require_role(['Unit.Admin'])
+    @require_role([Security.ROLE_UNIT_ADMIN])
     @require_status(Youth.APPLICATION_STATUS_UNIT_APPROVAL)
     def submit_unit_approval(self, app, data):
         """Submit unit approval
@@ -226,7 +227,7 @@ class Controller(object):
         unit = self.unit_factory.load_by_uuid(app.unit_id)
         return unit.lds_unit
 
-    @require_role('Unit.Admin')
+    @require_role(Security.ROLE_UNIT_ADMIN)
     @require_status(Youth.APPLICATION_STATUS_UNIT_APPROVAL)
     def submit_unit_rejection(self, app, data):  # pylint: disable=no-self-use
         """Submit unit rejection (non-approval)
@@ -256,7 +257,7 @@ class Controller(object):
         app.validate()
         return app
 
-    @require_role('Council.Employee')
+    @require_role(Security.ROLE_COUNCIL_EMPLOYEE)
     @require_status(Youth.APPLICATION_STATUS_FEE_PENDING)
     def pay_fees(self, app, data):  # pylint: disable=no-self-use
         """Mark registration fees as paid
@@ -286,7 +287,7 @@ class Controller(object):
         app.validate()
         return app
 
-    @require_role('Council.Employee')
+    @require_role(Security.ROLE_COUNCIL_EMPLOYEE)
     @require_status(Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET)
     def mark_as_recorded(self, app, data):
         """Mark the application as recorded in ScoutNet

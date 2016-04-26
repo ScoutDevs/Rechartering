@@ -126,7 +126,8 @@ class TestGuardian(ModelTestCase):
         """Init"""
         obj_data = {
             'uuid': 'gdn-TEST-1',
-            'youth': [123, 456],
+            'user_uuid': 'usr-ben',
+            'youth': ['yth-TEST-1'],
             'first_name': 'Test',
             'last_name': 'Testerson',
         }

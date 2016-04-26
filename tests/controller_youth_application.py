@@ -42,7 +42,7 @@ class TestYouthApplicationController(unittest.TestCase):
         self.assertEqual(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL, self.app.status)
 
         guardian_approval = {
-            'guardian_approval_guardian_id': 'grd-TEST-123',
+            'guardian_approval_guardian_id': 'gdn-TEST-123',
             'guardian_approval_signature': 'abcd',
         }
         (self.app, _) = self.controller.submit_guardian_approval(self.app, guardian_approval)
@@ -75,7 +75,7 @@ class TestYouthApplicationController(unittest.TestCase):
         self.assertEqual(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL, self.app.status)
 
         guardian_approval = {
-            'guardian_approval_guardian_id': 'grd-TEST-123',
+            'guardian_approval_guardian_id': 'gdn-TEST-123',
             'guardian_approval_signature': 'abcd',
         }
         (self.app, _) = self.controller.submit_guardian_approval(self.app, guardian_approval)
@@ -116,7 +116,7 @@ class TestYouthApplicationController(unittest.TestCase):
         self.assertEqual(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL, self.app.status)
 
         guardian_approval = {
-            'guardian_approval_guardian_id': 'grd-TEST-123',
+            'guardian_approval_guardian_id': 'gdn-TEST-123',
             'guardian_approval_signature': 'abcd',
         }
         (self.app, _) = self.controller.submit_guardian_approval(self.app, guardian_approval)
@@ -133,7 +133,7 @@ class TestYouthApplicationController(unittest.TestCase):
         """Test invalid workflow exceptions"""
         with self.assertRaises(InvalidActionException):
             guardian_approval = {
-                'guardian_approval_guardian_id': 'grd-TEST-123',
+                'guardian_approval_guardian_id': 'gdn-TEST-123',
                 'guardian_approval_signature': 'abcd',
             }
             self.controller.submit_guardian_approval(self.app, guardian_approval)

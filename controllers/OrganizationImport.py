@@ -144,7 +144,7 @@ class Controller(object):
             tuple: district, subdistrict, sporg objects
         """
         # TO-DO: This needs to be injectable, since the UNPC approach doesn't
-        # appear to be the standard
+        # appear to be a standard
         district = self._process_district(record)
         subdistrict = self._process_subdistrict(record, district)
         sporg = self._process_sponsoring_organization(record, subdistrict)

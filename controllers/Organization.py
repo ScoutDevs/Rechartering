@@ -1,5 +1,6 @@
 # pylint: disable=import-error
 """Organization Controller"""
+import Security
 from models import District
 from models import Organization
 from models import RecordNotFoundException
@@ -59,7 +60,7 @@ class Controller(object):
         """
         return self._get_factory_by_uuid(uuid).load_by_uuid(uuid)
 
-    @require_role('Council_Admin')
+    @require_role(Security.ROLE_COUNCIL_ADMIN)
     def set(self, data):
         """Record-level create/update
 
@@ -77,7 +78,7 @@ class Controller(object):
         else:
             raise ClientErrorException('Invalid organization type specified.')
 
-    @require_role('Council_Admin')
+    @require_role(Security.ROLE_COUNCIL_ADMIN)
     def update(self, data):
         """Field-level create/update
 

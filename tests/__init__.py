@@ -1,9 +1,11 @@
 # pylint: disable=no-member,attribute-defined-outside-init,import-error
 """General functionality for use across tests"""
 
+from controllers import Security
 from models import COUNCIL_ID
 from models import Base
 from models import District
+from models import Guardian
 from models import Organization
 from models import Subdistrict
 from models import SponsoringOrganization
@@ -43,7 +45,7 @@ class FakePersister(object):
         for item in self.data:
             match = True
             for field_name, field_value in search_data.items():
-                if item[field_name] != field_value:
+                if field_name not in item or item[field_name] != field_value:
                     match = False
                     break
             if match:
@@ -69,15 +71,46 @@ class FakeUserPersister(FakePersister):
                 'uuid': 'usr-ben',
                 'username': 'ben',
                 'password': 'ben',
-                'guardian_id': 'grd-TEST-1',
+                'guardian_id': 'gdn-TEST-1',
                 'roles': {
-                    'Council.Admin': [],
+                    Security.ROLE_COUNCIL_ADMIN: [],
                 },
-                'positions': [
-                ]
+            },
+            {
+                'uuid': 'usr-ken',
+                'username': 'ken',
+                'password': 'ken',
+                'roles': {
+                    Security.ROLE_GUARDIAN: [],
+                },
             },
         ]
         super(FakeUserPersister, self).__init__(data)
+
+
+class FakeGuardianFactory(Guardian.Factory):  # pylint: disable=too-few-public-methods,no-init
+    """Fake class for testing"""
+
+    @staticmethod
+    def get_persister():
+        """Get corresponding persister"""
+        return FakeGuardianPersister()
+
+
+class FakeGuardianPersister(FakePersister):
+    """Fake class for testing"""
+
+    def __init__(self):
+        data = [
+            {
+                'uuid': 'gdn-TEST-1',
+                'user_uuid': 'usr-ben',
+                'first_name': 'Ben',
+                'last_name': 'Reece',
+                'youth': ['yth-TEST-1'],
+            },
+        ]
+        super(FakeGuardianPersister, self).__init__(data)
 
 
 class FakeUnitFactory(Unit.Factory):  # pylint: disable=too-few-public-methods,no-init
@@ -271,8 +304,19 @@ class FakeYouthPersister(FakePersister):
                 'date_of_birth': '2002-01-15',
                 'duplicate_hash': 'b94302d98d30a3e48ea80c7f4432a6f30661869f0a95e0096f50e84edc0fc09b',
                 'units': ['unt-TEST-1455'],
-                'guardian_approval_guardian_id': 'grd-TEST-123',
+                'guardian_approval_guardian_id': 'gdn-TEST-123',
                 'guardian_approval_signature': 'abcde',
+            },
+            {
+                'uuid': 'yth-TEST-2',
+                'first_name': 'Jacob',
+                'last_name': 'Reece',
+                'scoutnet_id': '123',
+                'date_of_birth': '2005-12-22',
+                'duplicate_hash': '123',
+                'units': ['unt-TEST-1455'],
+                'guardian_approval_guardian_id': '',
+                'guardian_approval_signature': '',
             },
         ]
         super(FakeYouthPersister, self).__init__(data)
