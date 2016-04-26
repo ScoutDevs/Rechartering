@@ -11,6 +11,7 @@ from models import Subdistrict
 from models import SponsoringOrganization
 from models import Unit
 from models import User
+from models import Volunteer
 from models import Youth
 
 
@@ -69,6 +70,8 @@ class FakeUserPersister(FakePersister):
         data = [
             {
                 'uuid': 'usr-ben',
+                'first_name': 'Ben',
+                'last_name': 'Reece',
                 'username': 'ben',
                 'password': 'ben',
                 'guardian_id': 'gdn-TEST-1',
@@ -86,6 +89,33 @@ class FakeUserPersister(FakePersister):
             },
         ]
         super(FakeUserPersister, self).__init__(data)
+
+
+class FakeVolunteerFactory(Volunteer.Factory):  # pylint: disable=too-few-public-methods,no-init
+    """Fake class for testing"""
+
+    @staticmethod
+    def get_persister():
+        """Get corresponding persister"""
+        return FakeVolunteerPersister()
+
+
+class FakeVolunteerPersister(FakePersister):
+    """Fake class for testing"""
+
+    def __init__(self):
+        data = [
+            {
+                'uuid': 'vol-TEST-1',
+                'user_uuid': 'usr-ben',
+                'first_name': 'Ben',
+                'last_name': 'Reece',
+                'unit_id': 'unt-TEST-1455',
+                'ypt_completion_date': '2016-01-01',
+                'ssn': '123-45-6789',
+            },
+        ]
+        super(FakeVolunteerPersister, self).__init__(data)
 
 
 class FakeGuardianFactory(Guardian.Factory):  # pylint: disable=too-few-public-methods,no-init

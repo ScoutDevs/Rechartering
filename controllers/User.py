@@ -1,16 +1,16 @@
 # pylint: disable=import-error
-"""Guardian Controller"""
+"""User Controller"""
 import CRUD
-from models import Guardian
+from models import User
 
 
 class Controller(CRUD.Controller):
-    """Guardian CRUD Controller
+    """User CRUD Controller
 
-    A 'Guardian' is a parent or guardian of one or more youth.
+    A 'User' is a parent or guardian of one or more youth.
     """
 
     def __init__(self, user, factory=None):
         if not factory:
-            self.factory = Guardian.Factory()
+            self.factory = User.Factory()
         super(Controller, self).__init__(user, factory)

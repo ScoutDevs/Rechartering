@@ -4,12 +4,14 @@ import hashlib
 from . import Base
 
 
-class User(Base.Object):
+class User(Base.Object):  # pylint: disable=too-many-instance-attributes
     """User class"""
 
     def __init__(self):
         super(self.__class__, self).__init__()
         self.uuid = self.get_uuid()
+        self.first_name = ''
+        self.last_name = ''
         self.username = ''
         self.password = ''
         self.guardian_id = ''
@@ -42,6 +44,7 @@ class Validator(Base.Validator):
             'positions': Base.FIELD_OPTIONAL,
             'guardians': Base.FIELD_OPTIONAL,
         }
+# TO-DO: UUID = usr-[USERNAME]
 
 
 class Factory(Base.Factory):
