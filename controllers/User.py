@@ -1,16 +1,24 @@
 # pylint: disable=import-error
 """User Controller"""
-import CRUD
 from models import User
+
+from . import CRUD
 
 
 class Controller(CRUD.Controller):
-    """User CRUD Controller
+    """User Controller
 
-    A 'User' is a parent or guardian of one or more youth.
+    A 'User' is anyone with an account.
     """
 
     def __init__(self, user, factory=None):
+        self.user = user
         if not factory:
             self.factory = User.Factory()
         super(Controller, self).__init__(user, factory)
+
+    def log_in(self, username, password):
+        """Attempt to authenticate and log the user in"""
+        user = self.factory.load_by_username_password(username, password)
+        self.user = user
+        return user

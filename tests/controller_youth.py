@@ -37,20 +37,20 @@ class TestYouthController(unittest.TestCase):
         """Test guardian approval"""
         youth = FakeYouthFactory().load_by_uuid('yth-TEST-1')
         data = {
-            'guardian_approval_guardian_id': 'gdn-TEST-1',
+            'guardian_approval_guardian_uuid': 'gdn-TEST-1',
             'guardian_approval_signature': 'SIG',
             'guardian_approval_date': '2016-05-01',
         }
 
         youth = self.controller.grant_guardian_approval(youth, data)
-        self.assertEqual('gdn-TEST-1', youth.guardian_approval_guardian_id)
+        self.assertEqual('gdn-TEST-1', youth.guardian_approval_guardian_uuid)
         self.assertEqual('SIG', youth.guardian_approval_signature)
         self.assertEqual('2016-05-01', youth.guardian_approval_date)
 
         guardian = FakeGuardianFactory().load_by_uuid('gdn-TEST-1')
 
         youth = self.controller.revoke_guardian_approval(guardian, youth)
-        self.assertEqual('', youth.guardian_approval_guardian_id)
+        self.assertEqual('', youth.guardian_approval_guardian_uuid)
         self.assertEqual('', youth.guardian_approval_signature)
         self.assertEqual('', youth.guardian_approval_date)
 
@@ -74,7 +74,7 @@ class TestYouthController(unittest.TestCase):
             'date_of_birth': '2002-01-15',
             'duplicate_hash': 'b94302d98d30a3e48ea80c7f4432a6f30661869f0a95e0096f50e84edc0fc09b',
             'units': ['unt-TEST-1455'],
-            'guardian_approval_guardian_id': 'gdn-TEST-123',
+            'guardian_approval_guardian_uuid': 'gdn-TEST-123',
             'guardian_approval_signature': 'abcde',
         }
         youth = self.controller.set(data)

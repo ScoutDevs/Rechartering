@@ -18,7 +18,7 @@ def get_applications_by_status(event, context):
 def submit_application(event, context):
     """Lambda facade for YouthApplication.Controller method"""
     controller = _get_controller(event, context)
-    app = Youth.ApplicationFactory().load_by_uuid(event['application_id'])
+    app = Youth.ApplicationFactory().load_by_uuid(event['application_uuid'])
     app = controller.submit_application(app)
     Youth.ApplicationPersister().save(app)
     return app.uuid
@@ -27,7 +27,7 @@ def submit_application(event, context):
 def submit_guardian_approval(event, context):
     """Lambda facade for YouthApplication.Controller method"""
     controller = _get_controller(event, context)
-    app = Youth.ApplicationFactory().load_by_uuid(event['application_id'])
+    app = Youth.ApplicationFactory().load_by_uuid(event['application_uuid'])
     data = event['data']
     (app, youth) = controller.submit_guardian_approval(app, data)
 
@@ -41,7 +41,7 @@ def submit_guardian_approval(event, context):
 def submit_guardian_rejection(event, context):
     """Lambda facade for YouthApplication.Controller method"""
     controller = _get_controller(event, context)
-    app = Youth.ApplicationFactory().load_by_uuid(event['application_id'])
+    app = Youth.ApplicationFactory().load_by_uuid(event['application_uuid'])
     data = event['data']
     app = controller.submit_guardian_rejection(app, data)
     Youth.ApplicationPersister().save(app)
@@ -51,7 +51,7 @@ def submit_guardian_rejection(event, context):
 def submit_unit_approval(event, context):
     """Lambda facade for YouthApplication.Controller method"""
     controller = _get_controller(event, context)
-    app = Youth.ApplicationFactory().load_by_uuid(event['application_id'])
+    app = Youth.ApplicationFactory().load_by_uuid(event['application_uuid'])
     data = event['data']
     app = controller.submit_unit_approval(app, data)
     Youth.ApplicationPersister().save(app)
@@ -61,7 +61,7 @@ def submit_unit_approval(event, context):
 def submit_unit_rejection(event, context):
     """Lambda facade for YouthApplication.Controller method"""
     controller = _get_controller(event, context)
-    app = Youth.ApplicationFactory().load_by_uuid(event['application_id'])
+    app = Youth.ApplicationFactory().load_by_uuid(event['application_uuid'])
     data = event['data']
     app = controller.submit_unit_rejection(app, data)
     Youth.ApplicationPersister().save(app)
@@ -71,7 +71,7 @@ def submit_unit_rejection(event, context):
 def pay_fees(event, context):
     """Lambda facade for YouthApplication.Controller method"""
     controller = _get_controller(event, context)
-    app = Youth.ApplicationFactory().load_by_uuid(event['application_id'])
+    app = Youth.ApplicationFactory().load_by_uuid(event['application_uuid'])
     data = event['data']
     app = controller.pay_fees(app, data)
     Youth.ApplicationPersister().save(app)
@@ -81,7 +81,7 @@ def pay_fees(event, context):
 def mark_as_recorded(event, context):
     """Lambda facade for YouthApplication.Controller method"""
     controller = _get_controller(event, context)
-    app = Youth.ApplicationFactory().load_by_uuid(event['application_id'])
+    app = Youth.ApplicationFactory().load_by_uuid(event['application_uuid'])
     data = event['data']
     (app, youth) = controller.mark_as_recorded(app, data)
     Youth.ApplicationPersister().save(app)
@@ -91,5 +91,5 @@ def mark_as_recorded(event, context):
 
 def _get_controller(event, context):
     """Creates and returns the YouthApplication.Controller object"""
-    user = User.Factory().load_by_session(context['session_id'])
+    user = User.Factory().load_by_session(event['session_uuid'])
     return YouthApplication.Controller(user)

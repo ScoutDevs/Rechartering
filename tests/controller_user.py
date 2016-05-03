@@ -5,6 +5,7 @@ import unittest
 
 from controllers import ClientErrorException
 from controllers import User
+from models import AuthenticationFailureException
 
 from . import FakeUserFactory
 
@@ -69,6 +70,15 @@ class TestUserController(unittest.TestCase):
         self.assertEqual(1, len(response))
         self.assertEqual('usr-ben', response[0]['uuid'])
 
+    def test_login(self):
+        """Test 'log_in' method"""
+        controller = User.Controller(None, FakeUserFactory())
+
+        user = controller.log_in('ben', 'ben')
+        self.assertEqual('usr-ben', user.uuid)
+
+        with self.assertRaises(AuthenticationFailureException):
+            controller.log_in('fred', 'flintstone')
 
 if __name__ == '__main__':
     unittest.main()

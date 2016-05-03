@@ -42,14 +42,14 @@ class TestYouthApplicationController(unittest.TestCase):
         self.assertEqual(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL, self.app.status)
 
         guardian_approval = {
-            'guardian_approval_guardian_id': 'gdn-TEST-123',
+            'guardian_approval_guardian_uuid': 'gdn-TEST-123',
             'guardian_approval_signature': 'abcd',
         }
         (self.app, _) = self.controller.submit_guardian_approval(self.app, guardian_approval)
         self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
 
         unit_approval = {
-            'unit_approval_user_id': 'usr-ben',
+            'unit_approval_user_uuid': 'usr-ben',
             'unit_approval_signature': 'abcd',
         }
         self.app = self.controller.submit_unit_approval(self.app, unit_approval)
@@ -64,32 +64,32 @@ class TestYouthApplicationController(unittest.TestCase):
     def test_guardian_approval_on_file(self):
         """Test workflow when the guardian approval is on file"""
         data = FakeYouthFactory().load_by_uuid('yth-TEST-1')
-        self.app.youth_id = data.uuid
+        self.app.youth_uuid = data.uuid
         self.app = self.controller.submit_application(self.app)
         self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
 
     def test_non_lds_flow(self):
         """Test flow with non-LDS unit"""
-        self.app.unit_id = 'unt-51.spo-51.sbd-5-8.dst-5.cnl-'+COUNCIL_ID
+        self.app.unit_uuid = 'unt-51.spo-51.sbd-5-8.dst-5.cnl-'+COUNCIL_ID
         self.app = self.controller.submit_application(self.app)
         self.assertEqual(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL, self.app.status)
 
         guardian_approval = {
-            'guardian_approval_guardian_id': 'gdn-TEST-123',
+            'guardian_approval_guardian_uuid': 'gdn-TEST-123',
             'guardian_approval_signature': 'abcd',
         }
         (self.app, _) = self.controller.submit_guardian_approval(self.app, guardian_approval)
         self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
 
         unit_approval = {
-            'unit_approval_user_id': 'usr-TEST-123',
+            'unit_approval_user_uuid': 'usr-TEST-123',
             'unit_approval_signature': 'abcd',
         }
         self.app = self.controller.submit_unit_approval(self.app, unit_approval)
         self.assertEqual(Youth.APPLICATION_STATUS_FEE_PENDING, self.app.status)
 
         fee_data = {
-            'fee_payment_user_id': 'usr-TEST-123',
+            'fee_payment_user_uuid': 'usr-TEST-123',
             'fee_payment_receipt': 123
         }
         self.app = self.controller.pay_fees(self.app, fee_data)
@@ -116,14 +116,14 @@ class TestYouthApplicationController(unittest.TestCase):
         self.assertEqual(Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL, self.app.status)
 
         guardian_approval = {
-            'guardian_approval_guardian_id': 'gdn-TEST-123',
+            'guardian_approval_guardian_uuid': 'gdn-TEST-123',
             'guardian_approval_signature': 'abcd',
         }
         (self.app, _) = self.controller.submit_guardian_approval(self.app, guardian_approval)
         self.assertEqual(Youth.APPLICATION_STATUS_UNIT_APPROVAL, self.app.status)
 
         data = {
-            'unit_approval_user_id': 'usr-TEST-123',
+            'unit_approval_user_uuid': 'usr-TEST-123',
             'unit_approval_signature': 'abcd',
         }
         self.app = self.controller.submit_unit_rejection(self.app, data)
@@ -133,14 +133,14 @@ class TestYouthApplicationController(unittest.TestCase):
         """Test invalid workflow exceptions"""
         with self.assertRaises(InvalidActionException):
             guardian_approval = {
-                'guardian_approval_guardian_id': 'gdn-TEST-123',
+                'guardian_approval_guardian_uuid': 'gdn-TEST-123',
                 'guardian_approval_signature': 'abcd',
             }
             self.controller.submit_guardian_approval(self.app, guardian_approval)
 
         with self.assertRaises(InvalidActionException):
             unit_approval = {
-                'unit_approval_user_id': 'usr-TEST-123',
+                'unit_approval_user_uuid': 'usr-TEST-123',
                 'unit_approval_signature': 'abcd',
             }
             self.controller.submit_unit_approval(self.app, unit_approval)

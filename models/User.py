@@ -1,7 +1,9 @@
 """User classes"""
 import hashlib
 
+from . import AuthenticationFailureException
 from . import Base
+from . import MultipleMatchException
 
 
 class User(Base.Object):  # pylint: disable=too-many-instance-attributes
@@ -14,12 +16,12 @@ class User(Base.Object):  # pylint: disable=too-many-instance-attributes
         self.last_name = ''
         self.username = ''
         self.password = ''
-        self.guardian_id = ''
+        self.guardian_uuid = ''
         self.roles = {}
         self.positions = []
 
     @staticmethod
-    def hash_password(password):
+    def get_password_hash(password):
         """Hashes the password"""
         hashed_password = hashlib.sha256(password).hexdigest()
         return hashed_password
@@ -50,11 +52,36 @@ class Validator(Base.Validator):
 class Factory(Base.Factory):
     """User Factory"""
 
-    @staticmethod
-    def load_by_session(session_id):
+    def load_by_session(self, session_uuid):
         """Load the user based on the session UUID"""
-        # TO-DO: implement this
-        return session_id
+        search = {
+            '__index__': 'session_uuid',
+            'session_uuid': session_uuid,
+        }
+        data = self.get_persister().query(search)
+        if len(data) == 1:
+            user = self.construct(data[0])
+            return user
+        elif len(data) > 1:  # This should never happen.
+            raise MultipleMatchException('System Error 5001.')
+        else:
+            raise AuthenticationFailureException('Authentication failure.')
+
+    def load_by_username_password(self, username, password):
+        """Load the user based on the username & password"""
+        search = {
+            '__index__': 'username',
+            'username': username,
+            'password': User.get_password_hash(password),
+        }
+        data = self.get_persister().query(search)
+        if len(data) == 1:
+            user = self.construct(data[0])
+            return user
+        elif len(data) > 1:  # This should never happen.
+            raise MultipleMatchException('System Error 5002.')
+        else:
+            raise AuthenticationFailureException('User not found.')
 
     @staticmethod
     def _get_object_class():
@@ -66,7 +93,6 @@ class Factory(Base.Factory):
 
 
 class Persister(Base.Persister):
-
     """Persists User objects"""
 
     @staticmethod

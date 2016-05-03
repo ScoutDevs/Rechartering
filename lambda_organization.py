@@ -106,7 +106,7 @@ def process_record(event, context):
 
 def _get_controller(event, context):
     """Creates and returns the Controller object"""
-    user = User.Factory().load_by_session(context['session_id'])
+    user = User.Factory().load_by_session(event['session_uuid'])
     return Organization.Controller(user)
 
 

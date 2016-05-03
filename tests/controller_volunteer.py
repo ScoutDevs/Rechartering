@@ -41,7 +41,7 @@ class TestVolunteerController(unittest.TestCase):
             'user_uuid': 'usr-ben',
             'first_name': 'Ben',
             'last_name': 'Reece',
-            'unit_id': 'unt-TEST-1455',
+            'unit_uuid': 'unt-TEST-1455',
             'ypt_completion_date': '2016-01-01',
             'ssn': '123-45-6789',
         }

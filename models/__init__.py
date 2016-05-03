@@ -3,8 +3,8 @@
 COUNCIL_ID = '591'
 
 
-class RecordNotFoundException(Exception):
-    """Record not found"""
+class AuthenticationFailureException(Exception):
+    """Authentication failure (incorrect username or password)"""
     pass
 
 
@@ -15,4 +15,9 @@ class InvalidObjectException(Exception):
 
 class MultipleMatchException(Exception):
     """Multiple records were returned when only 1 was expected"""
+    pass
+
+
+class RecordNotFoundException(Exception):
+    """Record not found"""
     pass

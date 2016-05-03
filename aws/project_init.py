@@ -232,7 +232,7 @@ def create_volunteers_table():
                     'AttributeType': 'N',
                 },
                 {
-                    'AttributeName': 'unit_id',
+                    'AttributeName': 'unit_uuid',
                     'AttributeType': 'S',
                 },
             ],
@@ -270,10 +270,10 @@ def create_volunteers_table():
                     },
                 },
                 {
-                    'IndexName': 'unit_id',
+                    'IndexName': 'unit_uuid',
                     'KeySchema': [
                         {
-                            'AttributeName': 'unit_id',
+                            'AttributeName': 'unit_uuid',
                             'KeyType': 'HASH',
                         },
                     ],
@@ -509,6 +509,62 @@ def create_record_logs_table():
             raise exc
 
 
+def create_sessions_table():
+    """Create the 'Sessions' DynamoDB table"""
+
+    # Create the DynamoDB table.
+    try:
+        table = DYNAMODB.create_table(
+            TableName='Sessions',
+            KeySchema=[
+                {
+                    'AttributeName': 'uuid',
+                    'KeyType': 'HASH',
+                },
+            ],
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'uuid',
+                    'AttributeType': 'S',
+                },
+                {
+                    'AttributeName': 'user_uuid',
+                    'AttributeType': 'S',
+                },
+            ],
+            GlobalSecondaryIndexes=[
+                {
+                    'IndexName': 'user_uuid',
+                    'KeySchema': [
+                        {
+                            'AttributeName': 'user_uuid',
+                            'KeyType': 'HASH',
+                        },
+                    ],
+                    'Projection': {
+                        'ProjectionType': 'INCLUDE',
+                        'NonKeyAttributes': [
+                            'uuid',
+                            'user_uuid',
+                        ],
+                    },
+                    'ProvisionedThroughput': {
+                        'ReadCapacityUnits': 1,
+                        'WriteCapacityUnits': 1,
+                    },
+                },
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
+            }
+        )
+        return table
+    except botocore.exceptions.ClientError as exc:
+        if 'ResourceInUseException' not in exc.__str__():
+            raise exc
+
+
 def wait(tables):
     """Wait for AWS to finish the table creation process"""
     for table_name, table in tables.items():
@@ -528,6 +584,7 @@ def main():
     tables['Organizations'] = create_organizations_table()
     tables['Applications'] = create_applications_table()
     tables['RecordLogs'] = create_record_logs_table()
+    tables['Sessions'] = create_sessions_table()
     wait(tables)
 
     # API Gateway

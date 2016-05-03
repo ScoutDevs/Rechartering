@@ -53,7 +53,7 @@ class TestUser(ModelTestCase):
     def test_password(self):
         """Make sure passwords are being hashed correctly"""
         hashed_password = '0f1128046248f83dc9b9ab187e16fad0ff596128f1524d05a9a77c4ad932f10a'
-        self.assertEquals(hashed_password, self.obj.hash_password('howdy'))
+        self.assertEquals(hashed_password, self.obj.get_password_hash('howdy'))
 
 
 class TestYouth(ModelTestCase):
@@ -104,7 +104,7 @@ class TestVolunteer(ModelTestCase):
         """Init"""
         obj_data = {
             'scoutnet_id': 123,
-            'unit_id': 'unt-123',
+            'unit_uuid': 'unt-123',
             'duplicate_hash': '123123123',
             'ypt_completion_date': '2015-01-01',
             'ssn': '123-45-6789',
@@ -179,7 +179,7 @@ class TestYouthApplication(ModelTestCase):
         """Init"""
         obj_data = {
             'status': Youth.APPLICATION_STATUS_COMPLETE,
-            'unit_id': 'unt-123',
+            'unit_uuid': 'unt-123',
             'scoutnet_id': 123,
             'first_name': 'Ben',
             'last_name': 'Reece',
@@ -205,7 +205,7 @@ class TestYouthApplication(ModelTestCase):
         """Test guardian signature validation"""
         self.obj.status = Youth.APPLICATION_STATUS_UNIT_APPROVAL
         self.assertFalse(self.validator.valid())
-        self.obj.guardian_approval_guardian_id = '123'
+        self.obj.guardian_approval_guardian_uuid = '123'
         self.obj.guardian_approval_signature = 'stuff'
         self.obj.guardian_approval_date = '2015-01-01'
         self.assertTrue(self.validator.valid())
@@ -214,10 +214,10 @@ class TestYouthApplication(ModelTestCase):
         """Test unit approval validation"""
         self.obj.status = Youth.APPLICATION_STATUS_FEE_PENDING
         self.assertFalse(self.validator.valid())
-        self.obj.guardian_approval_guardian_id = '123'
+        self.obj.guardian_approval_guardian_uuid = '123'
         self.obj.guardian_approval_signature = 'stuff'
         self.obj.guardian_approval_date = '2015-01-01'
-        self.obj.unit_approval_user_id = '123'
+        self.obj.unit_approval_user_uuid = '123'
         self.obj.unit_approval_signature = 'stuff'
         self.obj.unit_approval_date = '2015-01-01'
         self.assertTrue(self.validator.valid())
@@ -226,10 +226,10 @@ class TestYouthApplication(ModelTestCase):
         """Test fee payment validation"""
         self.obj.status = Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET
         self.assertFalse(self.validator.valid())
-        self.obj.guardian_approval_guardian_id = '123'
+        self.obj.guardian_approval_guardian_uuid = '123'
         self.obj.guardian_approval_signature = 'stuff'
         self.obj.guardian_approval_date = '2015-01-01'
-        self.obj.unit_approval_user_id = '123'
+        self.obj.unit_approval_user_uuid = '123'
         self.obj.unit_approval_signature = 'stuff'
         self.obj.unit_approval_date = '2015-01-01'
         self.assertTrue(self.validator.valid())
@@ -237,10 +237,10 @@ class TestYouthApplication(ModelTestCase):
     def test_record(self):
         """Test ready for ScoutNet validation"""
         self.obj.status = Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET
-        self.obj.guardian_approval_guardian_id = '123'
+        self.obj.guardian_approval_guardian_uuid = '123'
         self.obj.guardian_approval_signature = 'stuff'
         self.obj.guardian_approval_date = '2015-01-01'
-        self.obj.unit_approval_user_id = '123'
+        self.obj.unit_approval_user_uuid = '123'
         self.obj.unit_approval_signature = 'stuff'
         self.obj.unit_approval_date = '2015-01-01'
         self.assertTrue(self.validator.valid())
@@ -249,10 +249,10 @@ class TestYouthApplication(ModelTestCase):
         """Test complete status"""
         self.obj.status = Youth.APPLICATION_STATUS_COMPLETE
         self.assertFalse(self.validator.valid())
-        self.obj.guardian_approval_guardian_id = '123'
+        self.obj.guardian_approval_guardian_uuid = '123'
         self.obj.guardian_approval_signature = 'stuff'
         self.obj.guardian_approval_date = '2015-01-01'
-        self.obj.unit_approval_user_id = '123'
+        self.obj.unit_approval_user_uuid = '123'
         self.obj.unit_approval_signature = 'stuff'
         self.obj.unit_approval_date = '2015-01-01'
         self.obj.recorded_in_scoutnet_date = '2015-01-01'
@@ -275,7 +275,7 @@ class TestAdultApplications(ModelTestCase):
         """Init"""
         obj_data = {
             'status': 'Completed',
-            'org_id': '123123',
+            'org_uuid': '123123',
         }
         self._set_up(AdultApplications, obj_data)
 
@@ -290,7 +290,7 @@ class TestCharterApplications(ModelTestCase):
     def setUp(self):
         """Init"""
         obj_data = {
-            'sponsoring_organization_id': '123123',
+            'sponsoring_organization_uuid': '123123',
             'year': 2015,
             'status': 'Completed',
         }

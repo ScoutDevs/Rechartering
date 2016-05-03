@@ -67,7 +67,7 @@ class Controller(object):
         Returns:
             Youth object (updated)
         """
-        youth.guardian_approval_guardian_id = data['guardian_approval_guardian_id']
+        youth.guardian_approval_guardian_uuid = data['guardian_approval_guardian_uuid']
         youth.guardian_approval_signature = data['guardian_approval_signature']
         youth.guardian_approval_date = data['guardian_approval_date']
         return youth
@@ -87,8 +87,8 @@ class Controller(object):
         Returns:
             Youth object (updated)
         """
-        if guardian.uuid == youth.guardian_approval_guardian_id:
-            youth.guardian_approval_guardian_id = ''
+        if guardian.uuid == youth.guardian_approval_guardian_uuid:
+            youth.guardian_approval_guardian_uuid = ''
             youth.guardian_approval_signature = ''
             youth.guardian_approval_date = ''
             return youth

@@ -14,9 +14,9 @@ class Volunteer(Base.Object):  # pylint: disable=too-many-instance-attributes
         self.uuid = self.get_uuid()
         self.user_uuid = ''
         self.duplicate_hash = ''
-        self.unit_id = ''
+        self.unit_uuid = ''
         self.scoutnet_id = ''
-        self.application_id = ''
+        self.application_uuid = ''
         self.ypt_completion_date = ''
         self.first_name = ''
         self.last_name = ''
@@ -47,9 +47,9 @@ class Validator(Base.Validator):
         return {
             'uuid': Base.FIELD_REQUIRED,
             'duplicate_hash': Base.FIELD_REQUIRED,
-            'unit_id': Base.FIELD_REQUIRED,
+            'unit_uuid': Base.FIELD_REQUIRED,
             'scoutnet_id': Base.FIELD_OPTIONAL,
-            'application_id': Base.FIELD_OPTIONAL,
+            'application_uuid': Base.FIELD_OPTIONAL,
             'ypt_completion_date': Base.FIELD_REQUIRED,
             'first_name': Base.FIELD_REQUIRED,
             'last_name': Base.FIELD_REQUIRED,

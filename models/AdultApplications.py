@@ -12,7 +12,7 @@ class AdultApplications(Base.Object):
         super(self.__class__, self).__init__()
         self.uuid = self.get_uuid()
         self.status = ''
-        self.org_id = ''
+        self.org_uuid = ''
         self.data = {}
 
     def get_validator(self):
@@ -30,7 +30,7 @@ class Validator(Base.Validator):
         return {
             'uuid': Base.FIELD_REQUIRED,
             'status': Base.FIELD_REQUIRED,
-            'org_id': Base.FIELD_REQUIRED,
+            'org_uuid': Base.FIELD_REQUIRED,
         }
 
 

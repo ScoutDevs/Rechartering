@@ -73,8 +73,8 @@ class FakeUserPersister(FakePersister):
                 'first_name': 'Ben',
                 'last_name': 'Reece',
                 'username': 'ben',
-                'password': 'ben',
-                'guardian_id': 'gdn-TEST-1',
+                'password': User.User.get_password_hash('ben'),
+                'guardian_uuid': 'gdn-TEST-1',
                 'roles': {
                     Security.ROLE_COUNCIL_ADMIN: [],
                 },
@@ -82,7 +82,7 @@ class FakeUserPersister(FakePersister):
             {
                 'uuid': 'usr-ken',
                 'username': 'ken',
-                'password': 'ken',
+                'password': User.User.get_password_hash('ken'),
                 'roles': {
                     Security.ROLE_GUARDIAN: [],
                 },
@@ -110,7 +110,7 @@ class FakeVolunteerPersister(FakePersister):
                 'user_uuid': 'usr-ben',
                 'first_name': 'Ben',
                 'last_name': 'Reece',
-                'unit_id': 'unt-TEST-1455',
+                'unit_uuid': 'unt-TEST-1455',
                 'ypt_completion_date': '2016-01-01',
                 'ssn': '123-45-6789',
             },
@@ -298,7 +298,7 @@ class FakeYouthApplicationPersister(FakePersister):
         data = [
             {
                 'uuid': 'yap-TEST-1',
-                'unit_id': 'unt-1455.spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
+                'unit_uuid': 'unt-1455.spo-1455.sbd-5-9.dst-5.cnl-'+COUNCIL_ID,
                 'scoutnet_id': 123,
                 'status': Youth.APPLICATION_STATUS_CREATED,
                 'first_name': 'Ben',
@@ -334,7 +334,7 @@ class FakeYouthPersister(FakePersister):
                 'date_of_birth': '2002-01-15',
                 'duplicate_hash': 'b94302d98d30a3e48ea80c7f4432a6f30661869f0a95e0096f50e84edc0fc09b',
                 'units': ['unt-TEST-1455'],
-                'guardian_approval_guardian_id': 'gdn-TEST-123',
+                'guardian_approval_guardian_uuid': 'gdn-TEST-123',
                 'guardian_approval_signature': 'abcde',
             },
             {
@@ -345,7 +345,7 @@ class FakeYouthPersister(FakePersister):
                 'date_of_birth': '2005-12-22',
                 'duplicate_hash': '123',
                 'units': ['unt-TEST-1455'],
-                'guardian_approval_guardian_id': '',
+                'guardian_approval_guardian_uuid': '',
                 'guardian_approval_signature': '',
             },
         ]

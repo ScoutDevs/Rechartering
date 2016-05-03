@@ -24,12 +24,12 @@ class Youth(Base.Object):  # pylint: disable=too-many-instance-attributes
         self.duplicate_hash = ''
         self.units = []
         self.scoutnet_id = ''
-        self.application_id = ''
+        self.application_uuid = ''
         self.guardians = []
         self.first_name = ''
         self.last_name = ''
         self.date_of_birth = ''
-        self.guardian_approval_guardian_id = ''
+        self.guardian_approval_guardian_uuid = ''
         self.guardian_approval_signature = ''
         self.guardian_approval_date = ''
 
@@ -46,9 +46,9 @@ class Youth(Base.Object):  # pylint: disable=too-many-instance-attributes
     def get_guardian_approval(self):
         """Get guardian approval data"""
         approval = {}
-        if self.guardian_approval_guardian_id:
+        if self.guardian_approval_guardian_uuid:
             approval = {
-                'guardian_approval_guardian_id': self.guardian_approval_guardian_id,
+                'guardian_approval_guardian_uuid': self.guardian_approval_guardian_uuid,
                 'guardian_approval_signature': self.guardian_approval_signature,
                 'guardian_approval_date': self.guardian_approval_date,
             }
@@ -114,21 +114,21 @@ class Application(Base.Object):  # pylint: disable=too-many-instance-attributes
     def __init__(self):
         super(self.__class__, self).__init__()
         self.uuid = self.get_uuid()
-        self.unit_id = ''
+        self.unit_uuid = ''
         self.status = APPLICATION_STATUS_CREATED
-        self.guardian_approval_guardian_id = ''
+        self.guardian_approval_guardian_uuid = ''
         self.guardian_approval_signature = ''
         self.guardian_approval_date = ''
-        self.unit_approval_user_id = ''
+        self.unit_approval_user_uuid = ''
         self.unit_approval_signature = ''
         self.unit_approval_date = ''
         self.fee_payment_date = ''
-        self.fee_payment_user_id = ''
+        self.fee_payment_user_uuid = ''
         self.fee_payment_receipt = ''
         self.recorded_in_scoutnet_date = ''
         self.rejection_date = ''
         self.rejection_reason = ''
-        self.youth_id = ''
+        self.youth_uuid = ''
         self.scoutnet_id = 0
         self.first_name = ''
         self.last_name = ''
@@ -149,7 +149,7 @@ class ApplicationValidator(Base.Validator):
         field_requirements = {
             'uuid': Base.FIELD_REQUIRED,
             'status': Base.FIELD_REQUIRED,
-            'unit_id': Base.FIELD_REQUIRED,
+            'unit_uuid': Base.FIELD_REQUIRED,
             'first_name': Base.FIELD_REQUIRED,
             'last_name': Base.FIELD_REQUIRED,
             'date_of_birth': Base.FIELD_REQUIRED,
@@ -195,7 +195,7 @@ class ApplicationStatusValidator(object):  # pylint: disable=too-few-public-meth
                 APPLICATION_STATUS_READY_FOR_SCOUTNET,
                 APPLICATION_STATUS_COMPLETE]:
             fields.update({
-                'guardian_approval_guardian_id': Base.FIELD_REQUIRED,
+                'guardian_approval_guardian_uuid': Base.FIELD_REQUIRED,
                 'guardian_approval_signature': Base.FIELD_REQUIRED,
                 'guardian_approval_date': Base.FIELD_REQUIRED,
             })
@@ -204,7 +204,7 @@ class ApplicationStatusValidator(object):  # pylint: disable=too-few-public-meth
                 APPLICATION_STATUS_READY_FOR_SCOUTNET,
                 APPLICATION_STATUS_COMPLETE]:
             fields.update({
-                'unit_approval_user_id': Base.FIELD_REQUIRED,
+                'unit_approval_user_uuid': Base.FIELD_REQUIRED,
                 'unit_approval_signature': Base.FIELD_REQUIRED,
                 'unit_approval_date': Base.FIELD_REQUIRED,
             })

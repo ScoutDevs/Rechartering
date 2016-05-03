@@ -8,7 +8,7 @@ class CharterApplications(Base.Object):
     def __init__(self):
         super(self.__class__, self).__init__()
         self.uuid = self.get_uuid()
-        self.sponsoring_organization_id = ''
+        self.sponsoring_organization_uuid = ''
         self.year = 0
         self.status = ''
 
@@ -27,7 +27,7 @@ class Validator(Base.Validator):
     def get_field_requirements(self):
         return {
             'uuid': Base.FIELD_REQUIRED,
-            'sponsoring_organization_id': Base.FIELD_REQUIRED,
+            'sponsoring_organization_uuid': Base.FIELD_REQUIRED,
             'year': Base.FIELD_REQUIRED,
             'status': Base.FIELD_REQUIRED,
         }

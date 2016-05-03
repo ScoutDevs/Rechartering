@@ -83,7 +83,7 @@ class Controller(object):
         """
         app.status = Youth.APPLICATION_STATUS_GUARDIAN_APPROVAL
 
-        if app.youth_id:
+        if app.youth_uuid:
             app.scoutnet_id = self._get_youth_scoutnet_id(app)
             approval = self._get_guardian_approval(app)
             if approval:
@@ -104,7 +104,7 @@ class Controller(object):
         Returns:
             dict containing approval data, or empty dict
         """
-        youth = self.youth_factory.load_by_uuid(app.youth_id)
+        youth = self.youth_factory.load_by_uuid(app.youth_uuid)
         return youth.get_guardian_approval()
 
     @require_role(Security.ROLE_GUARDIAN)
@@ -119,27 +119,27 @@ class Controller(object):
         Args:
             app: Application object in GUARDIAN_APPROVAL status
             data: dict containing the following fields:
-                guardian_approval_guardian_id: ID of the guardian who granted
+                guardian_approval_guardian_uuid: ID of the guardian who granted
                     approval
                 guardian_approval_signature: signature provided by guardian
                 guardian_approval_date (optional): date of original guardian
                     approval for the youth; defaults to current date
         Returns:
             tuple: Application object (updated),
-                and Youth object (possibly updated; None if no youth_id)
+                and Youth object (possibly updated; None if no youth_uuid)
         Raises:
             RecordNotFoundException
         """
         if 'guardian_approval_date' not in data or not data['guardian_approval_date']:
             data['guardian_approval_date'] = date.today().isoformat()
 
-        app.guardian_approval_guardian_id = data['guardian_approval_guardian_id']
+        app.guardian_approval_guardian_uuid = data['guardian_approval_guardian_uuid']
         app.guardian_approval_signature = data['guardian_approval_signature']
         app.guardian_approval_date = data['guardian_approval_date']
         app.status = Youth.APPLICATION_STATUS_UNIT_APPROVAL
 
-        if app.youth_id:
-            youth = self.youth_factory.load_by_uuid(app.youth_id)
+        if app.youth_uuid:
+            youth = self.youth_factory.load_by_uuid(app.youth_uuid)
             controller = YouthController.Controller(self.user, self.youth_factory)
             youth = controller.grant_guardian_approval(youth, data)
             youth.validate()
@@ -192,7 +192,7 @@ class Controller(object):
         Args:
             app: Application object in UNIT_APPROVAL status
             data: dict containing the following fields:
-                unit_approval_user_id: User ID of the user who approved
+                unit_approval_user_uuid: User ID of the user who approved
                 unit_approval_signature: Signature of said user
                 unit_approval_date (optional): defaults to current date
         Returns:
@@ -201,7 +201,7 @@ class Controller(object):
         if 'unit_approval_date' not in data or not data['unit_approval_date']:
             data['unit_approval_date'] = date.today().isoformat()
 
-        app.unit_approval_user_id = data['unit_approval_user_id']
+        app.unit_approval_user_uuid = data['unit_approval_user_uuid']
         app.unit_approval_signature = data['unit_approval_signature']
         app.unit_approval_date = data['unit_approval_date']
 
@@ -224,7 +224,7 @@ class Controller(object):
         Returns:
             boolean
         """
-        unit = self.unit_factory.load_by_uuid(app.unit_id)
+        unit = self.unit_factory.load_by_uuid(app.unit_uuid)
         return unit.lds_unit
 
     @require_role(Security.ROLE_UNIT_ADMIN)
@@ -268,7 +268,7 @@ class Controller(object):
         Args:
             app: Application object in FEE_PENDING status
             data: dict containing the following fields:
-                fee_payment_user_id (optional): ID of the user who is marking the
+                fee_payment_user_uuid (optional): ID of the user who is marking the
                     registration fees as paid
                 fee_payment_receipt: Transaction or receipt number
                 fee_payment_date (optional): defaults to current date
@@ -280,7 +280,7 @@ class Controller(object):
             data['fee_payment_date'] = date.today().isoformat()
 
         app.fee_payment_date = data['fee_payment_date']
-        app.fee_payment_user_id = data['fee_payment_user_id']
+        app.fee_payment_user_uuid = data['fee_payment_user_uuid']
         app.fee_payment_receipt = data['fee_payment_receipt']
         app.status = Youth.APPLICATION_STATUS_READY_FOR_SCOUTNET
 
@@ -312,11 +312,11 @@ class Controller(object):
         app.recorded_in_scoutnet_date = data['date']
         app.status = Youth.APPLICATION_STATUS_COMPLETE
 
-        if app.youth_id:
-            youth = self.youth_factory.load_by_uuid(app.youth_id)
+        if app.youth_uuid:
+            youth = self.youth_factory.load_by_uuid(app.youth_uuid)
         else:
             youth = self.youth_factory.construct_from_app(app)
-        youth.units.append(app.unit_id)
+        youth.units.append(app.unit_uuid)
 
         app.validate()
         youth.validate()
@@ -334,5 +334,5 @@ class Controller(object):
         Returns:
             int: the Youth's ScoutNet ID
         """
-        youth = self.youth_factory.load_by_uuid(app.youth_id)
+        youth = self.youth_factory.load_by_uuid(app.youth_uuid)
         return youth.scoutnet_id
