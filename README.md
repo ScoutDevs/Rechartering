@@ -1,5 +1,5 @@
-# Rechartering
-Paperless rechartering project, sponsored by the UNPC.
+# Registration
+Paperless registration (and rechartering) project, sponsored by the UNPC.
 
 # Code of Conduct
 The code of conduct is very simple: adhere to the tenets & values of the BSA, specifically the Scout Oath & Scout Law.
