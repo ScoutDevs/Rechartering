@@ -47,7 +47,6 @@ class Factory(Base.Factory):
 
 
 class Persister(Base.Persister):
-
     """Persists Guardian objects"""
 
     @staticmethod

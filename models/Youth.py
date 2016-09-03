@@ -236,7 +236,6 @@ class ApplicationFactory(Base.Factory):
 
 
 class ApplicationPersister(Base.Persister):
-
     """Persists Youth Application objects"""
 
     @staticmethod

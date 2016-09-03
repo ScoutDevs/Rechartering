@@ -59,7 +59,6 @@ class Validator(Base.Validator):
 
 
 class Persister(Base.Persister):
-
     """Persists Unit objects"""
 
     @staticmethod

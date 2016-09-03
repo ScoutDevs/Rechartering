@@ -12,7 +12,6 @@ FIELD_OPTIONAL = 'optional'
 
 
 class Object(object):
-
     """Base class"""
 
     def __init__(self):
@@ -67,7 +66,6 @@ class Object(object):
 
 
 class Validator(object):
-
     """Validates data construct"""
 
     def __init__(self, obj):
@@ -128,7 +126,6 @@ class Validator(object):
 
 
 class Factory(object):
-
     """Base Factory"""
 
     def __init__(self):
@@ -191,7 +188,6 @@ class Factory(object):
 
 
 class Persister(object):
-
     """Persists objects"""
 
     def __init__(self):

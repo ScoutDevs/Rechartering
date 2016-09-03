@@ -75,7 +75,6 @@ class Factory(Base.Factory):
 
 
 class Persister(Base.Persister):
-
     """Persists Unit objects"""
 
     @staticmethod

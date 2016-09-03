@@ -65,7 +65,6 @@ class Factory(Base.Factory):
 
 
 class Persister(Base.Persister):
-
     """Persists Subdistrict objects"""
 
     @staticmethod

@@ -70,7 +70,6 @@ class Factory(Base.Factory):
 
 
 class Persister(Base.Persister):
-
     """Persists Volunteer objects"""
 
     @staticmethod

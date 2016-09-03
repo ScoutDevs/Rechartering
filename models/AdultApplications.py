@@ -35,7 +35,6 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-
     """AdultApplications Factory"""
 
     @staticmethod
@@ -48,7 +47,6 @@ class Factory(Base.Factory):
 
 
 class Persister(Base.Persister):
-
     """Persists AdultApplications objects"""
 
     @staticmethod

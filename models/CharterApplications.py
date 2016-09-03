@@ -21,7 +21,6 @@ class CharterApplications(Base.Object):
 
 
 class Validator(Base.Validator):
-
     """CharterApplication validator"""
 
     def get_field_requirements(self):
@@ -34,7 +33,6 @@ class Validator(Base.Validator):
 
 
 class Factory(Base.Factory):
-
     """CharterApplications Factory"""
 
     @staticmethod
@@ -47,7 +45,6 @@ class Factory(Base.Factory):
 
 
 class Persister(Base.Persister):
-
     """Persists CharterApplications objects"""
 
     @staticmethod
